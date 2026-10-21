@@ -293,6 +293,25 @@ nav.tabs button[aria-selected="true"]{background:color-mix(in srgb,var(--accent)
 header.top .wrap{gap:8px}
 .info-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;cursor:pointer;color:var(--accent);background:var(--glass-soft);border:1px solid var(--glass-line);box-shadow:var(--hl);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
 .card a{color:var(--accent)}
+/* meteo previsto */
+.vig .now-head .muted,.eq .now-head .muted{font-size:.82rem;color:var(--muted)}
+.rain{width:12px;height:12px;border-radius:50%;flex:none;border:1px solid rgba(80,110,150,.45)}
+.rain.r0,.rain.r1{background:transparent}
+.rain.r2{background:#9FE6F5} .rain.r3{background:#3FB8E8} .rain.r4{background:#3C6FE0} .rain.r5{background:#8A3FE0}
+.vig-sub{margin:0;font-size:.85rem;color:var(--muted);font-weight:600}
+.vig-list{margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:.9rem}
+.vig-more summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.9rem}
+.vig-more[open] summary{margin-bottom:8px}
+/* terremoti */
+.eq-sum{margin:0;font-size:.95rem}
+.eq-list{list-style:none;margin:0;padding:0;display:grid}
+.eq-list a{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line);color:var(--fg);text-decoration:none}
+.eq-list li:first-child a{border-top:0}
+.mag{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:1.1rem;font-variant-numeric:tabular-nums;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.mag.m0{background:#5E8F6E} .mag.m1{background:#C9A100;color:#2B2200} .mag.m2{background:#D9661A} .mag.m3{background:#B42329}
+.eq-txt{min-width:0;display:grid}
+.eq-txt strong{font-size:.95rem;overflow-wrap:anywhere}
+.eq-txt small{color:var(--muted);font-size:.8rem}
 /* senza supporto al vetro: superfici piene */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   :root{--glass:var(--surface);--glass-strong:var(--surface);--glass-soft:var(--surface)}
@@ -340,6 +359,24 @@ header.top .wrap{gap:8px}
   </div>
 
   <a class="sos" href="tel:112"><b>112</b><span>Numero Unico di Emergenza.<br>Soccorso sanitario, Vigili del Fuoco, Carabinieri, Polizia.</span></a>
+
+  <div class="card vig" id="vig" hidden>
+    <div class="now-head"><span class="eyebrow">Meteo previsto</span><span id="vig-zone" class="muted"></span></div>
+    <ul class="risks" id="vig-rows"></ul>
+    <div id="vig-lazio"></div>
+    <details class="vig-more"><summary>Leggi tutto il bollettino nazionale</summary><ul class="vig-list" id="vig-all"></ul></details>
+    <p class="now-src" id="vig-src"></p>
+  </div>
+
+  <div class="card eq" id="eq">
+    <div class="now-head"><span class="eyebrow">Terremoti recenti</span><span class="muted">ultimi 7 giorni</span></div>
+    <div id="eq-body">
+      <p class="eq-sum" id="eq-sum">Carico i dati sismici…</p>
+      <ul class="eq-list" id="eq-list"></ul>
+      <p class="now-src" id="eq-src"></p>
+    </div>
+    <p id="eq-err" hidden>Non riesco a scaricare i dati sui terremoti. Controlla la connessione oppure apri <a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">terremoti.ingv.it</a>.</p>
+  </div>
 
   <div class="eyebrow">Situazione adesso</div>
   <div class="links">
@@ -409,6 +446,8 @@ header.top .wrap{gap:8px}
   <div class="card">
     <h3>Fonti e licenze</h3>
     <p><strong>Allerte:</strong> Bollettino di criticità nazionale del Dipartimento della Protezione Civile, dati aperti con licenza <a href="https://creativecommons.org/licenses/by/4.0/deed.it" target="_blank" rel="noopener">CC BY 4.0</a>, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica" target="_blank" rel="noopener">github.com/pcm-dpc</a>. I dati sono mostrati senza modifiche nel contenuto: l'app calcola solo il livello più alto della zona.</p>
+    <p><strong>Meteo previsto:</strong> Bollettino di vigilanza meteorologica nazionale del Dipartimento della Protezione Civile, dati aperti con licenza CC BY 4.0, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Vigilanza-Meteorologica" target="_blank" rel="noopener">github.com/pcm-dpc</a>.</p>
+    <p><strong>Terremoti:</strong> dati dell'Istituto Nazionale di Geofisica e Vulcanologia (<a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">INGV</a>) e, se non raggiungibile, del Centro Sismologico Euro-Mediterraneo (EMSC). Sono localizzazioni automatiche o rivedute che possono cambiare nelle ore successive.</p>
     <p><strong>Cosa fare:</strong> testi riformulati a partire dalle indicazioni della campagna nazionale "Io non rischio" e del Ministero della Salute.</p>
     <p><strong>Numeri e indirizzi:</strong> fonti pubbliche della Regione Lazio e del Comune di Cave.</p>
   </div>
@@ -418,7 +457,7 @@ header.top .wrap{gap:8px}
     <p>L'app non raccoglie dati personali: non ci sono account, cookie di tracciamento o statistiche di utilizzo.</p>
     <p><strong>Posizione:</strong> viene chiesta solo se tocchi "Usa la mia posizione", serve a trovare la zona di allerta e resta sul telefono. Non viene inviata a nessuno.</p>
     <p><strong>Dati salvati sul telefono:</strong> le spunte dello zaino, il comune scelto e l'ultimo bollettino, per far funzionare l'app senza connessione. Puoi cancellarli eliminando l'app o i dati del sito.</p>
-    <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica il bollettino dai server di GitHub. Come per ogni sito, GitHub riceve l'indirizzo IP del telefono per rispondere alla richiesta.</p>
+    <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica i bollettini dai server di GitHub e i dati sui terremoti da INGV (o EMSC). Come per ogni sito, questi server ricevono l'indirizzo IP del telefono per rispondere. La tua posizione non viene inviata: l'app scarica i terremoti di tutta Italia e calcola le distanze sul telefono.</p>
   </div>
 </section>
 
@@ -697,7 +736,7 @@ const BCR = (() => {
     return { today: { file: "today", date: d0 }, tomorrow: { file: "tomorrow", date: d1 }, stale: true };
   }
 
-  return { API, RAW, CACHE, CHECK_EVERY, DEFAULT_COMUNE, LEVELS, SHORT, level, prepare, byPoint, byComune, comuni, plan, stemDate };
+  return { API, RAW, CACHE, CHECK_EVERY, DEFAULT_COMUNE, LEVELS, SHORT, level, prepare, inRings, byPoint, byComune, comuni, plan, stemDate };
 })();
 
 if (typeof module !== "undefined") module.exports = BCR;
@@ -824,7 +863,7 @@ if (typeof document !== "undefined") (function allertaInit() {
     navigator.geolocation.getCurrentPosition((pos) => {
       el.geo.disabled = false; el.geo.lastChild.textContent = "Aggiorna posizione";
       place = { mode: "geo", lat: pos.coords.latitude, lon: pos.coords.longitude };
-      ls.set("allerta-luogo", place); update();
+      ls.set("allerta-luogo", place); document.dispatchEvent(new Event("luogo")); update();
     }, (err) => {
       el.geo.disabled = false; el.geo.lastChild.textContent = "Usa la mia posizione";
       toast(err.code === 1 ? "Permesso posizione negato: attivalo in Impostazioni" : "Posizione non trovata, riprova");
@@ -839,8 +878,197 @@ if (typeof document !== "undefined") (function allertaInit() {
     const match = [...el.list.options].map((o) => o.value).find((c) => c.toLowerCase() === name.toLowerCase());
     if (el.list.options.length && !match) { toast("Comune non trovato: scegli dall'elenco"); return; }
     place = { mode: "comune", name: match || name };
-    ls.set("allerta-luogo", place); el.pick.hidden = true; el.input.value = ""; el.geo.lastChild.textContent = "Usa la mia posizione"; update();
+    ls.set("allerta-luogo", place); document.dispatchEvent(new Event("luogo")); el.pick.hidden = true; el.input.value = ""; el.geo.lastChild.textContent = "Usa la mia posizione"; update();
   });
+})();
+
+</script>
+<script>
+/* ===== Vigilanza meteo (DPC) e terremoti recenti (INGV / EMSC) ===== */
+const MS = (() => {
+  const CAVE = { lat: 41.8189, lon: 12.9306, name: "Cave" };
+  const VIG_RAW = "https://raw.githubusercontent.com/pcm-dpc/DPC-Bollettini-Vigilanza-Meteorologica/master/files/";
+  const PIOGGIA = ["", "Assenti", "Deboli", "Moderate", "Elevate", "Molto elevate"];
+  const LAZIO = /lazio|lazial|roma\b|romano|ciociaria|frusinat|pontin/i;
+
+  const ymdStr = (d) => d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
+
+  /* Testo nazionale: paragrafi -> voci {titolo, testo} */
+  function parseVig(html) {
+    const div = document.createElement("div");
+    div.innerHTML = html || "";
+    const out = []; let head = "";
+    div.querySelectorAll("p").forEach((p) => {
+      const strong = p.querySelector("strong");
+      let text = p.textContent.replace(/\s+/g, " ").trim();
+      if (strong) {
+        head = strong.textContent.replace(/[:\s]+$/, "").trim();
+        text = text.slice(strong.textContent.length).replace(/^[:\s]+/, "").trim();
+      }
+      text = text.replace(/^-\s*/, "").replace(/;$/, ".");
+      if (text) out.push({ head, text });
+    });
+    return out;
+  }
+
+  /* FDSN text: EventID|Time|Latitude|Longitude|Depth|Author|Catalog|Contributor|ContributorID|MagType|Magnitude|MagAuthor|EventLocationName|... */
+  function parseFdsn(txt) {
+    return txt.split("\n").filter((l) => l && l[0] !== "#").map((l) => {
+      const c = l.split("|");
+      const t = c[1] && !/Z|[+-]\d\d:?\d\d$/.test(c[1]) ? c[1] + "Z" : c[1];
+      return { id: c[0], time: new Date(t), lat: +c[2], lon: +c[3], depth: +c[4], magType: c[9], mag: +c[10], place: c[12] || "" };
+    }).filter((e) => isFinite(e.lat) && isFinite(e.mag) && !isNaN(e.time));
+  }
+  function km(a, b) {
+    const R = 6371, r = Math.PI / 180;
+    const dLat = (b.lat - a.lat) * r, dLon = (b.lon - a.lon) * r;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  return { CAVE, VIG_RAW, PIOGGIA, LAZIO, ymdStr, parseVig, parseFdsn, km };
+})();
+
+if (typeof document !== "undefined") (function meteoSismiInit() {
+  const $ = (s) => document.querySelector(s);
+  const escH = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const ls = {
+    get(k, f) { try { const v = localStorage.getItem(k); return v == null ? f : JSON.parse(v); } catch (e) { return f; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const place = () => ls.get("allerta-luogo", { mode: "comune", name: "Cave" });
+  const CACHE = "meteo-dati";
+
+  async function cachedJson(url, keepKey) {
+    let cache = null;
+    try { cache = await caches.open(CACHE); const hit = await cache.match(url); if (hit) return hit.json(); } catch (e) {}
+    const r = await fetch(url);
+    if (!r.ok) throw new Error("http " + r.status);
+    if (cache) { try { await cache.put(url, r.clone()); } catch (e) {} }
+    return r.json();
+  }
+  async function pruneMeteo(keep) {
+    try { const c = await caches.open(CACHE); for (const req of await c.keys()) if (!keep.some((k) => req.url.includes(k))) await c.delete(req); } catch (e) {}
+  }
+
+  /* ---------- Vigilanza meteo ---------- */
+  const zonesMem = {};
+  async function vigIndex() {
+    const today = new Date(), yest = new Date(); yest.setDate(yest.getDate() - 1);
+    for (const [d, shift] of [[today, 0], [yest, 1]]) {
+      const key = MS.ymdStr(d);
+      try {
+        // l'indice del giorno cambia solo una volta: lo tengo in cache, ma ricontrollo quello di oggi se manca
+        const r = await fetch(MS.VIG_RAW + key + ".json", { cache: "no-cache" });
+        if (r.ok) { const j = await r.json(); ls.set("vig-index", { key, shift, j }); return { key, shift, j }; }
+      } catch (e) {}
+    }
+    const last = ls.get("vig-index", null);
+    if (last) return { ...last, offline: true };
+    throw new Error("vigilanza non disponibile");
+  }
+  async function vigZones(url) {
+    if (zonesMem[url]) return zonesMem[url];
+    const topo = await cachedJson(url);
+    zonesMem[url] = BCR.prepare(topo);
+    return zonesMem[url];
+  }
+  function findZone(zones, p) {
+    if (p.mode === "geo") return zones.find((z) => p.lon >= z.bbox[0] && p.lon <= z.bbox[2] && p.lat >= z.bbox[1] && p.lat <= z.bbox[3] && BCR.inRings(z.rings, p.lon, p.lat)) || null;
+    const n = (p.name || "").toLowerCase();
+    return zones.find((z) => (z.props.comuni || []).some((c) => c.toLowerCase() === n)) || null;
+  }
+  async function renderVig() {
+    const box = $("#vig");
+    try {
+      const idx = await vigIndex();
+      const days = idx.shift === 0 ? [["Oggi", idx.j.today], ["Domani", idx.j.tomorrow]] : [["Oggi", idx.j.tomorrow], ["Domani", idx.j.aftertomorrow]];
+      const p = place();
+      const rows = [];
+      for (const [label, d] of days) {
+        if (!d || !d.topo_json) continue;
+        let z = null;
+        try { z = findZone(await vigZones(d.topo_json[0]), p); } catch (e) {}
+        const cls = z ? +z.props.id_classificazione : 0;
+        rows.push(`<li><span>${label}</span><span><i class="rain r${cls}"></i>${z ? "Piogge " + MS.PIOGGIA[cls].toLowerCase() : "Non disponibile"}</span></li>`);
+        if (label === "Oggi" && z) $("#vig-zone").textContent = z.props.Nome_Zona;
+      }
+      const items = MS.parseVig(days[0][1] && days[0][1].html_description);
+      const lazio = items.filter((i) => MS.LAZIO.test(i.text));
+      const all = items.map((i) => `<li>${i.head ? "<strong>" + escH(i.head) + ":</strong> " : ""}${escH(i.text)}</li>`).join("");
+      $("#vig-rows").innerHTML = rows.join("");
+      $("#vig-lazio").innerHTML = lazio.length
+        ? `<p class="vig-sub">Segnalato oggi per il Lazio</p><ul class="vig-list">${lazio.map((i) => `<li><strong>${escH(i.head)}:</strong> ${escH(i.text)}</li>`).join("")}</ul>`
+        : `<p class="vig-sub">Il bollettino di oggi non cita in modo specifico il Lazio.</p>`;
+      $("#vig-all").innerHTML = all;
+      const d = idx.key;
+      $("#vig-src").innerHTML = `Bollettino di vigilanza meteorologica DPC del ${d.slice(6, 8)}/${d.slice(4, 6)}/${d.slice(0, 4)}${idx.offline ? " · ultimo scaricato" : ""}`;
+      box.hidden = false;
+      const keep = [idx.key];
+      pruneMeteo(keep);
+    } catch (e) {
+      if (!$("#vig-rows").childElementCount) box.hidden = true;
+    }
+  }
+
+  /* ---------- Terremoti ---------- */
+  const SOURCES = [
+    { name: "INGV", url: "https://webservices.ingv.it/fdsnws/event/1/query", link: (id) => "https://terremoti.ingv.it/event/" + id },
+    { name: "EMSC", url: "https://www.seismicportal.eu/fdsnws/event/1/query", link: () => "https://www.seismicportal.eu/" },
+  ];
+  const RADIUS = 100, MINMAG = 2, DAYS = 7;
+  async function fetchQuakes() {
+    const start = new Date(Date.now() - DAYS * 864e5).toISOString().slice(0, 19);
+    // Area di tutta Italia: la posizione dell'utente non viene mai inviata, le distanze si calcolano sul telefono
+    const q = `?starttime=${start}&minlat=35&maxlat=48&minlon=6&maxlon=19.5&minmag=${MINMAG}&orderby=time&format=text&limit=2000`;
+    for (const s of SOURCES) {
+      try {
+        const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 12000);
+        const r = await fetch(s.url + q, { signal: ctl.signal }); clearTimeout(to);
+        if (r.status === 204) return { src: s.name, list: [] };
+        if (!r.ok) continue;
+        const list = MS.parseFdsn(await r.text()).map((e) => ({ ...e, link: s.link(e.id) }));
+        const res = { src: s.name, list, at: Date.now() };
+        ls.set("sismi-ultimo", res);
+        return res;
+      } catch (e) {}
+    }
+    const last = ls.get("sismi-ultimo", null);
+    if (last) return { ...last, list: last.list.map((e) => ({ ...e, time: new Date(e.time) })), offline: true };
+    throw new Error("terremoti non disponibili");
+  }
+  const ago = (d) => {
+    const m = Math.round((Date.now() - d) / 60000);
+    if (m < 60) return m <= 1 ? "1 minuto fa" : m + " minuti fa";
+    const h = Math.round(m / 60); if (h < 24) return h === 1 ? "1 ora fa" : h + " ore fa";
+    return d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" }) + " " + d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  };
+  const magClass = (m) => m >= 5 ? "m3" : m >= 4 ? "m2" : m >= 3 ? "m1" : "m0";
+  async function renderQuakes() {
+    const p = place();
+    const ref = p.mode === "geo" ? { lat: p.lat, lon: p.lon } : MS.CAVE;
+    const refLabel = p.mode === "geo" ? "dalla tua posizione" : "da Cave";
+    try {
+      const res = await fetchQuakes();
+      const near = res.list.map((e) => ({ ...e, d: MS.km(ref, e) })).filter((e) => e.d <= RADIUS).sort((a, b) => b.time - a.time);
+      const strongest = near.reduce((a, e) => (!a || e.mag > a.mag ? e : a), null);
+      $("#eq-sum").textContent = near.length
+        ? `${near.length} ${near.length === 1 ? "scossa" : "scosse"} di magnitudo ${MINMAG} o più negli ultimi ${DAYS} giorni entro ${RADIUS} km ${refLabel}. La più forte: ${strongest.mag.toFixed(1)}.`
+        : `Nessuna scossa di magnitudo ${MINMAG} o più negli ultimi ${DAYS} giorni entro ${RADIUS} km ${refLabel}.`;
+      $("#eq-list").innerHTML = near.slice(0, 6).map((e) => `<li><a href="${escH(e.link)}" target="_blank" rel="noopener">
+        <b class="mag ${magClass(e.mag)}">${e.mag.toFixed(1)}</b>
+        <span class="eq-txt"><strong>${escH(e.place.trim() || "Zona non indicata")}</strong><small>${ago(e.time)} · ${Math.round(e.d)} km ${refLabel} · prof. ${Math.round(e.depth)} km</small></span></a></li>`).join("");
+      $("#eq-src").innerHTML = `Dati ${res.src === "INGV" ? "INGV – Istituto Nazionale di Geofisica e Vulcanologia" : "EMSC – Centro Sismologico Euro-Mediterraneo"}${res.offline ? " · ultimo aggiornamento salvato" : ""} · <a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">terremoti.ingv.it</a>`;
+      $("#eq-err").hidden = true; $("#eq-body").hidden = false;
+    } catch (e) {
+      $("#eq-body").hidden = true; $("#eq-err").hidden = false;
+    }
+  }
+
+  function refresh() { renderVig(); renderQuakes(); }
+  refresh();
+  document.addEventListener("luogo", refresh);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) renderQuakes(); });
+  setInterval(() => { if (!document.hidden) renderQuakes(); }, 5 * 60 * 1000);
 })();
 
 </script>
