@@ -5,17 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Allerta Cave</title>
 <meta name="description" content="Guida di emergenza per Cave (RM): allerte, cosa fare, zaino di emergenza e numeri utili.">
-<meta name="theme-color" content="#1D4F91">
+<meta name="theme-color" content="#E8EEF6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#070C14" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Allerta Cave">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
 <style>html{-webkit-text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px)}body{margin:0;min-height:100vh}img{max-width:100%}[hidden]{display:none!important}</style>
 <style>
 /* Layout: app a schede, una colonna stretta, barra di navigazione fissa in basso come un'app iOS */
@@ -185,9 +183,119 @@ nav.tabs svg{width:24px;height:24px}
 .area small{color:var(--muted);font-size:.85rem}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 14px);background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:.88rem;z-index:7}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ================= LIQUID GLASS =================
+   Superfici in vetro smerigliato su sfondo colorato, barra schede flottante, font di sistema Apple */
+:root{
+  --f-display:-apple-system,"SF Pro Display",system-ui,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --f-body:-apple-system,"SF Pro Text",system-ui,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --bg:#E8EEF6;
+  --glass:rgba(255,255,255,.58); --glass-strong:rgba(255,255,255,.74); --glass-soft:rgba(255,255,255,.38);
+  --glass-line:rgba(255,255,255,.75); --glass-edge:rgba(20,40,70,.10);
+  --glass-shadow:0 8px 28px rgba(22,45,80,.12),0 1px 2px rgba(22,45,80,.06);
+  --hl:inset 0 1px 0 rgba(255,255,255,.85);
+  --blob1:#7FB2FF; --blob2:#9FE3E0; --blob3:#C9B8FF; --blob4:#FFD7A8;
+  --line:rgba(20,40,70,.10);
+  --r:22px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#070C14;
+  --glass:rgba(38,50,68,.48); --glass-strong:rgba(30,40,56,.70); --glass-soft:rgba(60,75,98,.28);
+  --glass-line:rgba(255,255,255,.14); --glass-edge:rgba(0,0,0,.35);
+  --glass-shadow:0 10px 30px rgba(0,0,0,.45),0 1px 2px rgba(0,0,0,.3);
+  --hl:inset 0 1px 0 rgba(255,255,255,.12);
+  --blob1:#1F4FA8; --blob2:#0F6B6A; --blob3:#4B2F8F; --blob4:#7A4A16;
+  --line:rgba(255,255,255,.10);
+}}
+:root[data-theme="dark"]{
+  --bg:#070C14;
+  --glass:rgba(38,50,68,.48); --glass-strong:rgba(30,40,56,.70); --glass-soft:rgba(60,75,98,.28);
+  --glass-line:rgba(255,255,255,.14); --glass-edge:rgba(0,0,0,.35);
+  --glass-shadow:0 10px 30px rgba(0,0,0,.45),0 1px 2px rgba(0,0,0,.3);
+  --hl:inset 0 1px 0 rgba(255,255,255,.12);
+  --blob1:#1F4FA8; --blob2:#0F6B6A; --blob3:#4B2F8F; --blob4:#7A4A16;
+  --line:rgba(255,255,255,.10);
+}
+
+body{letter-spacing:-.005em}
+.backdrop{position:fixed;inset:0;z-index:-1;background:
+  radial-gradient(42% 32% at 12% 8%,var(--blob1) 0%,transparent 70%),
+  radial-gradient(38% 30% at 92% 22%,var(--blob3) 0%,transparent 70%),
+  radial-gradient(48% 34% at 80% 88%,var(--blob2) 0%,transparent 70%),
+  radial-gradient(40% 28% at 10% 70%,var(--blob4) 0%,transparent 72%),
+  var(--bg);opacity:.95}
+h1,h2,h3{font-weight:700;letter-spacing:-.02em}
+
+/* elemento vetro di base */
+.link,.card,.group,.num,.place,.risk,.chip,.btn,.mini,.tomorrow,.code,.now,nav.tabs .in,header.top,.toast,.pick input{
+  -webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
+.link,.card,.group,.num,.place,.risk{background:var(--glass);border:1px solid var(--glass-line);border-radius:var(--r);box-shadow:var(--glass-shadow),var(--hl)}
+.card.group{background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 22%,var(--glass)),var(--glass));border-color:var(--glass-line)}
+.link .ic{background:color-mix(in srgb,var(--accent) 16%,transparent);border-radius:12px}
+.group h2{padding-top:14px}
+.item{border-top-color:var(--line)}
+
+/* barra in alto: vetro con titolo grande */
+body::before{background:var(--glass-strong);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
+header.top{background:var(--glass-strong);color:var(--fg);border-bottom:1px solid var(--glass-line);box-shadow:0 1px 0 var(--glass-edge)}
+header.top .brand h1{color:var(--fg);font-size:1.55rem}
+header.top .brand svg{color:var(--accent)}
+header.top .brand small{color:var(--muted);opacity:1;letter-spacing:.04em}
+header.top .clock{color:var(--muted);opacity:1}
+
+/* pulsanti in vetro */
+.btn,.mini,.chip{background:var(--glass-soft);border:1px solid var(--glass-line);box-shadow:var(--hl);border-radius:999px;color:var(--fg)}
+.btn{padding:9px 16px;font-weight:600}
+.mini{padding:6px 12px;font-weight:600}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:transparent;color:var(--accent-ink);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 40%,transparent)}
+.btn:active,.mini:active,.chip:active,.link:active{transform:scale(.97)}
+.btn,.mini,.chip,.link{transition:transform .15s ease}
+.pick input{background:var(--glass-soft);border:1px solid var(--glass-line);border-radius:999px;padding:10px 16px}
+.btn.danger{border-radius:999px}
+
+/* 112: rosso pieno con riflesso */
+.sos{border-radius:var(--r);background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0) 55%),#B42329;box-shadow:0 10px 28px rgba(180,35,41,.35),inset 0 1px 0 rgba(255,255,255,.35)}
+
+/* scheda allerta: vetro tinto del colore del livello */
+.now{border:1px solid var(--glass-line);border-top:1px solid var(--glass-line);border-radius:26px;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--lvl) 34%,var(--glass)) 0%,color-mix(in srgb,var(--lvl) 10%,var(--glass)) 100%);
+  box-shadow:0 14px 36px color-mix(in srgb,var(--lvl) 25%,transparent),var(--glass-shadow),var(--hl)}
+.now-level i{border-radius:16px;box-shadow:0 6px 16px color-mix(in srgb,var(--lvl) 45%,transparent),inset 0 1px 0 rgba(255,255,255,.4)}
+.now-level b{font-weight:800;letter-spacing:-.02em;text-transform:none;font-size:2.1rem}
+.risks{border-top-color:var(--line)} .risks li{border-bottom-color:var(--line)}
+.tomorrow{background:var(--glass-soft);border:1px solid var(--glass-line);border-radius:16px;box-shadow:var(--hl)}
+.dot{box-shadow:0 0 0 2px rgba(255,255,255,.55)}
+
+/* codici colore in vetro tinto */
+.code{border-left:0;border:1px solid var(--glass-line);border-radius:18px;box-shadow:var(--hl)}
+.code.v{background:color-mix(in srgb,var(--verde) 20%,var(--glass))}
+.code.g{background:color-mix(in srgb,var(--gialla) 26%,var(--glass))}
+.code.a{background:color-mix(in srgb,var(--arancione) 24%,var(--glass))}
+.code.r{background:color-mix(in srgb,var(--rossa) 22%,var(--glass))}
+
+.progress .bar{background:var(--glass-soft);border:1px solid var(--glass-line)}
+.note{border-top-color:var(--line)}
+
+/* barra schede flottante a pillola */
+main{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 44px)}
+nav.tabs{background:transparent;border-top:0;padding:0 max(12px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 10px) max(12px,env(safe-area-inset-left,0px));pointer-events:none}
+nav.tabs .in{pointer-events:auto;max-width:520px;background:var(--glass-strong);border:1px solid var(--glass-line);border-radius:32px;box-shadow:0 12px 34px rgba(0,0,0,.18),var(--hl);padding:4px;gap:2px}
+nav.tabs button{border-radius:26px;transition:background .2s}
+nav.tabs button[aria-selected="true"]{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+.toast{background:var(--glass-strong);color:var(--fg);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 28px)}
+
+.now[data-lvl="1"] .now-level i svg{stroke:#3B2F00}
+/* senza supporto al vetro: superfici piene */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  :root{--glass:var(--surface);--glass-strong:var(--surface);--glass-soft:var(--surface)}
+}
+@media (prefers-reduced-transparency:reduce){
+  :root{--glass:var(--surface);--glass-strong:var(--surface);--glass-soft:var(--bg)}
+}
 </style>
 </head>
 <body>
+<div class="backdrop" aria-hidden="true"></div>
 <header class="top">
   <div class="wrap">
     <div class="brand">
@@ -271,7 +379,7 @@ nav.tabs svg{width:24px;height:24px}
 <section class="tab" id="tab-numeri" role="tabpanel" aria-labelledby="b-numeri" hidden>
   <div class="eyebrow">Numeri di emergenza</div>
   <div class="nums" id="nums"></div>
-  <p class="note">Nel Lazio il 112 smista le chiamate verso il servizio giusto. Chiama solo per emergenze reali e di' subito dove ti trovi: Comune, via, numero civico.</p>
+  <p class="note">Nel Lazio è attivo il Numero Unico di Emergenza: anche chi compone 113, 115 o 118 viene messo in contatto con la centrale del 112, che smista la chiamata al servizio giusto. Chiama solo per emergenze reali e di' subito dove ti trovi: Comune, via, numero civico.</p>
 </section>
 
 <!-- IL MIO COMUNE -->
@@ -321,7 +429,7 @@ const RISKS = {
     ["Dopo",["Rientra e pulisci solo quando le autorità lo permettono.","Non camminare né guidare su strade allagate: il fondo può essere ceduto.","Fai controllare impianti elettrici e gas da un tecnico prima di riaccenderli."]]]},
   incendio:{name:"Incendio boschivo",phases:[
     ["Prevenzione",["Non gettare mozziconi o fiammiferi accesi.","Accendi fuochi solo nelle aree attrezzate e spegnili del tutto prima di andare via.","Non bruciare sterpaglie con il vento e non lasciare rifiuti nei boschi.","Non parcheggiare con la marmitta sopra l'erba secca."]],
-    ["Se lo vedi",["Chiama subito il 112 o il 115, anche se pensi che qualcuno l'abbia già fatto.","Indica con precisione località e Comune."]],
+    ["Se lo vedi",["Chiama subito il 112, anche se pensi che qualcuno l'abbia già fatto.","Indica con precisione località e Comune."]],
     ["Se sei coinvolto",["Cerca una via di fuga sicura come una strada o un corso d'acqua, mai nella direzione in cui soffia il vento.","Se non c'è scelta, passa dove le fiamme sono meno intense per raggiungere la zona già bruciata.","Se serve, stenditi a terra in un punto senza vegetazione per respirare meno fumo."]]]},
   caldo:{name:"Ondata di calore",phases:[
     ["Durante",["Evita di uscire nelle ore più calde, all'incirca dalle 11 alle 18.","Bevi spesso anche senza sete, evita alcolici e bevande gassate o molto fredde.","Tieni le tapparelle chiuse di giorno e arieggia la casa la sera e di notte.","Mangia leggero: frutta, verdura, pasti piccoli e frequenti.","Non lasciare mai persone o animali in auto chiusa, neanche per pochi minuti."]],
@@ -341,11 +449,8 @@ const KIT = [
 ];
 
 const NUMS = [
-  {n:"112",d:"Numero Unico di Emergenza",wide:true},
-  {n:"115",d:"Vigili del Fuoco"},
-  {n:"118",d:"Emergenza sanitaria"},
-  {n:"1515",d:"Incendi boschivi"},
-  {n:"1530",d:"Emergenza in mare"},
+  {n:"112",d:"Numero Unico di Emergenza: soccorso sanitario, Vigili del Fuoco, Carabinieri, Polizia",wide:true},
+  {n:"803 555",d:"Sala Operativa Regionale Protezione Civile Lazio",wide:true},
 ];
 
 /* ===== IL MIO COMUNE: modifica qui i dati del tuo comune =====
