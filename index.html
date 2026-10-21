@@ -448,6 +448,7 @@ header.top .wrap{gap:8px}
     <p><strong>Allerte:</strong> Bollettino di criticità nazionale del Dipartimento della Protezione Civile, dati aperti con licenza <a href="https://creativecommons.org/licenses/by/4.0/deed.it" target="_blank" rel="noopener">CC BY 4.0</a>, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica" target="_blank" rel="noopener">github.com/pcm-dpc</a>. I dati sono mostrati senza modifiche nel contenuto: l'app calcola solo il livello più alto della zona.</p>
     <p><strong>Meteo previsto:</strong> Bollettino di vigilanza meteorologica nazionale del Dipartimento della Protezione Civile, dati aperti con licenza CC BY 4.0, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Vigilanza-Meteorologica" target="_blank" rel="noopener">github.com/pcm-dpc</a>.</p>
     <p><strong>Terremoti:</strong> dati dell'Istituto Nazionale di Geofisica e Vulcanologia (<a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">INGV</a>) e, se non raggiungibile, del Centro Sismologico Euro-Mediterraneo (EMSC). Sono localizzazioni automatiche o rivedute che possono cambiare nelle ore successive.</p>
+    <p><strong>Coordinate dei comuni:</strong> © contributori di <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, licenza ODbL.</p>
     <p><strong>Cosa fare:</strong> testi riformulati a partire dalle indicazioni della campagna nazionale "Io non rischio" e del Ministero della Salute.</p>
     <p><strong>Numeri e indirizzi:</strong> fonti pubbliche della Regione Lazio e del Comune di Cave.</p>
   </div>
@@ -458,7 +459,9 @@ header.top .wrap{gap:8px}
     <p><strong>Posizione:</strong> viene chiesta solo se tocchi "Usa la mia posizione", serve a trovare la zona di allerta e resta sul telefono. Non viene inviata a nessuno.</p>
     <p><strong>Dati salvati sul telefono:</strong> le spunte dello zaino, il comune scelto e l'ultimo bollettino, per far funzionare l'app senza connessione. Puoi cancellarli eliminando l'app o i dati del sito.</p>
     <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica i bollettini dai server di GitHub e i dati sui terremoti da INGV (o EMSC). Come per ogni sito, questi server ricevono l'indirizzo IP del telefono per rispondere. La tua posizione non viene inviata: l'app scarica i terremoti di tutta Italia e calcola le distanze sul telefono.</p>
+    <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div>
+  <p class="note" id="app-version">Versione 13 · 21 ottobre 2026</p>
 </section>
 
 <!-- IL MIO COMUNE -->
@@ -716,7 +719,8 @@ const BCR = (() => {
   function summarize(list) {
     if (!list.length) return null;
     const risks = RISKS.map(([k, label]) => ({ label, lvl: Math.max(...list.map((z) => level(z.props[k]))) }));
-    return { zone: [...new Set(list.map((z) => z.props["Nome zona"]))].join(" / "), risks, max: Math.max(...risks.map((r) => r.lvl)) };
+    const bbox = list.reduce((b, z) => [Math.min(b[0], z.bbox[0]), Math.min(b[1], z.bbox[1]), Math.max(b[2], z.bbox[2]), Math.max(b[3], z.bbox[3])], [Infinity, Infinity, -Infinity, -Infinity]);
+    return { zone: [...new Set(list.map((z) => z.props["Nome zona"]))].join(" / "), risks, max: Math.max(...risks.map((r) => r.lvl)), bbox };
   }
   const byPoint = (zones, lat, lon) => summarize(zones.filter((z) => lon >= z.bbox[0] && lon <= z.bbox[2] && lat >= z.bbox[1] && lat <= z.bbox[3] && inRings(z.rings, lon, lat)).slice(0, 1));
   const byComune = (zones, name) => {
@@ -838,6 +842,7 @@ if (typeof document !== "undefined") (function allertaInit() {
       if (job !== busy) return;
       const res = { placeLabel: label, stem, stale: p.stale, today: { date: p.today.date, sum: find(zToday) }, tomorrow: { date: p.tomorrow.date, sum: find(zTomorrow) } };
       render(res);
+      if (place.mode === "comune" && res.today.sum) { ls.set("allerta-zona", { name: place.name, bbox: res.today.sum.bbox }); document.dispatchEvent(new Event("allerta-zona")); }
       ls.set("allerta-ultimo", { ...res, today: { ...res.today, date: +res.today.date }, tomorrow: { ...res.tomorrow, date: +res.tomorrow.date } });
       if (!el.list.childElementCount) el.list.innerHTML = BCR.comuni(zToday).map((c) => `<option value="${escH(c)}">`).join("");
       pruneCache(stem);
@@ -1043,20 +1048,49 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
     return d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" }) + " " + d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
   };
   const magClass = (m) => m >= 5 ? "m3" : m >= 4 ? "m2" : m >= 3 ? "m1" : "m0";
+  /* Punto di riferimento: posizione GPS, Cave, oppure il comune scelto nella scheda dell'allerta */
+  const geoMem = {};
+  async function refPoint(p) {
+    if (p.mode === "geo") return { lat: p.lat, lon: p.lon, label: "dalla tua posizione" };
+    const name = p.name || "Cave";
+    if (name.toLowerCase() === "cave") return { ...MS.CAVE, label: "da Cave" };
+    const key = "coord:" + name.toLowerCase();
+    const saved = ls.get(key, null);
+    if (saved) return { ...saved, label: "da " + name };
+    const zone = ls.get("allerta-zona", null);
+    if (!zone || zone.name !== name) return null; // la scheda dell'allerta non ha ancora trovato la zona: riprovo all'evento "allerta-zona"
+    const b = zone.bbox;
+    if (!geoMem[key]) geoMem[key] = (async () => {
+      try {
+        // Ricerca del comune su OpenStreetMap, limitata all'area della sua zona di allerta per evitare omonimi
+        const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=it&accept-language=it&bounded=1"
+          + "&viewbox=" + [b[0] - .05, b[3] + .05, b[2] + .05, b[1] - .05].join(",") + "&city=" + encodeURIComponent(name);
+        const r = await fetch(url, { headers: { "Accept": "application/json" } });
+        const j = r.ok ? await r.json() : [];
+        if (j && j[0]) { const c = { lat: +j[0].lat, lon: +j[0].lon }; ls.set(key, c); return { ...c, label: "da " + name }; }
+      } catch (e) {}
+      return { lat: (b[1] + b[3]) / 2, lon: (b[0] + b[2]) / 2, label: "da " + name, approx: true };
+    })();
+    const res = await geoMem[key];
+    if (res.approx) delete geoMem[key]; // la prossima volta riprova la ricerca precisa
+    return res;
+  }
+
   async function renderQuakes() {
     const p = place();
-    const ref = p.mode === "geo" ? { lat: p.lat, lon: p.lon } : MS.CAVE;
-    const refLabel = p.mode === "geo" ? "dalla tua posizione" : "da Cave";
+    const rp = await refPoint(p);
+    if (!rp) { $("#eq-sum").textContent = "Cerco la posizione di " + (p.name || "") + "…"; $("#eq-list").innerHTML = ""; return; }
+    const ref = { lat: rp.lat, lon: rp.lon }, refLabel = rp.label, ap = rp.approx ? "circa " : "";
     try {
       const res = await fetchQuakes();
       const near = res.list.map((e) => ({ ...e, d: MS.km(ref, e) })).filter((e) => e.d <= RADIUS).sort((a, b) => b.time - a.time);
       const strongest = near.reduce((a, e) => (!a || e.mag > a.mag ? e : a), null);
       $("#eq-sum").textContent = near.length
-        ? `${near.length} ${near.length === 1 ? "scossa" : "scosse"} di magnitudo ${MINMAG} o più negli ultimi ${DAYS} giorni entro ${RADIUS} km ${refLabel}. La più forte: ${strongest.mag.toFixed(1)}.`
+        ? `${near.length} ${near.length === 1 ? "scossa" : "scosse"} di magnitudo ${MINMAG} o più negli ultimi ${DAYS} giorni entro ${RADIUS} km ${refLabel}. La più forte: ${strongest.mag.toFixed(1)}.${rp.approx ? " Distanze indicative: posizione esatta del comune non disponibile." : ""}`
         : `Nessuna scossa di magnitudo ${MINMAG} o più negli ultimi ${DAYS} giorni entro ${RADIUS} km ${refLabel}.`;
       $("#eq-list").innerHTML = near.slice(0, 6).map((e) => `<li><a href="${escH(e.link)}" target="_blank" rel="noopener">
         <b class="mag ${magClass(e.mag)}">${e.mag.toFixed(1)}</b>
-        <span class="eq-txt"><strong>${escH(e.place.trim() || "Zona non indicata")}</strong><small>${ago(e.time)} · ${Math.round(e.d)} km ${refLabel} · prof. ${Math.round(e.depth)} km</small></span></a></li>`).join("");
+        <span class="eq-txt"><strong>${escH(e.place.trim() || "Zona non indicata")}</strong><small>${ago(e.time)} · ${ap}${Math.round(e.d)} km ${refLabel} · prof. ${Math.round(e.depth)} km</small></span></a></li>`).join("");
       $("#eq-src").innerHTML = `Dati ${res.src === "INGV" ? "INGV – Istituto Nazionale di Geofisica e Vulcanologia" : "EMSC – Centro Sismologico Euro-Mediterraneo"}${res.offline ? " · ultimo aggiornamento salvato" : ""} · <a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">terremoti.ingv.it</a>`;
       $("#eq-err").hidden = true; $("#eq-body").hidden = false;
     } catch (e) {
@@ -1067,6 +1101,7 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
   function refresh() { renderVig(); renderQuakes(); }
   refresh();
   document.addEventListener("luogo", refresh);
+  document.addEventListener("allerta-zona", () => renderQuakes());
   document.addEventListener("visibilitychange", () => { if (!document.hidden) renderQuakes(); });
   setInterval(() => { if (!document.hidden) renderQuakes(); }, 5 * 60 * 1000);
 })();
