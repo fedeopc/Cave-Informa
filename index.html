@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Allerta Cave</title>
+<meta name="description" content="Guida di emergenza per Cave (RM): allerte, cosa fare, zaino di emergenza e numeri utili.">
+<meta name="theme-color" content="#1D4F91">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Allerta Cave">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
+<style>html{-webkit-text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px)}body{margin:0;min-height:100vh}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+/* Layout: app a schede, una colonna stretta, barra di navigazione fissa in basso come un'app iOS */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --fg:#13202C; --muted:#5A6878; --line:#D3DAE2;
+  --accent:#1D4F91; --accent-ink:#FFFFFF; --accent-soft:#DDE7F4;
+  --verde:#2F7D4F; --gialla:#C99A00; --arancione:#D9661A; --rossa:#C0262D;
+  --gialla-bg:#FBF1CC; --arancione-bg:#FCE3D1; --rossa-bg:#F8D7D8; --verde-bg:#D8EEDF;
+  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --nav-h:64px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E151C; --surface:#17212B; --fg:#E6ECF2; --muted:#9AA8B6; --line:#2A3846;
+  --accent:#7FB0F0; --accent-ink:#0B1622; --accent-soft:#1D2F45;
+  --verde:#5CC08A; --gialla:#F0C640; --arancione:#F2914F; --rossa:#F06A6F;
+  --gialla-bg:#3A3112; --arancione-bg:#3C2414; --rossa-bg:#3E1A1C; --verde-bg:#16321F;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E151C; --surface:#17212B; --fg:#E6ECF2; --muted:#9AA8B6; --line:#2A3846;
+  --accent:#7FB0F0; --accent-ink:#0B1622; --accent-soft:#1D2F45;
+  --verde:#5CC08A; --gialla:#F0C640; --arancione:#F2914F; --rossa:#F06A6F;
+  --gialla-bg:#3A3112; --arancione-bg:#3C2414; --rossa-bg:#3E1A1C; --verde-bg:#16321F;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--accent)}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.15}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--accent);color:var(--accent-ink)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{flex:none}
+.brand h1{font-size:1.45rem;color:var(--accent-ink)}
+.brand small{display:block;font-size:.72rem;opacity:.85;letter-spacing:.06em;text-transform:uppercase;font-family:var(--f-body)}
+.clock{font-variant-numeric:tabular-nums;font-size:.85rem;opacity:.9;text-align:right}
+
+main{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 24px)}
+section.tab{display:flex;flex-direction:column;gap:18px;padding-block:18px}
+.lead{color:var(--muted);margin:0;font-size:.95rem}
+.eyebrow{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700}
+
+/* Pulsante 112 */
+.sos{display:flex;align-items:center;gap:14px;background:#B42329;color:#fff;border-radius:14px;padding:14px 16px;text-decoration:none}
+.sos b{font-family:var(--f-display);font-size:2.3rem;line-height:1;font-variant-numeric:tabular-nums}
+.sos span{font-size:.92rem;line-height:1.3}
+
+/* Link a fonti ufficiali */
+.links{display:grid;gap:10px}
+.link{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 14px;text-decoration:none;color:var(--fg)}
+.link .ic{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.link div{min-width:0;flex:1}
+.link strong{display:block;font-size:1rem}
+.link small{color:var(--muted);font-size:.84rem;display:block}
+.link .go{color:var(--muted);flex:none}
+
+/* Codici colore */
+.codes{display:grid;gap:8px}
+.code{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;border-radius:10px;padding:11px 12px;border-left:6px solid}
+.code .lbl{font-family:var(--f-display);font-weight:700;font-size:1.05rem;text-transform:uppercase;letter-spacing:.04em}
+.code p{margin:0;font-size:.9rem}
+.code.v{background:var(--verde-bg);border-color:var(--verde)} .code.v .lbl{color:var(--verde)}
+.code.g{background:var(--gialla-bg);border-color:var(--gialla)} .code.g .lbl{color:var(--gialla)}
+.code.a{background:var(--arancione-bg);border-color:var(--arancione)} .code.a .lbl{color:var(--arancione)}
+.code.r{background:var(--rossa-bg);border-color:var(--rossa)} .code.r .lbl{color:var(--rossa)}
+
+.note{font-size:.84rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin:0}
+
+/* Rischi */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;font-size:.92rem;padding:8px 14px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.risk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.risk h2{font-size:1.6rem}
+.phase h3{font-size:1rem;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:6px}
+.phase ul{margin:0;padding-left:1.15em;display:grid;gap:5px}
+.phase li{font-size:.95rem}
+
+/* Checklist */
+.progress{display:flex;align-items:center;gap:12px}
+.bar{flex:1;height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--verde);width:0;transition:width .25s}
+.progress span{font-variant-numeric:tabular-nums;font-weight:700;min-width:4.5ch;text-align:right}
+.group{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.group h2{font-size:1.1rem;padding:12px 14px 6px}
+.item{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;border-top:1px solid var(--line);cursor:pointer}
+.item:first-of-type{border-top:0}
+.item input{width:22px;height:22px;accent-color:var(--verde);flex:none;margin:1px 0 0}
+.item span{font-size:.95rem}
+.item input:checked + span{color:var(--muted);text-decoration:line-through}
+.btn{font:inherit;font-size:.9rem;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:9px 14px;cursor:pointer;align-self:flex-start}
+.confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.9rem}
+.btn.danger{background:#B42329;color:#fff;border-color:#B42329}
+
+/* Numeri */
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.num{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.num b{font-family:var(--f-display);font-size:1.9rem;line-height:1;font-variant-numeric:tabular-nums;user-select:all}
+.num span{font-size:.85rem;color:var(--muted)}
+.num.wide{grid-column:1/-1}
+.num .row{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.mini{font:inherit;font-size:.82rem;border-radius:8px;padding:5px 10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);text-decoration:none;cursor:pointer}
+.place{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.place div{min-width:0}
+.place strong{display:block}
+.place small{color:var(--muted);font-size:.85rem}
+
+/* Barra in basso */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--nav-h)}
+nav.tabs button{font:inherit;font-size:.72rem;background:none;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{color:var(--accent);font-weight:700}
+nav.tabs svg{width:24px;height:24px}
+
+/* Allerta di oggi */
+.now{--lvl:var(--muted);--lvl-bg:var(--surface);background:var(--lvl-bg);border:1px solid var(--line);border-top:8px solid var(--lvl);border-radius:16px;padding:14px 16px 16px;display:grid;gap:12px}
+.now[data-lvl="0"]{--lvl:var(--verde);--lvl-bg:var(--verde-bg)}
+.now[data-lvl="1"]{--lvl:var(--gialla);--lvl-bg:var(--gialla-bg)}
+.now[data-lvl="2"]{--lvl:var(--arancione);--lvl-bg:var(--arancione-bg)}
+.now[data-lvl="3"]{--lvl:var(--rossa);--lvl-bg:var(--rossa-bg)}
+.now-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.now-head span:last-child{font-size:.85rem;color:var(--muted)}
+.now-level{display:flex;align-items:center;gap:12px}
+.now-level i{width:44px;height:44px;border-radius:12px;background:var(--lvl);flex:none;display:grid;place-items:center}
+.now-level i svg{width:26px;height:26px}
+.now-level b{font-family:var(--f-display);font-size:2rem;line-height:1.05;text-transform:uppercase;letter-spacing:.01em}
+.now-place{display:flex;align-items:center;gap:6px;font-size:.92rem;color:var(--muted);min-width:0}
+.now-place strong{color:var(--fg)}
+.now-msg{margin:0;font-size:.95rem}
+.risks{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--line)}
+.risks li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.93rem}
+.risks li span:last-child{display:flex;align-items:center;gap:8px;font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;background:var(--muted);box-shadow:0 0 0 2px var(--surface)}
+.dot.l0{background:var(--verde)} .dot.l1{background:var(--gialla)} .dot.l2{background:var(--arancione)} .dot.l3{background:var(--rossa)}
+.tomorrow{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.93rem;background:var(--surface);border-radius:10px;padding:10px 12px}
+.tomorrow span:last-child{display:flex;align-items:center;gap:8px;font-weight:700;text-align:right}
+.now-actions{display:flex;gap:8px;flex-wrap:wrap}
+.now-actions .btn{display:inline-flex;align-items:center;gap:6px}
+.pick{display:flex;gap:8px}
+.pick input{flex:1;min-width:0;font:inherit;font-size:1rem;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.now-src{margin:0;font-size:.8rem;color:var(--muted)}
+.now-src a{color:inherit}
+/* Il mio comune */
+.town{display:grid;gap:4px}
+.town h2{font-size:2.4rem}
+.town small{color:var(--muted);font-size:.9rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:10px;min-width:0}
+.card h3{font-size:1.15rem}
+.card p{margin:0;font-size:.93rem}
+.card .muted{color:var(--muted)}
+.card.group{border-color:var(--accent);background:var(--accent-soft)}
+.kv{display:grid;gap:8px}
+.kv div{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.kv b{font-variant-numeric:tabular-nums;user-select:all}
+.kv span{color:var(--muted);font-size:.88rem}
+.area{display:flex;gap:12px;align-items:flex-start;padding-top:10px;border-top:1px solid var(--line)}
+.area:first-of-type{border-top:0;padding-top:0}
+.area .tag{flex:none;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--verde-bg);color:var(--verde)}
+.area .tag.acc{background:var(--accent-soft);color:var(--accent)}
+.area div{min-width:0;flex:1}
+.area strong{display:block}
+.area small{color:var(--muted);font-size:.85rem}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 14px);background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:.88rem;z-index:7}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 3 31 29H3Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><rect x="15.5" y="12" width="3" height="9" rx="1.5" fill="currentColor"/><circle cx="17" cy="24.5" r="1.8" fill="currentColor"/></svg>
+      <div><h1>Allerta Cave</h1><small>Guida di emergenza · Cave (RM)</small></div>
+    </div>
+    <div class="clock" id="clock" aria-live="off"></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ALLERTE -->
+<section class="tab" id="tab-allerte" role="tabpanel" aria-labelledby="b-allerte">
+  <div class="now" id="now" data-lvl="-1" aria-live="polite">
+    <div class="now-head"><span class="eyebrow">Allerta di oggi</span><span id="now-date"></span></div>
+    <div class="now-level"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 7v6M12 17v.5"/></svg></i><b id="now-level">Carico il bollettino</b></div>
+    <div class="now-place"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg><span id="now-place">Cave</span></div>
+    <p class="now-msg" id="now-msg" hidden></p>
+    <ul class="risks" id="now-risks" hidden></ul>
+    <div class="tomorrow" id="now-tomorrow" hidden></div>
+    <div class="now-actions">
+      <button class="btn" id="geo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Usa la mia posizione</button>
+      <button class="btn" id="pick-open" type="button">Cambia comune</button>
+      <button class="btn" id="retry" type="button" hidden>Riprova</button>
+    </div>
+    <form class="pick" id="pick" hidden>
+      <input id="pick-input" list="comuni" placeholder="Scrivi il nome del comune" autocomplete="off" aria-label="Comune">
+      <datalist id="comuni"></datalist>
+      <button class="btn" type="submit">Mostra</button>
+    </form>
+    <p class="now-src" id="now-src"></p>
+  </div>
+
+  <a class="sos" href="tel:112"><b>112</b><span>Numero Unico di Emergenza.<br>Soccorso sanitario, Vigili del Fuoco, Carabinieri, Polizia.</span></a>
+
+  <div class="eyebrow">Situazione adesso</div>
+  <div class="links">
+    <a class="link" href="https://radar.protezionecivile.it/#/pages/dashboard?zoom=5.75" target="_blank" rel="noopener">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 19 6"/></svg></span>
+      <div><strong>Radar meteo nazionale</strong><small>Piogge, fulmini e temperature in tempo reale, storico fino a 14 giorni</small></div><span class="go">›</span></a>
+    <a class="link" href="https://protezionecivile.regione.lazio.it/gestione-emergenze/centro-funzionale/bollettini-allertamenti" target="_blank" rel="noopener">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 22 20H2Z"/><path d="M12 10v4M12 17v.5"/></svg></span>
+      <div><strong>Bollettini e allerte Lazio</strong><small>Centro Funzionale Regionale: criticità idrogeologica e idraulica di oggi e domani</small></div><span class="go">›</span></a>
+    <a class="link" href="https://allertameteo.app" target="_blank" rel="noopener">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg></span>
+      <div><strong>Allerta per comune</strong><small>Livello di allerta per i singoli comuni</small></div><span class="go">›</span></a>
+    <a class="link" href="https://www.protezionecivile.gov.it" target="_blank" rel="noopener">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
+      <div><strong>Avvisi nazionali</strong><small>Comunicati e bollettini del sistema nazionale</small></div><span class="go">›</span></a>
+  </div>
+
+  <div class="eyebrow">Cosa significano i colori dell'allerta</div>
+  <div class="codes">
+    <div class="code v"><span class="lbl">Verde</span><p>Nessun fenomeno significativo previsto. Resta informato.</p></div>
+    <div class="code g"><span class="lbl">Gialla</span><p>Fenomeni localizzati: allagamenti di sottopassi, piccole frane, rami caduti. Evita zone basse e corsi d'acqua.</p></div>
+    <div class="code a"><span class="lbl">Arancione</span><p>Fenomeni diffusi, possibili esondazioni e frane. Limita gli spostamenti, non sostare in cantine e seminterrati.</p></div>
+    <div class="code r"><span class="lbl">Rossa</span><p>Fenomeni intensi e diffusi, pericolo per le persone. Resta in un luogo sicuro ai piani alti e segui le indicazioni del Comune.</p></div>
+  </div>
+  <p class="note">Il livello di oggi viene dal bollettino nazionale di criticità del Dipartimento della Protezione Civile (dati aperti, licenza CC BY 4.0), pubblicato ogni giorno entro le 16. Senza connessione l'app mostra l'ultimo bollettino scaricato. Fa sempre fede l'allerta emessa dalla Regione Lazio e dal Comune di Cave.</p>
+</section>
+
+<!-- COSA FARE -->
+<section class="tab" id="tab-guida" role="tabpanel" aria-labelledby="b-guida" hidden>
+  <p class="lead">Comportamenti consigliati dalla campagna nazionale "Io non rischio" e dal Ministero della Salute.</p>
+  <div class="chips" role="group" aria-label="Tipo di rischio" id="chips"></div>
+  <div id="risk"></div>
+</section>
+
+<!-- ZAINO -->
+<section class="tab" id="tab-zaino" role="tabpanel" aria-labelledby="b-zaino" hidden>
+  <p class="lead">Prepara uno zaino da prendere in pochi secondi. Spunta le voci man mano: restano salvate su questo telefono.</p>
+  <div class="progress"><div class="bar"><i id="pbar"></i></div><span id="pcount">0/0</span></div>
+  <div id="kit" style="display:grid;gap:12px"></div>
+  <div class="confirm" id="resetbox">
+    <button class="btn" id="reset" type="button">Azzera la lista</button>
+  </div>
+</section>
+
+<!-- NUMERI -->
+<section class="tab" id="tab-numeri" role="tabpanel" aria-labelledby="b-numeri" hidden>
+  <div class="eyebrow">Numeri di emergenza</div>
+  <div class="nums" id="nums"></div>
+  <p class="note">Nel Lazio il 112 smista le chiamate verso il servizio giusto. Chiama solo per emergenze reali e di' subito dove ti trovi: Comune, via, numero civico.</p>
+</section>
+
+<!-- IL MIO COMUNE -->
+<section class="tab" id="tab-comune" role="tabpanel" aria-labelledby="b-comune" hidden>
+  <div class="town"><div class="eyebrow">Il mio comune</div><h2 id="town-name"></h2><small id="town-sub"></small></div>
+
+  <div class="card group" id="group" hidden></div>
+
+  <div id="areas-wrap" style="display:grid;gap:18px" hidden><div class="eyebrow">Aree di emergenza</div>
+  <div class="card" id="areas"></div></div>
+
+  <div class="eyebrow">Comune</div>
+  <div class="card" id="townhall"></div>
+
+  <div class="eyebrow">Allerta regionale</div>
+  <div class="card" id="region"></div>
+
+  <div class="eyebrow">Pronto soccorso in zona</div>
+  <div id="places" style="display:grid;gap:10px"></div>
+
+  <div id="support-wrap" style="display:grid;gap:18px" hidden><div class="eyebrow">Sostegno</div><div class="card" id="support"></div></div>
+</section>
+
+</main>
+
+<nav class="tabs" role="tablist" aria-label="Sezioni">
+  <div class="in">
+    <button role="tab" id="b-allerte" aria-controls="tab-allerte" aria-selected="true" data-t="allerte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 22 20H2Z"/><path d="M12 10v4M12 17v.5"/></svg>Allerte</button>
+    <button role="tab" id="b-guida" aria-controls="tab-guida" aria-selected="false" data-t="guida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M4 21V5"/></svg>Cosa fare</button>
+    <button role="tab" id="b-zaino" aria-controls="tab-zaino" aria-selected="false" data-t="zaino"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="7" width="14" height="14" rx="3"/><path d="M9 7V5a3 3 0 0 1 6 0v2M9 13h6"/></svg>Zaino</button>
+    <button role="tab" id="b-numeri" aria-controls="tab-numeri" aria-selected="false" data-t="numeri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Numeri</button>
+    <button role="tab" id="b-comune" aria-controls="tab-comune" aria-selected="false" data-t="comune"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M10 21v-5h4v5"/></svg>Comune</button>
+  </div>
+</nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const RISKS = {
+  terremoto:{name:"Terremoto",phases:[
+    ["Prima",["Fissa al muro scaffali, librerie e mobili alti; tieni gli oggetti pesanti sui ripiani bassi.","Non tenere mobili pesanti vicino a letti e divani.","Impara dove sono i rubinetti di gas e acqua e l'interruttore generale della luce.","Individua i punti sicuri della casa: muri portanti, architravi, tavoli robusti.","Informati sul piano di protezione civile del Comune di Cave."]],
+    ["Durante",["Al chiuso: riparati sotto un tavolo robusto o vicino a un muro portante. Non correre fuori.","Stai lontano da finestre, vetrate e mobili che possono cadere.","All'aperto: allontanati da edifici, alberi, lampioni e linee elettriche."]],
+    ["Dopo",["Controlla come stanno le persone vicine e presta i primi soccorsi.","Chiudi gas, acqua e luce. Indossa le scarpe, ci possono essere vetri rotti.","Esci senza usare l'ascensore e raggiungi l'area di attesa del Comune.","Usa telefono e auto solo se necessario, per lasciare libere linee e strade ai soccorsi."]]]},
+  alluvione:{name:"Alluvione",phases:[
+    ["Prima",["Informati sulle zone allagabili indicate dal Comune.","Non tenere oggetti di valore in cantina o nei seminterrati.","Segnala al Comune tombini ostruiti o rifiuti nei fossi.","Segui le allerte e i loro codici colore."]],
+    ["Durante l'allerta",["Non dormire e non restare nei piani seminterrati.","Evita le strade che possono allagarsi e rimanda gli spostamenti non necessari.","Non andare a spostare l'auto se farlo è pericoloso."]],
+    ["Durante l'alluvione",["In casa: sali ai piani alti e non usare l'ascensore.","Stacca gas e corrente, senza toccare impianti con le mani bagnate.","All'aperto: allontanati dall'acqua anche se è bassa e raggiungi un punto elevato.","Evita sottopassi, argini e ponti. Non attraversare in auto strade allagate."]],
+    ["Dopo",["Rientra e pulisci solo quando le autorità lo permettono.","Non camminare né guidare su strade allagate: il fondo può essere ceduto.","Fai controllare impianti elettrici e gas da un tecnico prima di riaccenderli."]]]},
+  incendio:{name:"Incendio boschivo",phases:[
+    ["Prevenzione",["Non gettare mozziconi o fiammiferi accesi.","Accendi fuochi solo nelle aree attrezzate e spegnili del tutto prima di andare via.","Non bruciare sterpaglie con il vento e non lasciare rifiuti nei boschi.","Non parcheggiare con la marmitta sopra l'erba secca."]],
+    ["Se lo vedi",["Chiama subito il 112 o il 115, anche se pensi che qualcuno l'abbia già fatto.","Indica con precisione località e Comune."]],
+    ["Se sei coinvolto",["Cerca una via di fuga sicura come una strada o un corso d'acqua, mai nella direzione in cui soffia il vento.","Se non c'è scelta, passa dove le fiamme sono meno intense per raggiungere la zona già bruciata.","Se serve, stenditi a terra in un punto senza vegetazione per respirare meno fumo."]]]},
+  caldo:{name:"Ondata di calore",phases:[
+    ["Durante",["Evita di uscire nelle ore più calde, all'incirca dalle 11 alle 18.","Bevi spesso anche senza sete, evita alcolici e bevande gassate o molto fredde.","Tieni le tapparelle chiuse di giorno e arieggia la casa la sera e di notte.","Mangia leggero: frutta, verdura, pasti piccoli e frequenti.","Non lasciare mai persone o animali in auto chiusa, neanche per pochi minuti."]],
+    ["Attenzione a",["Anziani soli, bambini piccoli e persone con malattie croniche: chiamali o passali a trovare.","Debolezza, confusione, crampi, pelle calda e secca: porta la persona al fresco, bagnala e chiama il 112 se non migliora."]]]},
+  neve:{name:"Neve e ghiaccio",phases:[
+    ["Prima",["Controlla le previsioni e il bollettino prima di metterti in viaggio.","Monta gomme invernali o tieni le catene in auto e prova a montarle prima.","Tieni in casa una scorta di sale e una pala."]],
+    ["Durante",["Esci solo se necessario e con scarpe antiscivolo.","In auto: velocità bassa, distanza di sicurezza ampia, niente frenate brusche.","Fai attenzione a rami e cornicioni carichi di neve."]]]}
+};
+
+const KIT = [
+  ["Documenti e soldi",["Copia dei documenti di identità","Copia della tessera sanitaria","Contanti in piccolo taglio","Elenco di numeri utili scritto su carta"]],
+  ["Salute",["Cassetta di pronto soccorso","Medicine che prendi abitualmente","Mascherine"]],
+  ["Luce e comunicazioni",["Torcia elettrica con pile di ricambio","Radio a pile","Power bank carico","Fischietto per farsi sentire"]],
+  ["Acqua e cibo",["Acqua in bottiglia per almeno 3 giorni","Cibo a lunga conservazione (scatolette, barrette)","Apriscatole manuale"]],
+  ["Vestiti e riparo",["Coperta isotermica","Cambio di vestiti e scarpe comode","Impermeabile o k-way","Guanti da lavoro"]],
+  ["Utili",["Coltellino multiuso","Duplicato delle chiavi di casa e dell'auto","Sacchetti di plastica resistenti"]]
+];
+
+const NUMS = [
+  {n:"112",d:"Numero Unico di Emergenza",wide:true},
+  {n:"115",d:"Vigili del Fuoco"},
+  {n:"118",d:"Emergenza sanitaria"},
+  {n:"1515",d:"Incendi boschivi"},
+  {n:"1530",d:"Emergenza in mare"},
+];
+
+/* ===== IL MIO COMUNE: modifica qui i dati del tuo comune =====
+   Le voci lasciate vuote non vengono mostrate. */
+const COMUNE = {
+  nome: "Cave",
+  sottotitolo: "Città metropolitana di Roma Capitale · zona di allerta Bacino del Liri",
+  municipio: { indirizzo: "Piazza Garibaldi 6, 00033 Cave (RM)", telefono: "06 9500081", sito: "https://www.comune.cave.rm.it" },
+  // Gruppo di protezione civile: compila per mostrare la scheda
+  gruppo: {
+    nome: "Associazione Italiana Protezione Civile Cave – OdV",
+    motto: "Insieme facciamo la differenza · volontari dal 1982",
+    telefoni: [ { n: "06 44 23 99 30", d: "Telefono" }, { n: "+39 339 750 9946", d: "Cellulare" } ],
+    sede: "Via Pio XII 55, 00033 Cave (RM)",
+    email: "protezionecivilecave1982@gmail.com",
+    facebook: "Protezione Civile Cave",
+    sostegno: { iban: "IT39 U 08716 39020 000002048358", cf5x1000: "05813300588" },
+  },
+  // Aree del piano comunale. tipo: "attesa" (dove ritrovarsi subito) o "accoglienza" (dove si viene ospitati)
+  aree: [
+    // { tipo: "attesa", nome: "Piazza ...", indirizzo: "Via ..." },
+  ],
+  regione: { nome: "Centro Funzionale Regione Lazio", telefono: "800 276 570", bollettini: "https://protezionecivile.regione.lazio.it/gestione-emergenze/centro-funzionale/bollettini-allertamenti" },
+};
+
+const PLACES = [
+  {name:"Ospedale di Palestrina",addr:"Viale Pio XII 42, Palestrina"},
+  {name:"Policlinico Tor Vergata",addr:"Viale Oxford 81, Roma"},
+  {name:"Policlinico Casilino",addr:"Via Casilina 1049, Roma"},
+];
+
+/* storage sicuro */
+const store = {
+  get(k,f){try{const v=localStorage.getItem(k);return v==null?f:JSON.parse(v)}catch(e){return f}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,1800)}
+
+/* orologio */
+function tick(){const d=new Date();$("#clock").innerHTML=d.toLocaleDateString("it-IT",{weekday:"short",day:"numeric",month:"short"})+"<br>"+d.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})}
+tick();setInterval(tick,15000);
+
+/* schede */
+function showTab(t){
+  document.querySelectorAll("nav.tabs button").forEach(b=>{const on=b.dataset.t===t;b.setAttribute("aria-selected",on)});
+  document.querySelectorAll("section.tab").forEach(s=>s.hidden=s.id!=="tab-"+t);
+  store.set("tab",t);window.scrollTo(0,0);
+}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.t)));
+const hashTab=(location.hash||"").slice(1);
+showTab(["allerte","guida","zaino","numeri","comune"].includes(hashTab)?hashTab:store.get("tab","allerte"));
+
+/* rischi */
+function renderRisk(k){
+  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.k===k));
+  const r=RISKS[k];
+  $("#risk").innerHTML=`<article class="risk"><h2>${esc(r.name)}</h2>${r.phases.map(([t,l])=>`<div class="phase"><h3>${esc(t)}</h3><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</article>`;
+  store.set("risk",k);
+}
+$("#chips").innerHTML=Object.entries(RISKS).map(([k,r])=>`<button class="chip" type="button" data-k="${k}" aria-pressed="false">${esc(r.name)}</button>`).join("");
+$("#chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(b)renderRisk(b.dataset.k)});
+renderRisk(RISKS[store.get("risk","terremoto")]?store.get("risk","terremoto"):"terremoto");
+
+/* zaino */
+let done=store.get("kit",{});
+function renderKit(){
+  let i=0;
+  $("#kit").innerHTML=KIT.map(([g,items])=>`<div class="group"><h2>${esc(g)}</h2>${items.map(it=>{const id="k"+(i++);return `<label class="item"><input type="checkbox" id="${id}" ${done[id]?"checked":""}><span>${esc(it)}</span></label>`}).join("")}</div>`).join("");
+  updateProgress();
+}
+function updateProgress(){
+  const all=document.querySelectorAll("#kit input"),n=[...all].filter(x=>x.checked).length;
+  $("#pcount").textContent=n+"/"+all.length;$("#pbar").style.width=(all.length?n/all.length*100:0)+"%";
+}
+$("#kit").addEventListener("change",e=>{if(e.target.matches("input")){done[e.target.id]=e.target.checked;store.set("kit",done);updateProgress();}});
+renderKit();
+$("#resetbox").addEventListener("click",e=>{
+  const box=$("#resetbox");
+  if(e.target.id==="reset"){box.innerHTML='<span>Togliere tutte le spunte?</span><button class="btn danger" id="yes" type="button">Sì, azzera</button><button class="btn" id="no" type="button">Annulla</button>';}
+  else if(e.target.id==="yes"){done={};store.set("kit",done);renderKit();restore();toast("Lista azzerata");}
+  else if(e.target.id==="no"){restore();}
+  function restore(){box.innerHTML='<button class="btn" id="reset" type="button">Azzera la lista</button>';}
+});
+
+/* numeri */
+$("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(x.n)}</b><span>${esc(x.d)}</span><div class="row"><a class="mini" href="tel:${x.n.replace(/\s/g,"")}">Chiama</a><button class="mini" type="button" data-copy="${esc(x.n)}">Copia</button></div></div>`).join("");
+$("#places").innerHTML=PLACES.map(p=>`<div class="place"><div><strong>${esc(p.name)}</strong><small>${esc(p.addr)}</small></div><a class="mini" href="https://maps.apple.com/?q=${encodeURIComponent(p.name+", "+p.addr)}" target="_blank" rel="noopener">Mappa</a></div>`).join("");
+/* il mio comune */
+(function(){
+  const C=COMUNE, tel=n=>n.replace(/[^\d+]/g,"");
+  const actions=n=>`<span style="display:flex;gap:8px"><a class="mini" href="tel:${tel(n)}">Chiama</a><button class="mini" type="button" data-copy="${esc(n)}">Copia</button></span>`;
+  $("#town-name").textContent=C.nome; $("#town-sub").textContent=C.sottotitolo||"";
+  const g=C.gruppo||{};
+  if(g.nome){
+    const tels=(g.telefoni||[]).map(t=>`<div><span style="display:grid"><span>${esc(t.d)}</span><b style="color:var(--fg);font-size:1.05rem">${esc(t.n)}</b></span>${actions(t.n)}</div>`).join("");
+    $("#group").innerHTML=`<div class="eyebrow">Protezione civile a ${esc(C.nome)}</div><h3>${esc(g.nome)}</h3>${g.motto?`<p class="muted">${esc(g.motto)}</p>`:""}
+      <div class="kv">${tels}
+      ${g.sede?`<div><span>Sede: ${esc(g.sede)}</span><a class="mini" href="https://maps.apple.com/?q=${encodeURIComponent(g.sede)}" target="_blank" rel="noopener">Mappa</a></div>`:""}
+      ${g.email?`<div><span style="overflow-wrap:anywhere">${esc(g.email)}</span><button class="mini" type="button" data-copy="${esc(g.email)}">Copia</button></div>`:""}
+      ${g.facebook?`<div><span>Facebook: ${esc(g.facebook)}</span></div>`:""}</div>`;
+    $("#group").hidden=false;
+    const so=g.sostegno||{};
+    if(so.iban||so.cf5x1000){
+      $("#support").innerHTML=`<h3>Sostieni i volontari</h3><p class="muted">L'associazione vive di volontariato e donazioni.</p><div class="kv">
+        ${so.cf5x1000?`<div><span style="display:grid"><span>5×1000 · codice fiscale</span><b style="color:var(--fg)">${esc(so.cf5x1000)}</b></span><button class="mini" type="button" data-copy="${esc(so.cf5x1000)}">Copia</button></div>`:""}
+        ${so.iban?`<div><span style="display:grid;min-width:0"><span>IBAN per donazioni</span><b style="color:var(--fg);overflow-wrap:anywhere">${esc(so.iban)}</b></span><button class="mini" type="button" data-copy="${esc(so.iban.replace(/\s/g,""))}">Copia</button></div>`:""}</div>`;
+      $("#support-wrap").hidden=false;
+    }
+  }
+  if(C.aree&&C.aree.length){
+    $("#areas").innerHTML=C.aree.map(a=>`<div class="area"><span class="tag${a.tipo==="accoglienza"?" acc":""}">${a.tipo==="accoglienza"?"Accoglienza":"Attesa"}</span><div><strong>${esc(a.nome)}</strong><small>${esc(a.indirizzo||"")}</small></div><a class="mini" href="https://maps.apple.com/?q=${encodeURIComponent(a.nome+", "+(a.indirizzo||"")+", "+C.nome)}" target="_blank" rel="noopener">Mappa</a></div>`).join("");
+    $("#areas-wrap").hidden=false;
+  }
+  const m=C.municipio||{};
+  $("#townhall").innerHTML=`<h3>Municipio di ${esc(C.nome)}</h3><p class="muted">${esc(m.indirizzo||"")}</p>
+    <div class="kv">${m.telefono?`<div><b>${esc(m.telefono)}</b>${actions(m.telefono)}</div>`:""}</div>
+    ${m.sito?`<a class="mini" style="justify-self:start" href="${esc(m.sito)}" target="_blank" rel="noopener">Sito del Comune</a>`:""}`;
+  const r=C.regione||{};
+  $("#region").innerHTML=`<h3>${esc(r.nome||"")}</h3><p class="muted">Emette le allerte meteo e idrogeologiche per i comuni della regione.</p>
+    <div class="kv">${r.telefono?`<div><b>${esc(r.telefono)}</b>${actions(r.telefono)}</div>`:""}</div>
+    ${r.bollettini?`<a class="mini" style="justify-self:start" href="${esc(r.bollettini)}" target="_blank" rel="noopener">Bollettini e allerte</a>`:""}`;
+})();
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-copy]");if(!b)return;
+  const v=b.dataset.copy;
+  try{navigator.clipboard.writeText(v).then(()=>toast("Copiato "+v),()=>toast("Tieni premuto il numero per copiarlo"))}catch(err){toast("Tieni premuto il numero per copiarlo")}
+});
+</script>
+
+<script>
+/* ===== Allerta di oggi: bollettino nazionale di criticità DPC (dati aperti su GitHub) ===== */
+const BCR = (() => {
+  const REPO = "pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica";
+  const API = "https://api.github.com/repos/" + REPO;
+  const RAW = "https://raw.githubusercontent.com/" + REPO + "/master/";
+  const CACHE = "allerta-dati";
+  const CHECK_EVERY = 20 * 60 * 1000; // controlla un nuovo bollettino al massimo ogni 20 minuti
+  const DEFAULT_COMUNE = "Cave";
+  const LEVELS = ["Nessuna allerta", "Allerta gialla", "Allerta arancione", "Allerta rossa"];
+  const SHORT = ["Verde", "Gialla", "Arancione", "Rossa"];
+  const RISKS = [["Per rischio idrogeologico", "Idrogeologico"], ["Per rischio idraulico", "Idraulico"], ["Per rischio temporali", "Temporali"]];
+
+  const level = (s) => /ROSSA/i.test(s || "") ? 3 : /ARANCIONE/i.test(s || "") ? 2 : /GIALLA/i.test(s || "") ? 1 : 0;
+
+  /* --- TopoJSON: decodifica degli archi e ricerca del poligono che contiene un punto --- */
+  function prepare(topo) {
+    const obj = Object.values(topo.objects)[0];
+    const t = topo.transform;
+    const arcs = topo.arcs.map((a) => {
+      if (!t) return a;
+      let x = 0, y = 0;
+      return a.map((p) => { x += p[0]; y += p[1]; return [x * t.scale[0] + t.translate[0], y * t.scale[1] + t.translate[1]]; });
+    });
+    const ring = (idx) => {
+      const out = [];
+      for (const i of idx) { const a = i >= 0 ? arcs[i] : arcs[~i].slice().reverse(); for (const p of a) out.push(p); }
+      return out;
+    };
+    const zones = obj.geometries.map((g) => {
+      const polys = g.type === "Polygon" ? [g.arcs] : g.type === "MultiPolygon" ? g.arcs : [];
+      const rings = [];
+      for (const poly of polys) for (const r of poly) rings.push(ring(r));
+      let b = [Infinity, Infinity, -Infinity, -Infinity];
+      for (const r of rings) for (const [x, y] of r) { if (x < b[0]) b[0] = x; if (y < b[1]) b[1] = y; if (x > b[2]) b[2] = x; if (y > b[3]) b[3] = y; }
+      return { props: g.properties || {}, rings, bbox: b };
+    });
+    return zones;
+  }
+  function inRings(rings, x, y) {
+    let inside = false; // regola pari/dispari: gestisce anche i buchi
+    for (const r of rings) {
+      for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+        const xi = r[i][0], yi = r[i][1], xj = r[j][0], yj = r[j][1];
+        if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+      }
+    }
+    return inside;
+  }
+  function summarize(list) {
+    if (!list.length) return null;
+    const risks = RISKS.map(([k, label]) => ({ label, lvl: Math.max(...list.map((z) => level(z.props[k]))) }));
+    return { zone: [...new Set(list.map((z) => z.props["Nome zona"]))].join(" / "), risks, max: Math.max(...risks.map((r) => r.lvl)) };
+  }
+  const byPoint = (zones, lat, lon) => summarize(zones.filter((z) => lon >= z.bbox[0] && lon <= z.bbox[2] && lat >= z.bbox[1] && lat <= z.bbox[3] && inRings(z.rings, lon, lat)).slice(0, 1));
+  const byComune = (zones, name) => {
+    const n = name.trim().toLowerCase();
+    return summarize(zones.filter((z) => (z.props.Comuni || []).some((c) => c.toLowerCase() === n)));
+  };
+  const comuni = (zones) => [...new Set(zones.flatMap((z) => z.props.Comuni || []))].sort((a, b) => a.localeCompare(b, "it"));
+
+  /* --- Date: il bollettino emesso il giorno D contiene "oggi" = D e "domani" = D+1 --- */
+  const ymd = (d) => d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  const stemDate = (stem) => new Date(+stem.slice(0, 4), +stem.slice(4, 6) - 1, +stem.slice(6, 8));
+  function plan(stem, now) {
+    const d0 = stemDate(stem), d1 = new Date(d0); d1.setDate(d1.getDate() + 1);
+    const today = ymd(now);
+    if (today === ymd(d0)) return { today: { file: "today", date: d0 }, tomorrow: { file: "tomorrow", date: d1 }, stale: false };
+    if (today === ymd(d1)) { const d2 = new Date(d1); d2.setDate(d2.getDate() + 1); return { today: { file: "tomorrow", date: d1 }, tomorrow: { file: null, date: d2 }, stale: false }; }
+    return { today: { file: "today", date: d0 }, tomorrow: { file: "tomorrow", date: d1 }, stale: true };
+  }
+
+  return { API, RAW, CACHE, CHECK_EVERY, DEFAULT_COMUNE, LEVELS, SHORT, level, prepare, byPoint, byComune, comuni, plan, stemDate };
+})();
+
+if (typeof module !== "undefined") module.exports = BCR;
+
+if (typeof document !== "undefined") (function allertaInit() {
+  const $ = (s) => document.querySelector(s);
+  const el = { box: $("#now"), date: $("#now-date"), level: $("#now-level"), place: $("#now-place"), msg: $("#now-msg"), risks: $("#now-risks"), tomorrow: $("#now-tomorrow"), src: $("#now-src"), geo: $("#geo"), pickOpen: $("#pick-open"), pick: $("#pick"), input: $("#pick-input"), list: $("#comuni"), retry: $("#retry") };
+  const ls = {
+    get(k, f) { try { const v = localStorage.getItem(k); return v == null ? f : JSON.parse(v); } catch (e) { return f; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const fmtDay = (d, opts) => d.toLocaleDateString("it-IT", opts || { weekday: "short", day: "numeric", month: "short" });
+  const escH = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const stemLabel = (stem) => fmtDay(BCR.stemDate(stem), { day: "numeric", month: "long" }) + " ore " + stem.slice(9, 11) + ":" + stem.slice(11, 13);
+
+  let place = ls.get("allerta-luogo", { mode: "comune", name: BCR.DEFAULT_COMUNE });
+  const zonesMem = {}; // file topojson già decodificati in questa sessione
+
+  /* --- rete e cache --- */
+  async function latestStem() {
+    const meta = ls.get("allerta-meta", null);
+    if (meta && Date.now() - meta.checkedAt < BCR.CHECK_EVERY) return meta.stem;
+    try {
+      const r = await fetch(BCR.API + "/commits?path=files/topojson&per_page=1", { cache: "no-store" });
+      if (!r.ok) throw new Error("api " + r.status);
+      const [c] = await r.json();
+      const d = await (await fetch(BCR.API + "/commits/" + c.sha)).json();
+      const f = (d.files || []).map((x) => x.filename).find((n) => /files\/topojson\/\d{8}_\d{4}_(today|tomorrow)\.json$/.test(n));
+      if (!f) throw new Error("nessun file");
+      const stem = f.match(/(\d{8}_\d{4})/)[1];
+      ls.set("allerta-meta", { stem, checkedAt: Date.now() });
+      return stem;
+    } catch (e) {
+      if (meta) return meta.stem; // senza rete o limite superato: uso l'ultimo noto
+      throw e;
+    }
+  }
+  async function getZones(stem, which) {
+    const key = stem + "_" + which;
+    if (zonesMem[key]) return zonesMem[key];
+    const url = BCR.RAW + "files/topojson/" + key + ".json";
+    let data = null, cache = null;
+    try { cache = await caches.open(BCR.CACHE); const hit = await cache.match(url); if (hit) data = await hit.json(); } catch (e) {}
+    if (!data) {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error("file " + r.status);
+      if (cache) { try { await cache.put(url, r.clone()); } catch (e) {} }
+      data = await r.json();
+    }
+    zonesMem[key] = BCR.prepare(data);
+    return zonesMem[key];
+  }
+  async function pruneCache(stem) {
+    try { const c = await caches.open(BCR.CACHE); for (const req of await c.keys()) if (!req.url.includes(stem)) await c.delete(req); } catch (e) {}
+  }
+
+  /* --- disegno --- */
+  function setState(lvl) { el.box.dataset.lvl = String(lvl); }
+  function showError(text) {
+    setState(-1); el.level.textContent = "Allerta non disponibile";
+    el.msg.textContent = text; el.msg.hidden = false; el.risks.hidden = true; el.tomorrow.hidden = true; el.retry.hidden = false;
+  }
+  function render(res) {
+    // res: { placeLabel, today:{date, sum}, tomorrow:{date, sum|null, pending}, stem, stale }
+    el.retry.hidden = true;
+    el.date.textContent = fmtDay(res.today.date, { weekday: "long", day: "numeric", month: "long" });
+    el.place.innerHTML = res.placeLabel;
+    if (!res.today.sum) {
+      showError("Questa posizione non rientra nelle zone di allerta italiane. Scegli un comune.");
+      return;
+    }
+    const s = res.today.sum;
+    setState(s.max);
+    el.level.textContent = BCR.LEVELS[s.max];
+    el.msg.hidden = !res.stale;
+    if (res.stale) el.msg.textContent = "Bollettino non aggiornato: è l'ultimo disponibile. Controlla la connessione.";
+    el.risks.innerHTML = s.risks.map((r) => `<li><span>${r.label}</span><span><i class="dot l${r.lvl}"></i>${BCR.SHORT[r.lvl]}</span></li>`).join("");
+    el.risks.hidden = false;
+    const t = res.tomorrow;
+    const tl = "Domani, " + fmtDay(t.date);
+    el.tomorrow.innerHTML = t.sum
+      ? `<span>${tl}</span><span><i class="dot l${t.sum.max}"></i>${BCR.LEVELS[t.sum.max]}</span>`
+      : `<span>${tl}</span><span>Bollettino entro le 16</span>`;
+    el.tomorrow.hidden = false;
+    el.src.innerHTML = `Zona di allerta <strong>${escH(s.zone)}</strong> · Bollettino DPC del ${stemLabel(res.stem)} · <a href="https://mappe.protezionecivile.gov.it/it/mappe-rischi/bollettino-di-criticita/" target="_blank" rel="noopener">Bollettino ufficiale</a>`;
+  }
+
+  /* --- calcolo --- */
+  let busy = 0;
+  async function update() {
+    const job = ++busy;
+    try {
+      const stem = await latestStem();
+      const p = BCR.plan(stem, new Date());
+      const zToday = await getZones(stem, p.today.file);
+      const zTomorrow = p.tomorrow.file ? await getZones(stem, p.tomorrow.file).catch(() => null) : null;
+      const find = (zones) => !zones ? null : place.mode === "geo" ? BCR.byPoint(zones, place.lat, place.lon) : BCR.byComune(zones, place.name);
+      const label = place.mode === "geo" ? "<strong>La tua posizione</strong>" : "<strong>" + escH(place.name) + "</strong>";
+      if (job !== busy) return;
+      const res = { placeLabel: label, stem, stale: p.stale, today: { date: p.today.date, sum: find(zToday) }, tomorrow: { date: p.tomorrow.date, sum: find(zTomorrow) } };
+      render(res);
+      ls.set("allerta-ultimo", { ...res, today: { ...res.today, date: +res.today.date }, tomorrow: { ...res.tomorrow, date: +res.tomorrow.date } });
+      if (!el.list.childElementCount) el.list.innerHTML = BCR.comuni(zToday).map((c) => `<option value="${escH(c)}">`).join("");
+      pruneCache(stem);
+    } catch (e) {
+      if (job !== busy) return;
+      if (!ls.get("allerta-ultimo", null)) showError("Non riesco a scaricare il bollettino. Controlla la connessione e tocca Riprova.");
+      else el.retry.hidden = false;
+    }
+  }
+
+  // Mostra subito l'ultimo risultato salvato, poi aggiorna
+  const last = ls.get("allerta-ultimo", null);
+  if (last) { try { render({ ...last, today: { ...last.today, date: new Date(last.today.date) }, tomorrow: { ...last.tomorrow, date: new Date(last.tomorrow.date) } }); } catch (e) {} }
+  else el.date.textContent = fmtDay(new Date(), { weekday: "long", day: "numeric", month: "long" });
+  update();
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) update(); });
+
+  el.retry.addEventListener("click", () => { el.level.textContent = "Carico il bollettino"; update(); });
+
+  el.geo.addEventListener("click", () => {
+    if (!("geolocation" in navigator)) { toast("Posizione non disponibile su questo dispositivo"); return; }
+    el.geo.disabled = true; el.geo.lastChild.textContent = "Cerco la posizione…";
+    navigator.geolocation.getCurrentPosition((pos) => {
+      el.geo.disabled = false; el.geo.lastChild.textContent = "Aggiorna posizione";
+      place = { mode: "geo", lat: pos.coords.latitude, lon: pos.coords.longitude };
+      ls.set("allerta-luogo", place); update();
+    }, (err) => {
+      el.geo.disabled = false; el.geo.lastChild.textContent = "Usa la mia posizione";
+      toast(err.code === 1 ? "Permesso posizione negato: attivalo in Impostazioni" : "Posizione non trovata, riprova");
+    }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 10 * 60 * 1000 });
+  });
+  if (place.mode === "geo") el.geo.lastChild.textContent = "Aggiorna posizione";
+
+  el.pickOpen.addEventListener("click", () => { el.pick.hidden = !el.pick.hidden; if (!el.pick.hidden) el.input.focus(); });
+  el.pick.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = el.input.value.trim(); if (!name) return;
+    const match = [...el.list.options].map((o) => o.value).find((c) => c.toLowerCase() === name.toLowerCase());
+    if (el.list.options.length && !match) { toast("Comune non trovato: scegli dall'elenco"); return; }
+    place = { mode: "comune", name: match || name };
+    ls.set("allerta-luogo", place); el.pick.hidden = true; el.input.value = ""; el.geo.lastChild.textContent = "Usa la mia posizione"; update();
+  });
+})();
+
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}
+</script>
+</body>
+</html>
