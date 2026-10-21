@@ -285,6 +285,14 @@ nav.tabs button[aria-selected="true"]{background:color-mix(in srgb,var(--accent)
 .toast{background:var(--glass-strong);color:var(--fg);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 28px)}
 
 .now[data-lvl="1"] .now-level i svg{stroke:#3B2F00}
+.top-right{display:flex;align-items:center;gap:10px}
+.clock{white-space:nowrap;font-size:.8rem}
+.brand{min-width:0}
+.brand>div{min-width:0}
+.brand small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .wrap{gap:8px}
+.info-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;cursor:pointer;color:var(--accent);background:var(--glass-soft);border:1px solid var(--glass-line);box-shadow:var(--hl);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
+.card a{color:var(--accent)}
 /* senza supporto al vetro: superfici piene */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   :root{--glass:var(--surface);--glass-strong:var(--surface);--glass-soft:var(--surface)}
@@ -300,9 +308,10 @@ nav.tabs button[aria-selected="true"]{background:color-mix(in srgb,var(--accent)
   <div class="wrap">
     <div class="brand">
       <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 3 31 29H3Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><rect x="15.5" y="12" width="3" height="9" rx="1.5" fill="currentColor"/><circle cx="17" cy="24.5" r="1.8" fill="currentColor"/></svg>
-      <div><h1>Allerta Cave</h1><small>Guida di emergenza · Cave (RM)</small></div>
+      <div><h1>Allerta Cave</h1><small>Guida di emergenza</small></div>
     </div>
-    <div class="clock" id="clock" aria-live="off"></div>
+    <div class="top-right"><div class="clock" id="clock" aria-live="off"></div>
+      <button class="info-btn" id="b-info" type="button" aria-label="Informazioni sull'app"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.5"/></svg></button></div>
   </div>
 </header>
 
@@ -355,7 +364,7 @@ nav.tabs button[aria-selected="true"]{background:color-mix(in srgb,var(--accent)
     <div class="code a"><span class="lbl">Arancione</span><p>Fenomeni diffusi, possibili esondazioni e frane. Limita gli spostamenti, non sostare in cantine e seminterrati.</p></div>
     <div class="code r"><span class="lbl">Rossa</span><p>Fenomeni intensi e diffusi, pericolo per le persone. Resta in un luogo sicuro ai piani alti e segui le indicazioni del Comune.</p></div>
   </div>
-  <p class="note">Il livello di oggi viene dal bollettino nazionale di criticità del Dipartimento della Protezione Civile (dati aperti, licenza CC BY 4.0), pubblicato ogni giorno entro le 16. Senza connessione l'app mostra l'ultimo bollettino scaricato. Fa sempre fede l'allerta emessa dalla Regione Lazio e dal Comune di Cave.</p>
+  <p class="note"><strong>App informativa non ufficiale:</strong> non sostituisce le allerte della Regione Lazio, del Comune di Cave e di IT-alert. Il livello di oggi viene dal bollettino nazionale di criticità del Dipartimento della Protezione Civile (dati aperti, licenza CC BY 4.0), pubblicato ogni giorno entro le 16. Senza connessione l'app mostra l'ultimo bollettino scaricato. Fa sempre fede l'allerta emessa dalla Regione Lazio e dal Comune di Cave.</p>
 </section>
 
 <!-- COSA FARE -->
@@ -380,6 +389,37 @@ nav.tabs button[aria-selected="true"]{background:color-mix(in srgb,var(--accent)
   <div class="eyebrow">Numeri di emergenza</div>
   <div class="nums" id="nums"></div>
   <p class="note">Nel Lazio è attivo il Numero Unico di Emergenza: anche chi compone 113, 115 o 118 viene messo in contatto con la centrale del 112, che smista la chiamata al servizio giusto. Chiama solo per emergenze reali e di' subito dove ti trovi: Comune, via, numero civico.</p>
+</section>
+
+<!-- INFORMAZIONI -->
+<section class="tab" id="tab-info" role="tabpanel" aria-label="Informazioni" hidden>
+  <div class="town"><div class="eyebrow">Informazioni</div><h2>L'app</h2></div>
+
+  <div class="card">
+    <h3>Cos'è</h3>
+    <p>Un'app informativa realizzata da volontari di protezione civile per i cittadini di Cave. Raccoglie in un posto solo le allerte del giorno, i comportamenti da seguire e i contatti utili.</p>
+    <p><strong>Non è un servizio ufficiale.</strong> Non sostituisce le allerte e le comunicazioni della Regione Lazio, del Comune di Cave e del sistema nazionale IT-alert. In caso di emergenza chiama sempre il <strong>112</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Limiti delle informazioni</h3>
+    <p>Il livello di allerta viene dal bollettino nazionale, pubblicato una volta al giorno entro le 16. La Regione può aggiornare la valutazione anche in altri momenti, e l'app lo mostra solo con il bollettino successivo. Senza connessione l'app mostra l'ultimo bollettino scaricato. In caso di dubbio fa fede la pagina ufficiale della Regione.</p>
+  </div>
+
+  <div class="card">
+    <h3>Fonti e licenze</h3>
+    <p><strong>Allerte:</strong> Bollettino di criticità nazionale del Dipartimento della Protezione Civile, dati aperti con licenza <a href="https://creativecommons.org/licenses/by/4.0/deed.it" target="_blank" rel="noopener">CC BY 4.0</a>, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica" target="_blank" rel="noopener">github.com/pcm-dpc</a>. I dati sono mostrati senza modifiche nel contenuto: l'app calcola solo il livello più alto della zona.</p>
+    <p><strong>Cosa fare:</strong> testi riformulati a partire dalle indicazioni della campagna nazionale "Io non rischio" e del Ministero della Salute.</p>
+    <p><strong>Numeri e indirizzi:</strong> fonti pubbliche della Regione Lazio e del Comune di Cave.</p>
+  </div>
+
+  <div class="card">
+    <h3>Privacy</h3>
+    <p>L'app non raccoglie dati personali: non ci sono account, cookie di tracciamento o statistiche di utilizzo.</p>
+    <p><strong>Posizione:</strong> viene chiesta solo se tocchi "Usa la mia posizione", serve a trovare la zona di allerta e resta sul telefono. Non viene inviata a nessuno.</p>
+    <p><strong>Dati salvati sul telefono:</strong> le spunte dello zaino, il comune scelto e l'ultimo bollettino, per far funzionare l'app senza connessione. Puoi cancellarli eliminando l'app o i dati del sito.</p>
+    <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica il bollettino dai server di GitHub. Come per ogni sito, GitHub riceve l'indirizzo IP del telefono per rispondere alla richiesta.</p>
+  </div>
 </section>
 
 <!-- IL MIO COMUNE -->
@@ -504,7 +544,8 @@ function showTab(t){
 }
 document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.t)));
 const hashTab=(location.hash||"").slice(1);
-showTab(["allerte","guida","zaino","numeri","comune"].includes(hashTab)?hashTab:store.get("tab","allerte"));
+$("#b-info").addEventListener("click",()=>showTab("info"));
+showTab(["allerte","guida","zaino","numeri","comune","info"].includes(hashTab)?hashTab:store.get("tab","allerte"));
 
 /* rischi */
 function renderRisk(k){
@@ -804,7 +845,7 @@ if (typeof document !== "undefined") (function allertaInit() {
 
 </script>
 <script>
-if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{}));}
 </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 // Allerta Cave: funzionamento offline.
 // Quando cambi i file dell'app, aumenta il numero di versione qui sotto.
-const VERSION = "allerta-cave-v8";
+const VERSION = "allerta-cave-v10";
 const CORE = [
   "./",
   "./index.html",
@@ -31,7 +31,7 @@ self.addEventListener("fetch", (e) => {
   // Pagina: prima la rete (per avere sempre l'ultima versione), poi la copia salvata.
   if (req.mode === "navigate") {
     e.respondWith(
-      fetch(req)
+      fetch(req.url, { cache: "no-cache", credentials: "same-origin" }) // salta la cache del browser (GitHub Pages tiene le pagine per 10 minuti)
         .then((res) => {
           if (res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put("./index.html", copy)); }
           return res;
