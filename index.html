@@ -128,7 +128,7 @@ section.tab{display:flex;flex-direction:column;gap:18px;padding-block:18px}
 
 /* Barra in basso */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
-nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--nav-h)}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);height:var(--nav-h)}
 nav.tabs button{font:inherit;font-size:.72rem;background:none;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
 nav.tabs button[aria-selected="true"]{color:var(--accent);font-weight:700}
 nav.tabs svg{width:24px;height:24px}
@@ -312,6 +312,22 @@ header.top .wrap{gap:8px}
 .eq-txt{min-width:0;display:grid}
 .eq-txt strong{font-size:.95rem;overflow-wrap:anywhere}
 .eq-txt small{color:var(--muted);font-size:.8rem}
+.now-change{margin:0;font-size:.9rem;display:block;line-height:1.45;background:var(--glass-soft);border:1px solid var(--glass-line);border-radius:12px;padding:8px 12px}
+.now-change b{font-weight:700}
+.now-change .dot{display:inline-block;vertical-align:-1px;margin:0 4px 0 2px}
+.update-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+/* DAE */
+.dae-actions{display:flex;gap:8px;flex-wrap:wrap}
+.dae-actions .btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.dae-head{display:flex;gap:12px;align-items:center}
+.dae-head div{min-width:0;display:grid}
+.dae-head small{color:var(--muted);font-size:.85rem}
+.dae-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,#2F9E5B 18%,transparent);color:#2F9E5B}
+.dae.near{background:linear-gradient(150deg,color-mix(in srgb,#2F9E5B 22%,var(--glass)),var(--glass));border-color:color-mix(in srgb,#2F9E5B 40%,var(--glass-line))}
+.dae-btns{display:flex;gap:8px;flex-wrap:wrap}
+.dae-btns .mini{text-decoration:none}
+.steps{margin:0;padding-left:1.3em;display:grid;gap:8px;font-size:.93rem}
+nav.tabs button{font-size:.68rem;white-space:nowrap}
 /* senza supporto al vetro: superfici piene */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   :root{--glass:var(--surface);--glass-strong:var(--surface);--glass-soft:var(--surface)}
@@ -342,6 +358,7 @@ header.top .wrap{gap:8px}
     <div class="now-head"><span class="eyebrow">Allerta di oggi</span><span id="now-date"></span></div>
     <div class="now-level"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 7v6M12 17v.5"/></svg></i><b id="now-level">Carico il bollettino</b></div>
     <div class="now-place"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg><span id="now-place">Cave</span></div>
+    <p class="now-change" id="now-change" hidden></p>
     <p class="now-msg" id="now-msg" hidden></p>
     <ul class="risks" id="now-risks" hidden></ul>
     <div class="tomorrow" id="now-tomorrow" hidden></div>
@@ -450,6 +467,7 @@ header.top .wrap{gap:8px}
     <p><strong>Terremoti:</strong> dati dell'Istituto Nazionale di Geofisica e Vulcanologia (<a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">INGV</a>) e, se non raggiungibile, del Centro Sismologico Euro-Mediterraneo (EMSC). Sono localizzazioni automatiche o rivedute che possono cambiare nelle ore successive.</p>
     <p><strong>Coordinate dei comuni:</strong> © contributori di <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, licenza ODbL.</p>
     <p><strong>Cosa fare:</strong> testi riformulati a partire dalle indicazioni della campagna nazionale "Io non rischio" e del Ministero della Salute.</p>
+    <p><strong>Defibrillatori:</strong> posizioni dalla mappa pubblica "Mappa DAE Cave" su Google My Maps.</p>
     <p><strong>Numeri e indirizzi:</strong> fonti pubbliche della Regione Lazio e dell'associazione.</p>
   </div>
 
@@ -461,7 +479,25 @@ header.top .wrap{gap:8px}
     <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica i bollettini dai server di GitHub e i dati sui terremoti da INGV (o EMSC). Come per ogni sito, questi server ricevono l'indirizzo IP del telefono per rispondere. La tua posizione non viene inviata: l'app scarica i terremoti di tutta Italia e calcola le distanze sul telefono.</p>
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div>
-  <p class="note" id="app-version">Versione 14 · 21 ottobre 2026</p>
+  <div class="card update-row">
+    <span id="app-version">Versione 17 · 22 ottobre 2026</span>
+    <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
+  </div>
+</section>
+
+<!-- DEFIBRILLATORI -->
+<section class="tab" id="tab-dae" role="tabpanel" aria-labelledby="b-dae" hidden>
+  <div class="town"><div class="eyebrow">Defibrillatori</div><h2>DAE a Cave</h2><small id="dae-sub"></small></div>
+
+  <a class="sos" href="tel:112"><b>112</b><span>Persona che non risponde e non respira normalmente? Chiama subito il 112 e fatti guidare.</span></a>
+
+  <div class="dae-actions">
+    <button class="btn" id="dae-geo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Trova il più vicino</button>
+    <a class="btn" id="dae-map" href="https://www.google.com/maps/d/viewer?mid=1i_VWr2qEZsH_mhhseaKbxg-eUrc3HS8X" target="_blank" rel="noopener">Mappa completa</a>
+  </div>
+  <div id="dae-list" style="display:grid;gap:10px"></div>
+
+  <p class="note">Posizioni dalla mappa "Mappa DAE Cave" su Google My Maps. Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.</p>
 </section>
 
 <!-- IL MIO COMUNE -->
@@ -490,10 +526,11 @@ header.top .wrap{gap:8px}
 <nav class="tabs" role="tablist" aria-label="Sezioni">
   <div class="in">
     <button role="tab" id="b-allerte" aria-controls="tab-allerte" aria-selected="true" data-t="allerte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 22 20H2Z"/><path d="M12 10v4M12 17v.5"/></svg>Allerte</button>
-    <button role="tab" id="b-guida" aria-controls="tab-guida" aria-selected="false" data-t="guida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M4 21V5"/></svg>Cosa fare</button>
+    <button role="tab" id="b-guida" aria-controls="tab-guida" aria-selected="false" data-t="guida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M4 21V5"/></svg>Guida</button>
     <button role="tab" id="b-zaino" aria-controls="tab-zaino" aria-selected="false" data-t="zaino"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="7" width="14" height="14" rx="3"/><path d="M9 7V5a3 3 0 0 1 6 0v2M9 13h6"/></svg>Zaino</button>
     <button role="tab" id="b-numeri" aria-controls="tab-numeri" aria-selected="false" data-t="numeri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Numeri</button>
     <button role="tab" id="b-comune" aria-controls="tab-comune" aria-selected="false" data-t="comune"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M10 21v-5h4v5"/></svg>Comune</button>
+    <button role="tab" id="b-dae" aria-controls="tab-dae" aria-selected="false" data-t="dae"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/><path d="M12.8 9.5 10.8 13h2.6l-1.8 3.2"/></svg>DAE</button>
   </div>
 </nav>
 <div class="toast" id="toast" hidden></div>
@@ -587,7 +624,19 @@ function showTab(t){
 document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.t)));
 const hashTab=(location.hash||"").slice(1);
 $("#b-info").addEventListener("click",()=>showTab("info"));
-showTab(["allerte","guida","zaino","numeri","comune","info"].includes(hashTab)?hashTab:store.get("tab","allerte"));
+$("#check-update").addEventListener("click",async()=>{
+  const btn=$("#check-update"); btn.disabled=true; btn.textContent="Controllo in corso…";
+  try{
+    const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();
+    if(reg) await reg.update();
+    const r=await fetch("./?v="+Date.now(),{cache:"no-store"});
+    const html=await r.text(); const m=html.match(/Versione (\d+)/); const cur=(document.getElementById("app-version").textContent.match(/Versione (\d+)/)||[])[1];
+    if(m&&cur&&+m[1]>+cur){ toast("Nuova versione "+m[1]+": aggiorno…"); if(reg&&reg.waiting) reg.waiting.postMessage("skip"); setTimeout(()=>location.reload(),900); return; }
+    toast("Hai già l'ultima versione");
+  }catch(e){ toast("Controllo non riuscito: verifica la connessione"); }
+  btn.disabled=false; btn.textContent="Controlla aggiornamenti";
+});
+showTab(["allerte","guida","zaino","numeri","comune","info","dae"].includes(hashTab)?hashTab:store.get("tab","allerte"));
 
 /* rischi */
 function renderRisk(k){
@@ -624,6 +673,48 @@ $("#resetbox").addEventListener("click",e=>{
 /* numeri */
 $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(x.n)}</b><span>${esc(x.d)}</span><div class="row"><a class="mini" href="tel:${x.n.replace(/\s/g,"")}">Chiama</a><button class="mini" type="button" data-copy="${esc(x.n)}">Copia</button></div></div>`).join("");
 $("#places").innerHTML=PLACES.map(p=>`<div class="place"><div><strong>${esc(p.name)}</strong><small>${esc(p.addr)}</small></div><a class="mini" href="https://maps.apple.com/?q=${encodeURIComponent(p.name+", "+p.addr)}" target="_blank" rel="noopener">Mappa</a></div>`).join("");
+/* ===== DEFIBRILLATORI: modifica qui l'elenco (lat, lon) ===== */
+const DAE = [
+  { nome: "Viale Giulio Venzi, 1", lat: 41.8219052, lon: 12.9294543 },
+  { nome: "Via Speciano, 5", lat: 41.8159704, lon: 12.9391443 },
+  { nome: "Via G. D'Annunzio", lat: 41.8145234, lon: 12.9309421 },
+  { nome: "Via dell'Artigianato, 4", lat: 41.8187452, lon: 12.94853 },
+  { nome: "Via della Selce", lat: 41.819704, lon: 12.9170557 },
+  { nome: "Viale Giorgioli", lat: 41.8183068, lon: 12.9318414 },
+  { nome: "Via Filippo Venzi / Piazza delle Erbe", lat: 41.8182472, lon: 12.9292479 },
+];
+(function(){
+  let me=null;
+  const dist=(a,b)=>{const R=6371e3,r=Math.PI/180,dLa=(b.lat-a.lat)*r,dLo=(b.lon-a.lon)*r;const h=Math.sin(dLa/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));};
+  const fmt=m=>m<1000?Math.round(m/10)*10+" m":(m/1000).toFixed(1).replace(".",",")+" km";
+  function render(){
+    $("#dae-sub").textContent=DAE.length+" defibrillatori semiautomatici sul territorio comunale";
+    const list=DAE.map(d=>({...d,m:me?dist(me,d):null}));
+    if(me) list.sort((a,b)=>a.m-b.m);
+    $("#dae-list").innerHTML=list.map((d,i)=>{
+      const apple=`https://maps.apple.com/?daddr=${d.lat},${d.lon}&dirflg=w`;
+      const google=`https://www.google.com/maps/dir/?api=1&destination=${d.lat},${d.lon}&travelmode=walking`;
+      const near=me&&i===0;
+      return `<div class="card dae${near?" near":""}">
+        <div class="dae-head"><span class="dae-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/><path d="M12.8 9.5 10.8 13h2.6l-1.8 3.2"/></svg></span>
+        <div><strong>${esc(d.nome)}</strong><small>${near?"Il più vicino · ":""}${d.m!=null?"a "+fmt(d.m)+" in linea d'aria":"Defibrillatore semiautomatico"}</small></div></div>
+        <div class="dae-btns"><a class="mini" href="${apple}" target="_blank" rel="noopener">Apple Mappe</a><a class="mini" href="${google}" target="_blank" rel="noopener">Google Maps</a></div>
+      </div>`;}).join("");
+  }
+  render();
+  $("#dae-geo").addEventListener("click",()=>{
+    if(!("geolocation" in navigator)){toast("Posizione non disponibile su questo dispositivo");return;}
+    const b=$("#dae-geo"); b.disabled=true; b.lastChild.textContent="Cerco la posizione…";
+    navigator.geolocation.getCurrentPosition(pos=>{
+      me={lat:pos.coords.latitude,lon:pos.coords.longitude}; render();
+      b.disabled=false; b.lastChild.textContent="Aggiorna posizione";
+    },err=>{
+      b.disabled=false; b.lastChild.textContent="Trova il più vicino";
+      toast(err.code===1?"Permesso posizione negato: attivalo in Impostazioni":"Posizione non trovata, riprova");
+    },{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+  });
+})();
+
 /* il mio comune */
 (function(){
   const C=COMUNE, tel=n=>n.replace(/[^\d+]/g,"");
@@ -747,7 +838,7 @@ if (typeof module !== "undefined") module.exports = BCR;
 
 if (typeof document !== "undefined") (function allertaInit() {
   const $ = (s) => document.querySelector(s);
-  const el = { box: $("#now"), date: $("#now-date"), level: $("#now-level"), place: $("#now-place"), msg: $("#now-msg"), risks: $("#now-risks"), tomorrow: $("#now-tomorrow"), src: $("#now-src"), geo: $("#geo"), pickOpen: $("#pick-open"), pick: $("#pick"), input: $("#pick-input"), list: $("#comuni"), retry: $("#retry") };
+  const el = { box: $("#now"), date: $("#now-date"), level: $("#now-level"), place: $("#now-place"), msg: $("#now-msg"), change: $("#now-change"), risks: $("#now-risks"), tomorrow: $("#now-tomorrow"), src: $("#now-src"), geo: $("#geo"), pickOpen: $("#pick-open"), pick: $("#pick"), input: $("#pick-input"), list: $("#comuni"), retry: $("#retry") };
   const ls = {
     get(k, f) { try { const v = localStorage.getItem(k); return v == null ? f : JSON.parse(v); } catch (e) { return f; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -800,7 +891,7 @@ if (typeof document !== "undefined") (function allertaInit() {
   /* --- disegno --- */
   function setState(lvl) { el.box.dataset.lvl = String(lvl); }
   function showError(text) {
-    setState(-1); el.level.textContent = "Allerta non disponibile";
+    setState(-1); el.level.textContent = "Allerta non disponibile"; el.change.hidden = true;
     el.msg.textContent = text; el.msg.hidden = false; el.risks.hidden = true; el.tomorrow.hidden = true; el.retry.hidden = false;
   }
   function render(res) {
@@ -817,6 +908,9 @@ if (typeof document !== "undefined") (function allertaInit() {
     el.level.textContent = BCR.LEVELS[s.max];
     el.msg.hidden = !res.stale;
     if (res.stale) el.msg.textContent = "Bollettino non aggiornato: è l'ultimo disponibile. Controlla la connessione.";
+    const ch = res.change;
+    el.change.hidden = !ch;
+    if (ch) el.change.innerHTML = `<b>${ch.dir > 0 ? "▲ Alzata" : "▼ Abbassata"}</b> rispetto alla previsione di ieri, che era <i class="dot l${ch.from}"></i>${BCR.LEVELS[ch.from].toLowerCase()}`;
     el.risks.innerHTML = s.risks.map((r) => `<li><span>${r.label}</span><span><i class="dot l${r.lvl}"></i>${BCR.SHORT[r.lvl]}</span></li>`).join("");
     el.risks.hidden = false;
     const t = res.tomorrow;
@@ -826,6 +920,24 @@ if (typeof document !== "undefined") (function allertaInit() {
       : `<span>${tl}</span><span>Bollettino entro le 16</span>`;
     el.tomorrow.hidden = false;
     el.src.innerHTML = `Zona di allerta <strong>${escH(s.zone)}</strong> · Bollettino DPC del ${stemLabel(res.stem)} · <a href="https://mappe.protezionecivile.gov.it/it/mappe-rischi/bollettino-di-criticita/" target="_blank" rel="noopener">Bollettino ufficiale</a>`;
+  }
+
+  /* --- confronto con la previsione precedente ---
+     Per ogni luogo e giorno ricordo il primo livello visto e il bollettino da cui veniva.
+     Se un bollettino più recente dà un livello diverso per lo stesso giorno, lo segnalo. */
+  function placeKey() { return place.mode === "geo" ? "g:" + place.lat.toFixed(2) + "," + place.lon.toFixed(2) : "c:" + (place.name || "").toLowerCase(); }
+  const dkey = (d) => d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  function trackChange(res) {
+    const h = ls.get("allerta-storico", {});
+    const pk = placeKey(), today = dkey(res.today.date);
+    const note = (d, sum) => { if (!sum) return; const k = pk + "|" + d; if (!h[k]) h[k] = { lvl: sum.max, stem: res.stem }; };
+    note(today, res.today.sum);
+    if (res.tomorrow.sum) note(dkey(res.tomorrow.date), res.tomorrow.sum);
+    for (const k of Object.keys(h)) if (+k.split("|")[1] < today - 3) delete h[k]; // tengo solo gli ultimi giorni
+    ls.set("allerta-storico", h);
+    const first = h[pk + "|" + today];
+    if (res.today.sum && first && first.stem < res.stem && first.lvl !== res.today.sum.max) return { dir: res.today.sum.max > first.lvl ? 1 : -1, from: first.lvl };
+    return null;
   }
 
   /* --- calcolo --- */
@@ -841,6 +953,7 @@ if (typeof document !== "undefined") (function allertaInit() {
       const label = place.mode === "geo" ? "<strong>La tua posizione</strong>" : "<strong>" + escH(place.name) + "</strong>";
       if (job !== busy) return;
       const res = { placeLabel: label, stem, stale: p.stale, today: { date: p.today.date, sum: find(zToday) }, tomorrow: { date: p.tomorrow.date, sum: find(zTomorrow) } };
+      res.change = trackChange(res);
       render(res);
       if (place.mode === "comune" && res.today.sum) { ls.set("allerta-zona", { name: place.name, bbox: res.today.sum.bbox }); document.dispatchEvent(new Event("allerta-zona")); }
       ls.set("allerta-ultimo", { ...res, today: { ...res.today, date: +res.today.date }, tomorrow: { ...res.tomorrow, date: +res.tomorrow.date } });
