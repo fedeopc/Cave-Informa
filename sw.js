@@ -1,6 +1,6 @@
 // Allerta Cave: funzionamento offline.
 // Quando cambi i file dell'app, aumenta il numero di versione qui sotto.
-const VERSION = "allerta-cave-v23";
+const VERSION = "allerta-cave-v24";
 const CORE = [
   "./",
   "./index.html",

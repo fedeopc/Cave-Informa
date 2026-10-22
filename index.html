@@ -336,6 +336,7 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 #avvisi .area p{margin:2px 0;font-size:.93rem}
 .ps-ic{background:color-mix(in srgb,#C0262D 16%,transparent);color:#C0262D}
 .ps-info{margin:0;font-size:.9rem;color:var(--muted)}
+.ps-switch{display:flex;gap:8px;flex-wrap:wrap}
 /* senza supporto al vetro: superfici piene */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   :root{--glass:var(--surface);--glass-strong:var(--surface);--glass-soft:var(--surface)}
@@ -488,11 +489,11 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     <p><strong>Dati salvati sul telefono:</strong> le spunte dello zaino, il comune scelto e l'ultimo bollettino, per far funzionare l'app senza connessione. Puoi cancellarli eliminando l'app o i dati del sito.</p>
     <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica i bollettini dai server di GitHub e i dati sui terremoti da INGV (o EMSC). Come per ogni sito, questi server ricevono l'indirizzo IP del telefono per rispondere. La tua posizione non viene inviata: l'app scarica i terremoti di tutta Italia e calcola le distanze sul telefono.</p>
     <p><strong>Notifiche:</strong> se le attivi, il telefono genera un indirizzo anonimo per ricevere i messaggi, che viene salvato sul servizio dell'associazione (Cloudflare) e usato solo per inviare le notifiche di Allerta Cave. Non contiene il tuo nome, il numero o la posizione. Puoi disattivarle in qualsiasi momento dalla pagina Allerte o dalle impostazioni del telefono.</p>
-    <p><strong>Ricerca pronto soccorso:</strong> se tocchi "Cerca vicino a me", l'app invia al servizio pubblico Overpass di OpenStreetMap la tua posizione arrotondata a circa 1 km, solo per trovare gli ospedali nel raggio di 30 km.</p>
+    <p><strong>Ricerca pronto soccorso:</strong> se tocchi "Vicini a me", l'app invia al servizio pubblico Overpass di OpenStreetMap la tua posizione arrotondata a circa 1 km, solo per trovare gli ospedali nel raggio di 30 km.</p>
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div>
   <div class="card update-row">
-    <span id="app-version">Versione 23 · 22 ottobre 2026</span>
+    <span id="app-version">Versione 24 · 22 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -528,9 +529,9 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
   <div class="card" id="areas"></div></div>
 
   <div class="eyebrow">Pronto soccorso</div>
-  <div class="dae-actions">
-    <button class="btn" id="ps-geo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Cerca vicino a me (30 km)</button>
-    <button class="btn" id="ps-reset" type="button" hidden>Torna a quelli di Cave</button>
+  <div class="ps-switch" role="group" aria-label="Quali pronto soccorso mostrare">
+    <button class="chip" id="ps-cave" type="button" aria-pressed="true">Vicini a Cave</button>
+    <button class="chip" id="ps-geo" type="button" aria-pressed="false">Vicini a me (30 km)</button>
   </div>
   <p class="ps-info" id="ps-info">Pronto soccorso più vicini a Cave.</p>
   <div id="places" style="display:grid;gap:10px"></div>
@@ -712,13 +713,13 @@ $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(
   function showDefault(){
     $("#places").innerHTML=PLACES.map(card).join("");
     $("#ps-info").textContent="Pronto soccorso più vicini a Cave.";
-    $("#ps-note").hidden=true; $("#ps-reset").hidden=true;
+    $("#ps-note").hidden=true; $("#ps-cave").setAttribute("aria-pressed","true"); $("#ps-geo").setAttribute("aria-pressed","false");
   }
   function showFound(list,me){
     const items=list.map(p=>({...p,d:distM(me,p)})).filter(p=>p.d<=RADIUS).sort((a,b)=>a.d-b.d);
     $("#places").innerHTML=items.map(card).join("");
     $("#ps-info").textContent=items.length?`${items.length} pronto soccorso entro 30 km dalla tua posizione.`:"Nessun pronto soccorso trovato entro 30 km nei dati disponibili. In emergenza chiama il 112.";
-    $("#ps-note").hidden=false; $("#ps-reset").hidden=false;
+    $("#ps-note").hidden=false; $("#ps-cave").setAttribute("aria-pressed","false"); $("#ps-geo").setAttribute("aria-pressed","true");
   }
   async function overpass(lat,lon){
     const q=`[out:json][timeout:25];(nwr["amenity"="hospital"]["emergency"="yes"](around:${RADIUS},${lat},${lon});nwr["healthcare"="hospital"]["emergency"="yes"](around:${RADIUS},${lat},${lon}););out center tags;`;
@@ -741,10 +742,10 @@ $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(
     throw new Error("ricerca non riuscita");
   }
   showDefault();
-  $("#ps-reset").addEventListener("click",showDefault);
+  $("#ps-cave").addEventListener("click",showDefault);
   $("#ps-geo").addEventListener("click",()=>{
     if(!("geolocation" in navigator)){toast("Posizione non disponibile su questo dispositivo");return;}
-    const b=$("#ps-geo"); b.disabled=true; b.lastChild.textContent="Cerco…";
+    const b=$("#ps-geo"); b.disabled=true; b.textContent="Cerco la posizione…";
     navigator.geolocation.getCurrentPosition(async pos=>{
       // per la ricerca la posizione viene arrotondata a circa 1 km
       const me={lat:pos.coords.latitude,lon:pos.coords.longitude};
@@ -760,9 +761,9 @@ $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(
         if(c&&c.list) { showFound(c.list,me); toast("Senza connessione: mostro l'ultima ricerca"); }
         else toast("Ricerca non riuscita: controlla la connessione e riprova");
       }
-      b.disabled=false; b.lastChild.textContent="Cerca vicino a me (30 km)";
+      b.disabled=false; b.textContent="Vicini a me (30 km)";
     },err=>{
-      b.disabled=false; b.lastChild.textContent="Cerca vicino a me (30 km)";
+      b.disabled=false; b.textContent="Vicini a me (30 km)";
       toast(err.code===1?"Permesso posizione negato: attivalo in Impostazioni":"Posizione non trovata, riprova");
     },{enableHighAccuracy:false,timeout:12000,maximumAge:300000});
   });
