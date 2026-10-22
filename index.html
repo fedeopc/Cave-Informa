@@ -128,7 +128,7 @@ section.tab{display:flex;flex-direction:column;gap:18px;padding-block:18px}
 
 /* Barra in basso */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
-nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);height:var(--nav-h)}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--nav-h)}
 nav.tabs button{font:inherit;font-size:.72rem;background:none;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
 nav.tabs button[aria-selected="true"]{color:var(--accent);font-weight:700}
 nav.tabs svg{width:24px;height:24px}
@@ -326,7 +326,7 @@ header.top .wrap{gap:8px}
 .dae-btns{display:flex;gap:8px;flex-wrap:wrap}
 .dae-btns .mini{text-decoration:none}
 .steps{margin:0;padding-left:1.3em;display:grid;gap:8px;font-size:.93rem}
-nav.tabs button{font-size:.68rem;white-space:nowrap}
+nav.tabs button{font-size:.7rem;white-space:nowrap}
 /* notifiche e comunicazioni */
 .notif-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-size:1.2rem}
 .notif small{color:var(--muted);font-size:.85rem}
@@ -334,6 +334,8 @@ nav.tabs button{font-size:.68rem;white-space:nowrap}
 .avviso-banner span:last-child{display:grid;min-width:0}
 .avviso-banner small{color:var(--muted);font-size:.82rem}
 #avvisi .area p{margin:2px 0;font-size:.93rem}
+.ps-ic{background:color-mix(in srgb,#C0262D 16%,transparent);color:#C0262D}
+.ps-info{margin:0;font-size:.9rem;color:var(--muted)}
 /* senza supporto al vetro: superfici piene */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   :root{--glass:var(--surface);--glass-strong:var(--surface);--glass-soft:var(--surface)}
@@ -452,13 +454,6 @@ nav.tabs button{font-size:.68rem;white-space:nowrap}
   </div>
 </section>
 
-<!-- NUMERI -->
-<section class="tab" id="tab-numeri" role="tabpanel" aria-labelledby="b-numeri" hidden>
-  <div class="eyebrow">Numeri di emergenza</div>
-  <div class="nums" id="nums"></div>
-  <p class="note">Nel Lazio è attivo il Numero Unico di Emergenza: anche chi compone 113, 115 o 118 viene messo in contatto con la centrale del 112, che smista la chiamata al servizio giusto. Chiama solo per emergenze reali e di' subito dove ti trovi: Comune, via, numero civico.</p>
-</section>
-
 <!-- INFORMAZIONI -->
 <section class="tab" id="tab-info" role="tabpanel" aria-label="Informazioni" hidden>
   <div class="town"><div class="eyebrow">Informazioni</div><h2>L'app</h2></div>
@@ -479,6 +474,7 @@ nav.tabs button{font-size:.68rem;white-space:nowrap}
     <p><strong>Allerte:</strong> Bollettino di criticità nazionale del Dipartimento della Protezione Civile, dati aperti con licenza <a href="https://creativecommons.org/licenses/by/4.0/deed.it" target="_blank" rel="noopener">CC BY 4.0</a>, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica" target="_blank" rel="noopener">github.com/pcm-dpc</a>. I dati sono mostrati senza modifiche nel contenuto: l'app calcola solo il livello più alto della zona.</p>
     <p><strong>Meteo previsto:</strong> Bollettino di vigilanza meteorologica nazionale del Dipartimento della Protezione Civile, dati aperti con licenza CC BY 4.0, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Vigilanza-Meteorologica" target="_blank" rel="noopener">github.com/pcm-dpc</a>.</p>
     <p><strong>Terremoti:</strong> dati dell'Istituto Nazionale di Geofisica e Vulcanologia (<a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">INGV</a>) e, se non raggiungibile, del Centro Sismologico Euro-Mediterraneo (EMSC). Sono localizzazioni automatiche o rivedute che possono cambiare nelle ore successive.</p>
+    <p><strong>Pronto soccorso vicini:</strong> ospedali segnati con pronto soccorso su OpenStreetMap, interrogati tramite il servizio Overpass.</p>
     <p><strong>Coordinate dei comuni:</strong> © contributori di <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, licenza ODbL.</p>
     <p><strong>Cosa fare:</strong> testi riformulati a partire dalle indicazioni della campagna nazionale "Io non rischio" e del Ministero della Salute.</p>
     <p><strong>Defibrillatori:</strong> posizioni dalla mappa pubblica "Mappa DAE Cave" su Google My Maps.</p>
@@ -492,10 +488,11 @@ nav.tabs button{font-size:.68rem;white-space:nowrap}
     <p><strong>Dati salvati sul telefono:</strong> le spunte dello zaino, il comune scelto e l'ultimo bollettino, per far funzionare l'app senza connessione. Puoi cancellarli eliminando l'app o i dati del sito.</p>
     <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica i bollettini dai server di GitHub e i dati sui terremoti da INGV (o EMSC). Come per ogni sito, questi server ricevono l'indirizzo IP del telefono per rispondere. La tua posizione non viene inviata: l'app scarica i terremoti di tutta Italia e calcola le distanze sul telefono.</p>
     <p><strong>Notifiche:</strong> se le attivi, il telefono genera un indirizzo anonimo per ricevere i messaggi, che viene salvato sul servizio dell'associazione (Cloudflare) e usato solo per inviare le notifiche di Allerta Cave. Non contiene il tuo nome, il numero o la posizione. Puoi disattivarle in qualsiasi momento dalla pagina Allerte o dalle impostazioni del telefono.</p>
+    <p><strong>Ricerca pronto soccorso:</strong> se tocchi "Cerca vicino a me", l'app invia al servizio pubblico Overpass di OpenStreetMap la tua posizione arrotondata a circa 1 km, solo per trovare gli ospedali nel raggio di 30 km.</p>
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div>
   <div class="card update-row">
-    <span id="app-version">Versione 22 · 22 ottobre 2026</span>
+    <span id="app-version">Versione 23 · 22 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -515,9 +512,13 @@ nav.tabs button{font-size:.68rem;white-space:nowrap}
   <p class="note">Posizioni dalla mappa "Mappa DAE Cave" su Google My Maps. Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.</p>
 </section>
 
-<!-- IL MIO COMUNE -->
+<!-- CONTATTI -->
 <section class="tab" id="tab-comune" role="tabpanel" aria-labelledby="b-comune" hidden>
-  <div class="town"><div class="eyebrow">Il mio comune</div><h2 id="town-name"></h2><small id="town-sub"></small></div>
+  <div class="town"><div class="eyebrow">Contatti</div><h2>Chi chiamare</h2><small>Emergenze, volontari e servizi per <span id="town-name"></span></small></div>
+
+  <div class="eyebrow">Emergenze</div>
+  <div class="nums" id="nums"></div>
+  <p class="note">Nel Lazio è attivo il Numero Unico di Emergenza: anche chi compone 113, 115 o 118 viene messo in contatto con la centrale del 112, che smista la chiamata al servizio giusto. Chiama solo per emergenze reali e di' subito dove ti trovi: Comune, via, numero civico.</p>
 
   <div class="card group" id="group" hidden></div>
 
@@ -526,14 +527,18 @@ nav.tabs button{font-size:.68rem;white-space:nowrap}
   <div id="areas-wrap" style="display:grid;gap:18px" hidden><div class="eyebrow">Aree di emergenza</div>
   <div class="card" id="areas"></div></div>
 
-  <div class="eyebrow">Comune</div>
-  <div class="card" id="townhall"></div>
-
-  <div class="eyebrow">Allerta regionale</div>
-  <div class="card" id="region"></div>
-
-  <div class="eyebrow">Pronto soccorso in zona</div>
+  <div class="eyebrow">Pronto soccorso</div>
+  <div class="dae-actions">
+    <button class="btn" id="ps-geo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Cerca vicino a me (30 km)</button>
+    <button class="btn" id="ps-reset" type="button" hidden>Torna a quelli di Cave</button>
+  </div>
+  <p class="ps-info" id="ps-info">Pronto soccorso più vicini a Cave.</p>
   <div id="places" style="display:grid;gap:10px"></div>
+  <p class="note" id="ps-note" hidden>Elenco da OpenStreetMap (strutture segnate con pronto soccorso): può essere incompleto o non aggiornato. In emergenza chiama il 112, che sa dove portarti.</p>
+
+  <div class="eyebrow">Comune e Regione</div>
+  <div class="card" id="townhall"></div>
+  <div class="card" id="region"></div>
 
   <div id="support-wrap" style="display:grid;gap:18px" hidden><div class="eyebrow">Sostegno</div><div class="card" id="support"></div></div>
 </section>
@@ -543,11 +548,10 @@ nav.tabs button{font-size:.68rem;white-space:nowrap}
 <nav class="tabs" role="tablist" aria-label="Sezioni">
   <div class="in">
     <button role="tab" id="b-allerte" aria-controls="tab-allerte" aria-selected="true" data-t="allerte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 22 20H2Z"/><path d="M12 10v4M12 17v.5"/></svg>Allerte</button>
-    <button role="tab" id="b-guida" aria-controls="tab-guida" aria-selected="false" data-t="guida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M4 21V5"/></svg>Guida</button>
+    <button role="tab" id="b-guida" aria-controls="tab-guida" aria-selected="false" data-t="guida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M4 21V5"/></svg>Cosa fare</button>
     <button role="tab" id="b-zaino" aria-controls="tab-zaino" aria-selected="false" data-t="zaino"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="7" width="14" height="14" rx="3"/><path d="M9 7V5a3 3 0 0 1 6 0v2M9 13h6"/></svg>Zaino</button>
-    <button role="tab" id="b-numeri" aria-controls="tab-numeri" aria-selected="false" data-t="numeri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Numeri</button>
-    <button role="tab" id="b-comune" aria-controls="tab-comune" aria-selected="false" data-t="comune"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M10 21v-5h4v5"/></svg>Comune</button>
     <button role="tab" id="b-dae" aria-controls="tab-dae" aria-selected="false" data-t="dae"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/><path d="M12.8 9.5 10.8 13h2.6l-1.8 3.2"/></svg>DAE</button>
+    <button role="tab" id="b-comune" aria-controls="tab-comune" aria-selected="false" data-t="comune"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Contatti</button>
   </div>
 </nav>
 <div class="toast" id="toast" hidden></div>
@@ -640,7 +644,7 @@ function showTab(t){
 }
 document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.t)));
 const hashTab=(location.hash||"").slice(1);
-window.addEventListener("hashchange",()=>{const t=(location.hash||"").slice(1);if(document.getElementById("tab-"+t))showTab(t);});
+window.addEventListener("hashchange",()=>{let t=(location.hash||"").slice(1);if(t==="numeri")t="comune";if(document.getElementById("tab-"+t))showTab(t);});
 $("#b-info").addEventListener("click",()=>showTab("info"));
 $("#check-update").addEventListener("click",async()=>{
   const btn=$("#check-update"); btn.disabled=true; btn.textContent="Controllo in corso…";
@@ -654,7 +658,8 @@ $("#check-update").addEventListener("click",async()=>{
   }catch(e){ toast("Controllo non riuscito: verifica la connessione"); }
   btn.disabled=false; btn.textContent="Controlla aggiornamenti";
 });
-showTab(["allerte","guida","zaino","numeri","comune","info","dae"].includes(hashTab)?hashTab:store.get("tab","allerte"));
+{const fix=t=>t==="numeri"?"comune":t;const start=fix(hashTab)||"";const saved=fix(store.get("tab","allerte"));
+showTab(["allerte","guida","zaino","comune","info","dae"].includes(start)?start:(["allerte","guida","zaino","comune","info","dae"].includes(saved)?saved:"allerte"));}
 
 /* rischi */
 function renderRisk(k){
@@ -690,7 +695,78 @@ $("#resetbox").addEventListener("click",e=>{
 
 /* numeri */
 $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(x.n)}</b><span>${esc(x.d)}</span><div class="row"><a class="mini" href="tel:${x.n.replace(/\s/g,"")}">Chiama</a><button class="mini" type="button" data-copy="${esc(x.n)}">Copia</button></div></div>`).join("");
-$("#places").innerHTML=PLACES.map(p=>`<div class="place"><div><strong>${esc(p.name)}</strong><small>${esc(p.addr)}</small></div><a class="mini" href="https://maps.apple.com/?q=${encodeURIComponent(p.name+", "+p.addr)}" target="_blank" rel="noopener">Mappa</a></div>`).join("");
+/* pronto soccorso: elenco fisso per Cave + ricerca entro 30 km su OpenStreetMap */
+(function(){
+  const RADIUS=30000;
+  const OVERPASS=["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter"];
+  const distM=(a,b)=>{const R=6371e3,r=Math.PI/180,dLa=(b.lat-a.lat)*r,dLo=(b.lon-a.lon)*r;const h=Math.sin(dLa/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));};
+  const fmtD=m=>m<1000?Math.round(m/10)*10+" m":(m/1000).toFixed(1).replace(".",",")+" km";
+  const card=(p)=>{
+    const dest=p.lat!=null?`${p.lat},${p.lon}`:encodeURIComponent(p.name+", "+p.addr);
+    const apple=p.lat!=null?`https://maps.apple.com/?daddr=${dest}`:`https://maps.apple.com/?q=${dest}`;
+    const google=p.lat!=null?`https://www.google.com/maps/dir/?api=1&destination=${dest}`:`https://www.google.com/maps/search/?api=1&query=${dest}`;
+    return `<div class="card dae"><div class="dae-head"><span class="dae-ic ps-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+      <div><strong>${esc(p.name)}</strong><small>${[p.addr,p.d!=null?"a "+fmtD(p.d)+" in linea d'aria":""].filter(Boolean).map(esc).join(" · ")}</small></div></div>
+      <div class="dae-btns">${p.phone?`<a class="mini" href="tel:${esc(p.phone.replace(/[^+\d]/g,""))}">Chiama</a>`:""}<a class="mini" href="${apple}" target="_blank" rel="noopener">Apple Mappe</a><a class="mini" href="${google}" target="_blank" rel="noopener">Google Maps</a></div></div>`;
+  };
+  function showDefault(){
+    $("#places").innerHTML=PLACES.map(card).join("");
+    $("#ps-info").textContent="Pronto soccorso più vicini a Cave.";
+    $("#ps-note").hidden=true; $("#ps-reset").hidden=true;
+  }
+  function showFound(list,me){
+    const items=list.map(p=>({...p,d:distM(me,p)})).filter(p=>p.d<=RADIUS).sort((a,b)=>a.d-b.d);
+    $("#places").innerHTML=items.map(card).join("");
+    $("#ps-info").textContent=items.length?`${items.length} pronto soccorso entro 30 km dalla tua posizione.`:"Nessun pronto soccorso trovato entro 30 km nei dati disponibili. In emergenza chiama il 112.";
+    $("#ps-note").hidden=false; $("#ps-reset").hidden=false;
+  }
+  async function overpass(lat,lon){
+    const q=`[out:json][timeout:25];(nwr["amenity"="hospital"]["emergency"="yes"](around:${RADIUS},${lat},${lon});nwr["healthcare"="hospital"]["emergency"="yes"](around:${RADIUS},${lat},${lon}););out center tags;`;
+    for(const url of OVERPASS){
+      try{
+        const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),20000);
+        const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q),signal:ctl.signal}); clearTimeout(to);
+        if(!r.ok) continue;
+        const j=await r.json(); const seen=new Set(); const out=[];
+        for(const e of j.elements||[]){
+          const c=e.center||e; const t=e.tags||{}; if(c.lat==null) continue;
+          const name=t.name||t["official_name"]||"Ospedale con pronto soccorso";
+          const k=name.toLowerCase()+"|"+c.lat.toFixed(3)+","+c.lon.toFixed(3); if(seen.has(k)) continue; seen.add(k);
+          const addr=[[t["addr:street"],t["addr:housenumber"]].filter(Boolean).join(" "),t["addr:city"]].filter(Boolean).join(", ");
+          out.push({name,addr,lat:c.lat,lon:c.lon,phone:t.phone||t["contact:phone"]||""});
+        }
+        return out;
+      }catch(e){}
+    }
+    throw new Error("ricerca non riuscita");
+  }
+  showDefault();
+  $("#ps-reset").addEventListener("click",showDefault);
+  $("#ps-geo").addEventListener("click",()=>{
+    if(!("geolocation" in navigator)){toast("Posizione non disponibile su questo dispositivo");return;}
+    const b=$("#ps-geo"); b.disabled=true; b.lastChild.textContent="Cerco…";
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      // per la ricerca la posizione viene arrotondata a circa 1 km
+      const me={lat:pos.coords.latitude,lon:pos.coords.longitude};
+      const rl=Math.round(me.lat*100)/100, ro=Math.round(me.lon*100)/100, key=rl+","+ro;
+      try{
+        const c=store.get("ps-cache",null);
+        let list;
+        if(c&&c.key===key&&Date.now()-c.at<7*864e5) list=c.list;
+        else { list=await overpass(rl,ro); store.set("ps-cache",{key,at:Date.now(),list}); }
+        showFound(list,me);
+      }catch(e){
+        const c=store.get("ps-cache",null);
+        if(c&&c.list) { showFound(c.list,me); toast("Senza connessione: mostro l'ultima ricerca"); }
+        else toast("Ricerca non riuscita: controlla la connessione e riprova");
+      }
+      b.disabled=false; b.lastChild.textContent="Cerca vicino a me (30 km)";
+    },err=>{
+      b.disabled=false; b.lastChild.textContent="Cerca vicino a me (30 km)";
+      toast(err.code===1?"Permesso posizione negato: attivalo in Impostazioni":"Posizione non trovata, riprova");
+    },{enableHighAccuracy:false,timeout:12000,maximumAge:300000});
+  });
+})();
 /* ===== NOTIFICHE: indirizzo del servizio Cloudflare (es. "https://allerta-cave-push.nomeutente.workers.dev")
    Lascia vuoto per nascondere notifiche e comunicazioni. ===== */
 const PUSH_API = ""; // da riattivare: "https://allerta-cave-push.secondo-violento3m.workers.dev"
@@ -808,7 +884,7 @@ const DAE = [
 (function(){
   const C=COMUNE, tel=n=>n.replace(/[^\d+]/g,"");
   const actions=n=>`<span style="display:flex;gap:8px"><a class="mini" href="tel:${tel(n)}">Chiama</a><button class="mini" type="button" data-copy="${esc(n)}">Copia</button></span>`;
-  $("#town-name").textContent=C.nome; $("#town-sub").textContent=C.sottotitolo||"";
+  $("#town-name").textContent=C.nome;
   const g=C.gruppo||{};
   if(g.nome){
     const tels=(g.telefoni||[]).map(t=>`<div><span style="display:grid"><span>${esc(t.d)}</span><b style="color:var(--fg);font-size:1.05rem">${esc(t.n)}</b></span>${actions(t.n)}</div>`).join("");
