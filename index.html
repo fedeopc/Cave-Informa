@@ -496,7 +496,7 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div>
   <div class="card update-row">
-    <span id="app-version">Versione 28 · 22 ottobre 2026</span>
+    <span id="app-version">Versione 2.0 · 22 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -668,8 +668,13 @@ $("#check-update").addEventListener("click",async()=>{
     const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();
     if(reg) await reg.update();
     const r=await fetch("./?v="+Date.now(),{cache:"no-store"});
-    const html=await r.text(); const m=html.match(/Versione (\d+)/); const cur=(document.getElementById("app-version").textContent.match(/Versione (\d+)/)||[])[1];
-    if(m&&cur&&+m[1]>+cur){ toast("Nuova versione "+m[1]+": aggiorno…"); if(reg&&reg.waiting) reg.waiting.postMessage("skip"); setTimeout(()=>location.reload(),900); return; }
+    const html=await r.text();
+    // versioni "2.0", "2.1"… ; le vecchie versioni intere (fino alla 28) valgono come 1.x
+    const ver=t=>{const m=String(t||"").match(/Versione (\d+)(?:\.(\d+))?/);if(!m)return null;return m[2]===undefined?[1,+m[1]]:[+m[1],+m[2]];};
+    const newer=(a,b)=>a&&b&&(a[0]!==b[0]?a[0]>b[0]:a[1]>b[1]);
+    const nv=ver(html), cv=ver(document.getElementById("app-version").textContent);
+    const m=nv&&[null,nv.join(".")];
+    if(newer(nv,cv)){ toast("Nuova versione "+m[1]+": aggiorno…"); if(reg&&reg.waiting) reg.waiting.postMessage("skip"); setTimeout(()=>location.reload(),900); return; }
     toast("Hai già l'ultima versione");
   }catch(e){ toast("Controllo non riuscito: verifica la connessione"); }
   btn.disabled=false; btn.textContent="Controlla aggiornamenti";
