@@ -475,7 +475,7 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     <p><strong>Allerte:</strong> Bollettino di criticità nazionale del Dipartimento della Protezione Civile, dati aperti con licenza <a href="https://creativecommons.org/licenses/by/4.0/deed.it" target="_blank" rel="noopener">CC BY 4.0</a>, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica" target="_blank" rel="noopener">github.com/pcm-dpc</a>. I dati sono mostrati senza modifiche nel contenuto: l'app calcola solo il livello più alto della zona.</p>
     <p><strong>Meteo previsto:</strong> Bollettino di vigilanza meteorologica nazionale del Dipartimento della Protezione Civile, dati aperti con licenza CC BY 4.0, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Vigilanza-Meteorologica" target="_blank" rel="noopener">github.com/pcm-dpc</a>.</p>
     <p><strong>Terremoti:</strong> dati dell'Istituto Nazionale di Geofisica e Vulcanologia (<a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">INGV</a>) e, se non raggiungibile, del Centro Sismologico Euro-Mediterraneo (EMSC). Sono localizzazioni automatiche o rivedute che possono cambiare nelle ore successive.</p>
-    <p><strong>Pronto soccorso vicini:</strong> ospedali segnati con pronto soccorso su OpenStreetMap, interrogati tramite il servizio Overpass.</p>
+    <p><strong>Pronto soccorso vicini:</strong> ospedali segnati con pronto soccorso su OpenStreetMap, cercati tramite i servizi Nominatim e Overpass.</p>
     <p><strong>Coordinate dei comuni:</strong> © contributori di <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, licenza ODbL.</p>
     <p><strong>Cosa fare:</strong> testi riformulati a partire dalle indicazioni della campagna nazionale "Io non rischio" e del Ministero della Salute.</p>
     <p><strong>Defibrillatori:</strong> posizioni dalla mappa pubblica "Mappa DAE Cave" su Google My Maps.</p>
@@ -489,11 +489,11 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     <p><strong>Dati salvati sul telefono:</strong> le spunte dello zaino, il comune scelto e l'ultimo bollettino, per far funzionare l'app senza connessione. Puoi cancellarli eliminando l'app o i dati del sito.</p>
     <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica i bollettini dai server di GitHub e i dati sui terremoti da INGV (o EMSC). Come per ogni sito, questi server ricevono l'indirizzo IP del telefono per rispondere. La tua posizione non viene inviata: l'app scarica i terremoti di tutta Italia e calcola le distanze sul telefono.</p>
     <p><strong>Notifiche:</strong> se le attivi, il telefono genera un indirizzo anonimo per ricevere i messaggi, che viene salvato sul servizio dell'associazione (Cloudflare) e usato solo per inviare le notifiche di Allerta Cave. Non contiene il tuo nome, il numero o la posizione. Puoi disattivarle in qualsiasi momento dalla pagina Allerte o dalle impostazioni del telefono.</p>
-    <p><strong>Ricerca pronto soccorso:</strong> se tocchi "Vicini a me", l'app invia al servizio pubblico Overpass di OpenStreetMap la tua posizione arrotondata a circa 1 km, solo per trovare gli ospedali nel raggio di 30 km.</p>
+    <p><strong>Ricerca pronto soccorso:</strong> se tocchi "Vicini a me", l'app invia ai servizi pubblici di OpenStreetMap (Nominatim e, in riserva, Overpass) la tua posizione arrotondata a circa 1 km, solo per trovare gli ospedali nel raggio di 30 km.</p>
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div>
   <div class="card update-row">
-    <span id="app-version">Versione 24 · 22 ottobre 2026</span>
+    <span id="app-version">Versione 25 · 22 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -535,7 +535,7 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
   </div>
   <p class="ps-info" id="ps-info">Pronto soccorso più vicini a Cave.</p>
   <div id="places" style="display:grid;gap:10px"></div>
-  <p class="note" id="ps-note" hidden>Elenco da OpenStreetMap (strutture segnate con pronto soccorso): può essere incompleto o non aggiornato. In emergenza chiama il 112, che sa dove portarti.</p>
+  <p class="note" id="ps-note" hidden>Elenco da OpenStreetMap (ospedali segnati con pronto soccorso): può essere incompleto o non aggiornato. In emergenza chiama il 112, che sa dove portarti.</p>
 
   <div class="eyebrow">Comune e Regione</div>
   <div class="card" id="townhall"></div>
@@ -699,7 +699,6 @@ $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(
 /* pronto soccorso: elenco fisso per Cave + ricerca entro 30 km su OpenStreetMap */
 (function(){
   const RADIUS=30000;
-  const OVERPASS=["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter"];
   const distM=(a,b)=>{const R=6371e3,r=Math.PI/180,dLa=(b.lat-a.lat)*r,dLo=(b.lon-a.lon)*r;const h=Math.sin(dLa/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));};
   const fmtD=m=>m<1000?Math.round(m/10)*10+" m":(m/1000).toFixed(1).replace(".",",")+" km";
   const card=(p)=>{
@@ -721,25 +720,54 @@ $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(
     $("#ps-info").textContent=items.length?`${items.length} pronto soccorso entro 30 km dalla tua posizione.`:"Nessun pronto soccorso trovato entro 30 km nei dati disponibili. In emergenza chiama il 112.";
     $("#ps-note").hidden=false; $("#ps-cave").setAttribute("aria-pressed","false"); $("#ps-geo").setAttribute("aria-pressed","true");
   }
+  // 1) Nominatim (veloce, già usato dall'app) – 2) Overpass come riserva, su più server
+  const OVERPASS=["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter"];
+  const withTimeout=(ms)=>{const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal;};
+  function addrOf(a){ if(!a) return ""; return [[a.road,a.house_number].filter(Boolean).join(" "),a.town||a.city||a.village||a.municipality].filter(Boolean).join(", "); }
+  async function nominatim(lat,lon){
+    const dLat=RADIUS/111320, dLon=RADIUS/(111320*Math.cos(lat*Math.PI/180));
+    const vb=[lon-dLon,lat+dLat,lon+dLon,lat-dLat].map(x=>x.toFixed(4)).join(",");
+    const base="https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=it&bounded=1&limit=40&extratags=1&addressdetails=1&accept-language=it&viewbox="+vb;
+    let list=null;
+    for(const extra of ["&amenity=hospital","&q=hospital"]){
+      try{
+        const r=await fetch(base+extra,{headers:{"Accept":"application/json"},signal:withTimeout(12000)});
+        if(!r.ok) continue;
+        const j=await r.json();
+        if(Array.isArray(j)&&j.length){ list=j; break; }
+        if(Array.isArray(j)) list=list||[];
+      }catch(e){}
+    }
+    if(list===null) throw new Error("nominatim");
+    return list.filter(e=>e.extratags&&e.extratags.emergency==="yes").map(e=>({
+      name:(e.name||e.display_name.split(",")[0]||"Ospedale con pronto soccorso"),
+      addr:addrOf(e.address), lat:+e.lat, lon:+e.lon,
+      phone:(e.extratags.phone||e.extratags["contact:phone"]||"")
+    }));
+  }
   async function overpass(lat,lon){
-    const q=`[out:json][timeout:25];(nwr["amenity"="hospital"]["emergency"="yes"](around:${RADIUS},${lat},${lon});nwr["healthcare"="hospital"]["emergency"="yes"](around:${RADIUS},${lat},${lon}););out center tags;`;
+    const q=`[out:json][timeout:15];nwr["amenity"="hospital"]["emergency"="yes"](around:${RADIUS},${lat},${lon});out center tags;`;
     for(const url of OVERPASS){
       try{
-        const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),20000);
-        const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q),signal:ctl.signal}); clearTimeout(to);
+        const r=await fetch(url+"?data="+encodeURIComponent(q),{signal:withTimeout(10000)});
         if(!r.ok) continue;
-        const j=await r.json(); const seen=new Set(); const out=[];
+        const j=await r.json(); const out=[];
         for(const e of j.elements||[]){
           const c=e.center||e; const t=e.tags||{}; if(c.lat==null) continue;
-          const name=t.name||t["official_name"]||"Ospedale con pronto soccorso";
-          const k=name.toLowerCase()+"|"+c.lat.toFixed(3)+","+c.lon.toFixed(3); if(seen.has(k)) continue; seen.add(k);
           const addr=[[t["addr:street"],t["addr:housenumber"]].filter(Boolean).join(" "),t["addr:city"]].filter(Boolean).join(", ");
-          out.push({name,addr,lat:c.lat,lon:c.lon,phone:t.phone||t["contact:phone"]||""});
+          out.push({name:t.name||t.official_name||"Ospedale con pronto soccorso",addr,lat:c.lat,lon:c.lon,phone:t.phone||t["contact:phone"]||""});
         }
         return out;
       }catch(e){}
     }
-    throw new Error("ricerca non riuscita");
+    throw new Error("overpass");
+  }
+  function dedupe(list){ const seen=new Set(); return list.filter(p=>{const k=p.name.toLowerCase().replace(/\s+/g," ")+"|"+p.lat.toFixed(2)+","+p.lon.toFixed(2); if(seen.has(k)) return false; seen.add(k); return true;}); }
+  async function search(lat,lon){
+    let list=[];
+    try{ list=await nominatim(lat,lon); }catch(e){}
+    if(!list.length){ try{ list=await overpass(lat,lon); }catch(e){ if(!list.length) throw e; } }
+    return dedupe(list);
   }
   showDefault();
   $("#ps-cave").addEventListener("click",showDefault);
@@ -754,7 +782,7 @@ $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(
         const c=store.get("ps-cache",null);
         let list;
         if(c&&c.key===key&&Date.now()-c.at<7*864e5) list=c.list;
-        else { list=await overpass(rl,ro); store.set("ps-cache",{key,at:Date.now(),list}); }
+        else { list=await search(rl,ro); store.set("ps-cache",{key,at:Date.now(),list}); }
         showFound(list,me);
       }catch(e){
         const c=store.get("ps-cache",null);
