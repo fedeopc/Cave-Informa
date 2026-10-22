@@ -495,7 +495,7 @@ nav.tabs button{font-size:.68rem;white-space:nowrap}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div>
   <div class="card update-row">
-    <span id="app-version">Versione 21 · 22 ottobre 2026</span>
+    <span id="app-version">Versione 22 · 22 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -693,7 +693,7 @@ $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(
 $("#places").innerHTML=PLACES.map(p=>`<div class="place"><div><strong>${esc(p.name)}</strong><small>${esc(p.addr)}</small></div><a class="mini" href="https://maps.apple.com/?q=${encodeURIComponent(p.name+", "+p.addr)}" target="_blank" rel="noopener">Mappa</a></div>`).join("");
 /* ===== NOTIFICHE: indirizzo del servizio Cloudflare (es. "https://allerta-cave-push.nomeutente.workers.dev")
    Lascia vuoto per nascondere notifiche e comunicazioni. ===== */
-const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev";
+const PUSH_API = ""; // da riattivare: "https://allerta-cave-push.secondo-violento3m.workers.dev"
 
 (function(){
   if(!PUSH_API) return;
