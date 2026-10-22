@@ -336,6 +336,9 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 #avvisi .area p{margin:2px 0;font-size:.93rem}
 .ps-ic{background:color-mix(in srgb,#C0262D 16%,transparent);color:#C0262D}
 .ps-info{margin:0;font-size:.9rem;color:var(--muted)}
+.ps-label{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#C0262D}
+.wau{background:linear-gradient(150deg,color-mix(in srgb,#2F7D4F 18%,var(--glass)),var(--glass))}
+.wau-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:#2F7D4F;color:#fff;font-weight:800;font-size:.8rem;letter-spacing:-.02em}
 .ps-switch{display:flex;gap:8px;flex-wrap:wrap}
 /* senza supporto al vetro: superfici piene */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
@@ -493,7 +496,7 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div>
   <div class="card update-row">
-    <span id="app-version">Versione 26 · 22 ottobre 2026</span>
+    <span id="app-version">Versione 28 · 22 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -519,6 +522,16 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 
   <div class="eyebrow">Emergenze</div>
   <div class="nums" id="nums"></div>
+  <div class="card wau">
+    <div class="dae-head"><span class="wau-ic" aria-hidden="true">112</span>
+      <div><strong>Scarica l'app 112 Where ARE U</strong><small>L'app ufficiale del Numero Unico di Emergenza, attiva nel Lazio</small></div></div>
+    <ul class="vig-list">
+      <li>Quando chiami il 112 dall'app, la centrale riceve subito la tua <strong>posizione esatta</strong>.</li>
+      <li>Permette la <strong>chiamata silenziosa</strong> e la <strong>chat</strong>, per chi non può parlare o non sente.</li>
+      <li>Dopo l'installazione registrati e consenti l'accesso alla posizione: in emergenza non c'è tempo.</li>
+    </ul>
+    <div class="dae-btns"><a class="mini" href="https://apps.apple.com/app/id888964800" target="_blank" rel="noopener">App Store</a><a class="mini" href="https://play.google.com/store/apps/details?id=it.Beta80Group.whereareu" target="_blank" rel="noopener">Google Play</a></div>
+  </div>
   <p class="note">Nel Lazio è attivo il Numero Unico di Emergenza: anche chi compone 113, 115 o 118 viene messo in contatto con la centrale del 112, che smista la chiamata al servizio giusto. Chiama solo per emergenze reali e di' subito dove ti trovi: Comune, via, numero civico.</p>
 
   <div class="card group" id="group" hidden></div>
@@ -535,7 +548,7 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
   </div>
   <p class="ps-info" id="ps-info">Pronto soccorso più vicini a Cave.</p>
   <div id="places" style="display:grid;gap:10px"></div>
-  <p class="note" id="ps-note" hidden>Elenco da OpenStreetMap (ospedali segnati con pronto soccorso): può essere incompleto o non aggiornato. In emergenza chiama il 112, che sa dove portarti.</p>
+  <p class="note" id="ps-note" hidden>Elenco da OpenStreetMap: sono mostrati solo gli ospedali segnati con pronto soccorso, escluse cliniche e case di cura. Può essere incompleto o non aggiornato. In emergenza chiama il 112, che sa dove portarti.</p>
 
   <div class="eyebrow">Comune e Regione</div>
   <div class="card" id="townhall"></div>
@@ -619,7 +632,7 @@ const COMUNE = {
 
 const PLACES = [
   {name:"Ospedale di Palestrina",addr:"Viale Pio XII 42, Palestrina"},
-  {name:"Ospedale Parodi Delfino",addr:"Piazza Aldo Moro 1, Colleferro"},
+  {name:"Ospedale Parodi Delfino",addr:"Viale Savoia 1, Colleferro"},
   {name:"Ospedale San Giovanni Evangelista",addr:"Via Parrozzani 3, Tivoli"},
   {name:"Policlinico Tor Vergata",addr:"Viale Oxford 81, Roma"},
   {name:"Policlinico Casilino",addr:"Via Casilina 1049, Roma"},
@@ -704,11 +717,12 @@ $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(
   const distM=(a,b)=>{const R=6371e3,r=Math.PI/180,dLa=(b.lat-a.lat)*r,dLo=(b.lon-a.lon)*r;const h=Math.sin(dLa/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));};
   const fmtD=m=>m<1000?Math.round(m/10)*10+" m":(m/1000).toFixed(1).replace(".",",")+" km";
   const card=(p)=>{
-    const dest=p.lat!=null?`${p.lat},${p.lon}`:encodeURIComponent(p.name+", "+p.addr);
-    const apple=p.lat!=null?`https://maps.apple.com/?daddr=${dest}`:`https://maps.apple.com/?q=${dest}`;
-    const google=p.lat!=null?`https://www.google.com/maps/dir/?api=1&destination=${dest}`:`https://www.google.com/maps/search/?api=1&query=${dest}`;
+    // le mappe cercano "Pronto soccorso <ospedale>, <indirizzo>" per arrivare all'ingresso del PS; senza indirizzo uso le coordinate
+    const q=p.addr?encodeURIComponent("Pronto soccorso "+p.name+", "+p.addr):null;
+    const apple=q?`https://maps.apple.com/?q=${q}${p.lat!=null?`&sll=${p.lat},${p.lon}`:""}`:`https://maps.apple.com/?daddr=${p.lat},${p.lon}`;
+    const google=q?`https://www.google.com/maps/search/?api=1&query=${q}`:`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`;
     return `<div class="card dae"><div class="dae-head"><span class="dae-ic ps-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
-      <div><strong>${esc(p.name)}</strong><small>${[p.addr,p.d!=null?"a "+fmtD(p.d)+" in linea d'aria":""].filter(Boolean).map(esc).join(" · ")}</small></div></div>
+      <div><span class="ps-label">Pronto soccorso</span><strong>${esc(p.name)}</strong><small>${[p.addr,p.d!=null?"a "+fmtD(p.d)+" in linea d'aria":""].filter(Boolean).map(esc).join(" · ")}</small></div></div>
       <div class="dae-btns">${p.phone?`<a class="mini" href="tel:${esc(p.phone.replace(/[^+\d]/g,""))}">Chiama</a>`:""}<a class="mini" href="${apple}" target="_blank" rel="noopener">Apple Mappe</a><a class="mini" href="${google}" target="_blank" rel="noopener">Google Maps</a></div></div>`;
   };
   function showDefault(){
@@ -764,7 +778,9 @@ $("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(
     }
     throw new Error("overpass");
   }
-  function dedupe(list){ const seen=new Set(); return list.filter(p=>{const k=p.name.toLowerCase().replace(/\s+/g," ")+"|"+p.lat.toFixed(2)+","+p.lon.toFixed(2); if(seen.has(k)) return false; seen.add(k); return true;}); }
+  // esclude strutture che di norma non hanno un pronto soccorso, anche se segnate così su OpenStreetMap
+  const NO_PS=/casa di cura|clinica|\brsa\b|hospice|riabilitazion|poliambulator|residenza|lungodegenza|veterinar|ambulatorio|centro medico/i;
+  function dedupe(list){ list=list.filter(p=>!NO_PS.test(p.name)); const seen=new Set(); return list.filter(p=>{const k=p.name.toLowerCase().replace(/\s+/g," ")+"|"+p.lat.toFixed(2)+","+p.lon.toFixed(2); if(seen.has(k)) return false; seen.add(k); return true;}); }
   async function search(lat,lon){
     let list=[];
     try{ list=await nominatim(lat,lon); }catch(e){}
