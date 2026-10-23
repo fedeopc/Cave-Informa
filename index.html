@@ -157,6 +157,8 @@ nav.tabs svg{width:24px;height:24px}
 .tomorrow span:last-child{display:flex;align-items:center;gap:8px;font-weight:700;text-align:right}
 .now-actions{display:flex;gap:8px;flex-wrap:wrap}
 .now-actions .btn{display:inline-flex;align-items:center;gap:6px}
+#bcr-refresh.spin svg{animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .pick{display:flex;gap:8px}
 .pick input{flex:1;min-width:0;font:inherit;font-size:1rem;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
 .now-src{margin:0;font-size:.8rem;color:var(--muted)}
@@ -457,6 +459,7 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
       <button class="btn" id="geo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Usa la mia posizione</button>
       <button class="btn" id="pick-open" type="button">Cambia comune</button>
       <button class="btn" id="retry" type="button" hidden>Riprova</button>
+      <button class="btn" id="bcr-refresh" type="button" aria-label="Cerca un nuovo bollettino"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg><span>Aggiorna</span></button>
     </div>
     <form class="pick" id="pick" hidden>
       <input id="pick-input" list="comuni" placeholder="Scrivi il nome del comune" autocomplete="off" aria-label="Comune">
@@ -584,7 +587,7 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 2.3 · 23 ottobre 2026</span>
+    <span id="app-version">Versione 2.4 · 23 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1173,9 +1176,9 @@ if (typeof document !== "undefined") (function allertaInit() {
   const zonesMem = {}; // file topojson già decodificati in questa sessione
 
   /* --- rete e cache --- */
-  async function latestStem() {
+  async function latestStem(force) {
     const meta = ls.get("allerta-meta", null);
-    if (meta && Date.now() - meta.checkedAt < BCR.CHECK_EVERY) return meta.stem;
+    if (!force && meta && Date.now() - meta.checkedAt < BCR.CHECK_EVERY) return meta.stem;
     try {
       const r = await fetch(BCR.API + "/commits?path=files/topojson&per_page=1", { cache: "no-store" });
       if (!r.ok) throw new Error("api " + r.status);
@@ -1264,10 +1267,10 @@ if (typeof document !== "undefined") (function allertaInit() {
 
   /* --- calcolo --- */
   let busy = 0;
-  async function update() {
+  async function update(force) {
     const job = ++busy;
     try {
-      const stem = await latestStem();
+      const stem = await latestStem(force);
       const p = BCR.plan(stem, new Date());
       const zToday = await getZones(stem, p.today.file);
       const zTomorrow = p.tomorrow.file ? await getZones(stem, p.tomorrow.file).catch(() => null) : null;
@@ -1283,10 +1286,12 @@ if (typeof document !== "undefined") (function allertaInit() {
       ls.set("allerta-ultimo", { ...res, today: { ...res.today, date: +res.today.date }, tomorrow: { ...res.tomorrow, date: +res.tomorrow.date } });
       if (!el.list.childElementCount) el.list.innerHTML = BCR.comuni(zToday).map((c) => `<option value="${escH(c)}">`).join("");
       pruneCache(stem);
+      return stem;
     } catch (e) {
       if (job !== busy) return;
       if (!ls.get("allerta-ultimo", null)) showError("Non riesco a scaricare il bollettino. Controlla la connessione e tocca Riprova.");
       else el.retry.hidden = false;
+      if (force) throw e;
     }
   }
 
@@ -1298,6 +1303,24 @@ if (typeof document !== "undefined") (function allertaInit() {
   document.addEventListener("visibilitychange", () => { if (!document.hidden) update(); });
 
   el.retry.addEventListener("click", () => { el.level.textContent = "Carico il bollettino"; update(); });
+
+  // Tasto "Aggiorna": cerca subito un nuovo bollettino, senza aspettare i 20 minuti
+  const rb = $("#bcr-refresh");
+  rb.addEventListener("click", async () => {
+    if (rb.disabled) return;
+    const before = (ls.get("allerta-meta", null) || {}).stem;
+    rb.disabled = true; rb.classList.add("spin"); rb.lastChild.textContent = "Cerco…";
+    document.dispatchEvent(new Event("aggiorna-dati")); // aggiorna anche meteo e terremoti
+    try {
+      const stem = await update(true);
+      if (stem) toast(stem !== before ? "Nuovo bollettino del " + stemLabel(stem) : "Nessun nuovo bollettino: è già il più recente");
+      else toast("Non riesco a controllare: riprova tra poco");
+    } catch (e) {
+      toast("Nessuna connessione: mostro l'ultimo bollettino salvato");
+    } finally {
+      rb.disabled = false; rb.classList.remove("spin"); rb.lastChild.textContent = "Aggiorna";
+    }
+  });
 
   el.geo.addEventListener("click", () => {
     if (!("geolocation" in navigator)) { toast("Posizione non disponibile su questo dispositivo"); return; }
@@ -1581,6 +1604,7 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
   function refresh() { renderVig(); renderQuakes(); }
   refresh();
   document.addEventListener("luogo", refresh);
+  document.addEventListener("aggiorna-dati", () => { lastVig = Date.now(); refresh(); });
   document.addEventListener("allerta-zona", () => { renderQuakes(); renderVig(); });
   let lastVig = Date.now();
   document.addEventListener("visibilitychange", () => {
