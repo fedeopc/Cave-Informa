@@ -405,6 +405,15 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
 .gcount.full{color:var(--verde)}
 .info-body{display:grid;gap:8px;padding:0 16px 14px!important}
 .info-body p{margin:0;font-size:.93rem}
+/* logo associazione */
+header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.18))}
+.grp-head{display:flex;gap:14px;align-items:center}
+.grp-head img{height:75px;width:auto;flex:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,.18))}
+.grp-head h3{margin:2px 0 0}
+.cura{display:flex;gap:14px;align-items:center;padding-top:10px;border-top:1px solid var(--line)}
+.cura img{height:64px;width:auto;flex:none}
+.cura small{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;display:block}
+.cura b{font-size:.95rem}
 /* senza supporto al vetro: superfici piene */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   :root{--glass:var(--surface);--glass-strong:var(--surface);--glass-soft:var(--surface)}
@@ -420,7 +429,7 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
   <div class="wrap">
     <div class="hrow">
       <div class="brand">
-        <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 3 31 29H3Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><rect x="15.5" y="12" width="3" height="9" rx="1.5" fill="currentColor"/><circle cx="17" cy="24.5" r="1.8" fill="currentColor"/></svg>
+        <img class="logo" src="icons/logo-150.png" width="35" height="50" alt="Logo Associazione Italiana Protezione Civile Cave">
         <div><h1>Allerta Cave</h1><small>Guida di emergenza</small></div>
       </div>
       <button class="info-btn" id="b-info" type="button" aria-label="Informazioni sull'app"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.5"/></svg></button>
@@ -546,6 +555,7 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
   <details class="acc info-acc" open><summary>Cos'è</summary><div class="acc-body info-body">
     <p>Un'app informativa realizzata da volontari di protezione civile per i cittadini di Cave. Raccoglie in un posto solo le allerte del giorno, i comportamenti da seguire e i contatti utili.</p>
     <p><strong>Non è un servizio ufficiale.</strong> Non sostituisce le allerte ufficiali della Regione Lazio e del sistema nazionale IT-alert. In caso di emergenza chiama sempre il <strong>112</strong>.</p>
+    <div class="cura"><img src="icons/logo-240.png" width="46" height="64" alt=""><div><small>A cura di</small><b>Associazione Italiana Protezione Civile Cave – OdV</b></div></div>
   </div></details>
 
   <details class="acc info-acc"><summary>Limiti delle informazioni</summary><div class="acc-body info-body">
@@ -559,6 +569,7 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
     <p><strong>Pronto soccorso vicini:</strong> ospedali segnati con pronto soccorso su OpenStreetMap, cercati tramite i servizi Nominatim e Overpass.</p>
     <p><strong>Coordinate dei comuni:</strong> © contributori di <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, licenza ODbL.</p>
     <p><strong>Cosa fare:</strong> testi riformulati a partire dalle indicazioni della campagna nazionale "Io non rischio" e del Ministero della Salute.</p>
+    <p><strong>Logo:</strong> © Associazione Italiana Protezione Civile Cave – OdV.</p>
     <p><strong>Defibrillatori:</strong> posizioni dalla mappa pubblica "Mappa DAE Cave" su Google My Maps.</p>
     <p><strong>Numeri e indirizzi:</strong> fonti pubbliche della Regione Lazio e dell'associazione.</p>
   </div></details>
@@ -573,7 +584,7 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 2.1 · 23 ottobre 2026</span>
+    <span id="app-version">Versione 2.2 · 23 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1033,7 +1044,7 @@ document.querySelectorAll(".tile[aria-controls]").forEach(t=>t.addEventListener(
   const g=C.gruppo||{};
   if(g.nome){
     const tels=(g.telefoni||[]).map(t=>`<a class="ntile" href="tel:${tel(t.n)}"><b class="sm">${esc(t.n.replace(/^\+39\s*/,""))}</b><small>${esc(t.d)}</small></a>`).join("");
-    $("#group").innerHTML=`<div class="eyebrow">Protezione civile a ${esc(C.nome)}</div><h3>${esc(g.nome)}</h3>${g.motto?`<p class="muted">${esc(g.motto)}</p>`:""}
+    $("#group").innerHTML=`<div class="grp-head"><img src="icons/logo-240.png" width="53" height="75" alt=""><div><div class="eyebrow">Protezione civile a ${esc(C.nome)}</div><h3>${esc(g.nome)}</h3></div></div>${g.motto?`<p class="muted">${esc(g.motto)}</p>`:""}
       <div class="ntiles">${tels}</div>
       <div class="kv">
       ${g.sede?`<div><span>Sede: ${esc(g.sede)}</span><a class="mini" href="${navUrl({q:g.sede})}" target="_blank" rel="noopener">Mappa</a></div>`:""}
