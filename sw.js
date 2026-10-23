@@ -1,7 +1,7 @@
 // Allerta Cave: funzionamento offline.
 // Quando cambi i file dell'app, aumenta il numero di versione qui sotto (2.0, 2.1, 2.2…)
 // e scrivi lo stesso numero in index.html, nella riga "Versione …" della pagina Informazioni.
-const VERSION = "allerta-cave-2.2";
+const VERSION = "allerta-cave-2.3";
 const CORE = [
   "./",
   "./index.html",
@@ -9,9 +9,7 @@ const CORE = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",
-  "./icons/favicon-32.png",
-  "./icons/logo-150.png",
-  "./icons/logo-240.png"
+  "./icons/favicon-32.png"
 ];
 
 self.addEventListener("install", (e) => {
