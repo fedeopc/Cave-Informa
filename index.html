@@ -340,6 +340,71 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 .wau{background:linear-gradient(150deg,color-mix(in srgb,#2F7D4F 18%,var(--glass)),var(--glass))}
 .wau-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:#2F7D4F;color:#fff;font-weight:800;font-size:.8rem;letter-spacing:-.02em}
 .ps-switch{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ===== anteprima 2.1 ===== */
+header.top .wrap{display:grid;gap:8px;padding-block:10px 12px;align-items:stretch;justify-content:stretch}
+.hrow{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.hrow2{display:flex;justify-content:space-between;align-items:center;gap:12px}
+header.top .clock{display:grid;line-height:1.2;font-size:.92rem;color:var(--muted);text-align:left}
+header.top .clock span::first-letter{text-transform:uppercase}
+header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabular-nums}
+.call112{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,0) 60%),#B42329;color:#fff;font-weight:800;font-size:1.2rem;padding:12px 20px;border-radius:999px;text-decoration:none;box-shadow:0 6px 18px rgba(180,35,41,.4),inset 0 1px 0 rgba(255,255,255,.35);white-space:nowrap}
+.rchips{display:flex;flex-wrap:wrap;gap:6px}
+.rchip{display:inline-flex;align-items:center;gap:6px;font-size:.84rem;font-weight:600;padding:6px 11px;border-radius:999px;background:var(--glass-soft);border:1px solid var(--glass-line);box-shadow:var(--hl)}
+.rchip b{font-weight:800}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{font:inherit;text-align:left;cursor:pointer;background:var(--glass);border:1px solid var(--glass-line);border-radius:20px;box-shadow:var(--glass-shadow),var(--hl);padding:12px 14px;display:grid;gap:3px;color:var(--fg);min-width:0;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
+.tile .k{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tile b{font-size:1.08rem;line-height:1.2}
+.tile small{color:var(--muted);font-size:.8rem;line-height:1.3}
+.tile .more{color:var(--accent);font-size:.82rem;font-weight:700;margin-top:2px}
+.tile .more::after{content:" ›"}
+.tile[aria-expanded="true"]{border-color:color-mix(in srgb,var(--accent) 50%,var(--glass-line))}
+.acc{background:var(--glass);border:1px solid var(--glass-line);border-radius:18px;box-shadow:var(--hl);overflow:hidden;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
+.acc>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;font-weight:700;cursor:pointer}
+.acc>summary::-webkit-details-marker{display:none}
+.acc>summary::after{content:"›";color:var(--muted);font-size:1.3rem;transform:rotate(90deg);transition:transform .2s}
+.acc[open]>summary::after{transform:rotate(-90deg)}
+.acc .acc-body{padding:0 12px 12px}
+.acc ul.acc-body{margin:0;padding:0 16px 14px 34px;display:grid;gap:6px;font-size:.94rem}
+.acc .links.acc-body .link{box-shadow:none}
+.phase.urgent{border-color:color-mix(in srgb,var(--accent) 45%,var(--glass-line))}
+.phase.urgent>summary{color:var(--accent)}
+.risk-wrap{display:grid;gap:10px}
+.risk-title{font-size:1.7rem;margin:4px 0 0}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rtile{font:inherit;cursor:pointer;display:grid;place-items:center;gap:4px;padding:12px 6px;border-radius:16px;background:var(--glass);border:1px solid var(--glass-line);font-size:.8rem;font-weight:600;text-align:center;box-shadow:var(--hl);color:var(--fg)}
+.rtile i{font-style:normal;font-size:1.5rem;line-height:1}
+.rtile[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+/* elenchi compatti (DAE, pronto soccorso, comune) */
+.plist{background:var(--glass);border:1px solid var(--glass-line);border-radius:20px;box-shadow:var(--glass-shadow),var(--hl);overflow:hidden;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
+.plist:empty{display:none}
+.li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line)}
+.li:first-child{border-top:0}
+.li>div{flex:1;min-width:0;display:grid}
+.li strong{font-size:.97rem;line-height:1.25}
+.li small{color:var(--muted);font-size:.82rem}
+.li.near{background:color-mix(in srgb,#2F9E5B 14%,transparent)}
+.li-ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none}
+.dae-c{background:color-mix(in srgb,#2F9E5B 18%,transparent);color:#2F9E5B}
+.ps-c{background:color-mix(in srgb,#C0262D 16%,transparent);color:#C0262D}
+.go{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--glass-soft);border:1px solid var(--glass-line);box-shadow:var(--hl);color:var(--accent);text-decoration:none}
+.go:active{transform:scale(.94)}
+/* tasti numero */
+.ntiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ntile{background:var(--glass);border:1px solid var(--glass-line);border-radius:18px;padding:12px 14px;display:grid;gap:2px;box-shadow:var(--hl);text-decoration:none;color:var(--fg);min-width:0}
+.ntile b{font-size:1.65rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.ntile b.sm{font-size:1.05rem;color:var(--accent)}
+.ntile small{font-size:.8rem;color:var(--muted)}
+.ntile.red{background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0) 55%),#B42329;color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(180,35,41,.3)}
+.ntile.red small{color:rgba(255,255,255,.9)}
+.sum-ic{display:flex;align-items:center;gap:10px}
+.wau .wau-ic{width:34px;height:34px;border-radius:10px;font-size:.72rem}
+.wau .acc-body{display:grid;gap:10px;padding:0 16px 14px}
+.gcount{font-size:.8rem;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.gcount.full{color:var(--verde)}
+.info-body{display:grid;gap:8px;padding:0 16px 14px!important}
+.info-body p{margin:0;font-size:.93rem}
 /* senza supporto al vetro: superfici piene */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   :root{--glass:var(--surface);--glass-strong:var(--surface);--glass-soft:var(--surface)}
@@ -353,12 +418,17 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 <div class="backdrop" aria-hidden="true"></div>
 <header class="top">
   <div class="wrap">
-    <div class="brand">
-      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 3 31 29H3Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><rect x="15.5" y="12" width="3" height="9" rx="1.5" fill="currentColor"/><circle cx="17" cy="24.5" r="1.8" fill="currentColor"/></svg>
-      <div><h1>Allerta Cave</h1><small>Guida di emergenza</small></div>
+    <div class="hrow">
+      <div class="brand">
+        <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 3 31 29H3Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><rect x="15.5" y="12" width="3" height="9" rx="1.5" fill="currentColor"/><circle cx="17" cy="24.5" r="1.8" fill="currentColor"/></svg>
+        <div><h1>Allerta Cave</h1><small>Guida di emergenza</small></div>
+      </div>
+      <button class="info-btn" id="b-info" type="button" aria-label="Informazioni sull'app"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.5"/></svg></button>
     </div>
-    <div class="top-right"><div class="clock" id="clock" aria-live="off"></div>
-      <button class="info-btn" id="b-info" type="button" aria-label="Informazioni sull'app"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.5"/></svg></button></div>
+    <div class="hrow2">
+      <div class="clock" id="clock" aria-live="off"></div>
+      <a class="call112" href="tel:112" aria-label="Chiama il 112, Numero Unico di Emergenza"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Chiama 112</a>
+    </div>
   </div>
 </header>
 
@@ -372,7 +442,7 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     <div class="now-place"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg><span id="now-place">Cave</span></div>
     <p class="now-change" id="now-change" hidden></p>
     <p class="now-msg" id="now-msg" hidden></p>
-    <ul class="risks" id="now-risks" hidden></ul>
+    <div class="rchips" id="now-risks" hidden></div>
     <div class="tomorrow" id="now-tomorrow" hidden></div>
     <div class="now-actions">
       <button class="btn" id="geo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Usa la mia posizione</button>
@@ -396,15 +466,21 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     <div class="dae-btns"><button class="btn" id="notif-on" type="button">Attiva notifiche</button><button class="btn" id="notif-off" type="button" hidden>Disattiva</button></div>
   </div>
 
-  <a class="sos" href="tel:112"><b>112</b><span>Numero Unico di Emergenza.<br>Soccorso sanitario, Vigili del Fuoco, Carabinieri, Polizia.</span></a>
+  <div class="tiles">
+    <button class="tile" id="tile-vig" type="button" aria-expanded="false" aria-controls="vig-wrap"><span class="k">Meteo previsto</span><b id="tv-main">…</b><small id="tv-sub">Carico il bollettino</small><span class="more">Dettagli</span></button>
+    <button class="tile" id="tile-eq" type="button" aria-expanded="false" aria-controls="eq-wrap"><span class="k">Terremoti · 7 giorni</span><b id="te-main">…</b><small id="te-sub">Carico i dati INGV</small><span class="more">Dettagli</span></button>
+  </div>
 
+  <div id="vig-wrap" hidden>
   <div class="card vig" id="vig" hidden>
     <div class="now-head"><span class="eyebrow">Meteo previsto</span><span id="vig-zone" class="muted"></span></div>
     <ul class="risks" id="vig-rows"></ul>
     <div id="vig-lazio"></div>
     <p class="now-src" id="vig-src"></p>
   </div>
+  </div>
 
+  <div id="eq-wrap" hidden>
   <div class="card eq" id="eq">
     <div class="now-head"><span class="eyebrow">Terremoti recenti</span><span class="muted">ultimi 7 giorni</span></div>
     <div id="eq-body">
@@ -414,9 +490,11 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     </div>
     <p id="eq-err" hidden>Non riesco a scaricare i dati sui terremoti. Controlla la connessione oppure apri <a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">terremoti.ingv.it</a>.</p>
   </div>
+  </div>
 
-  <div class="eyebrow">Situazione adesso</div>
-  <div class="links">
+  <details class="acc">
+  <summary>Radar e bollettini ufficiali</summary>
+  <div class="links acc-body">
     <a class="link" href="https://radar.protezionecivile.it/#/pages/dashboard?zoom=5.75" target="_blank" rel="noopener">
       <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 19 6"/></svg></span>
       <div><strong>Radar meteo nazionale</strong><small>Piogge, fulmini e temperature in tempo reale, storico fino a 14 giorni</small></div><span class="go">›</span></a>
@@ -430,22 +508,25 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
       <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
       <div><strong>Avvisi nazionali</strong><small>Comunicati e bollettini del sistema nazionale</small></div><span class="go">›</span></a>
   </div>
+  </details>
 
-  <div class="eyebrow">Cosa significano i colori dell'allerta</div>
-  <div class="codes">
+  <details class="acc">
+  <summary>Cosa significano i colori dell'allerta</summary>
+  <div class="codes acc-body">
     <div class="code v"><span class="lbl">Verde</span><p>Nessun fenomeno significativo previsto. Resta informato.</p></div>
     <div class="code g"><span class="lbl">Gialla</span><p>Fenomeni localizzati: allagamenti di sottopassi, piccole frane, rami caduti. Evita zone basse e corsi d'acqua.</p></div>
     <div class="code a"><span class="lbl">Arancione</span><p>Fenomeni diffusi, possibili esondazioni e frane. Limita gli spostamenti, non sostare in cantine e seminterrati.</p></div>
     <div class="code r"><span class="lbl">Rossa</span><p>Fenomeni intensi e diffusi, pericolo per le persone. Resta in un luogo sicuro ai piani alti e segui le indicazioni del Comune.</p></div>
   </div>
-  <p class="note"><strong>App informativa non ufficiale:</strong> non sostituisce le allerte ufficiali della Regione Lazio e del sistema IT-alert. Il livello di oggi viene dal bollettino nazionale di criticità del Dipartimento della Protezione Civile (dati aperti, licenza CC BY 4.0), pubblicato ogni giorno entro le 16. Senza connessione l'app mostra l'ultimo bollettino scaricato. Fa sempre fede l'allerta emessa dalla Regione Lazio.</p>
+  </details>
+  <p class="note"><strong>App informativa non ufficiale:</strong> fa sempre fede l'allerta della Regione Lazio e del sistema IT-alert. Fonti e dettagli nella pagina ⓘ.</p>
 </section>
 
 <!-- COSA FARE -->
 <section class="tab" id="tab-guida" role="tabpanel" aria-labelledby="b-guida" hidden>
   <p class="lead">Comportamenti consigliati dalla campagna nazionale "Io non rischio" e dal Ministero della Salute.</p>
-  <div class="chips" role="group" aria-label="Tipo di rischio" id="chips"></div>
-  <div id="risk"></div>
+  <div class="rgrid" role="group" aria-label="Tipo di rischio" id="chips"></div>
+  <div id="risk" class="risk-wrap"></div>
 </section>
 
 <!-- ZAINO -->
@@ -462,19 +543,16 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 <section class="tab" id="tab-info" role="tabpanel" aria-label="Informazioni" hidden>
   <div class="town"><div class="eyebrow">Informazioni</div><h2>L'app</h2></div>
 
-  <div class="card">
-    <h3>Cos'è</h3>
+  <details class="acc info-acc" open><summary>Cos'è</summary><div class="acc-body info-body">
     <p>Un'app informativa realizzata da volontari di protezione civile per i cittadini di Cave. Raccoglie in un posto solo le allerte del giorno, i comportamenti da seguire e i contatti utili.</p>
     <p><strong>Non è un servizio ufficiale.</strong> Non sostituisce le allerte ufficiali della Regione Lazio e del sistema nazionale IT-alert. In caso di emergenza chiama sempre il <strong>112</strong>.</p>
-  </div>
+  </div></details>
 
-  <div class="card">
-    <h3>Limiti delle informazioni</h3>
+  <details class="acc info-acc"><summary>Limiti delle informazioni</summary><div class="acc-body info-body">
     <p>Il livello di allerta viene dal bollettino nazionale, pubblicato una volta al giorno entro le 16. La Regione può aggiornare la valutazione anche in altri momenti, e l'app lo mostra solo con il bollettino successivo. Senza connessione l'app mostra l'ultimo bollettino scaricato. In caso di dubbio fa fede la pagina ufficiale della Regione.</p>
-  </div>
+  </div></details>
 
-  <div class="card">
-    <h3>Fonti e licenze</h3>
+  <details class="acc info-acc"><summary>Fonti e licenze</summary><div class="acc-body info-body">
     <p><strong>Allerte:</strong> Bollettino di criticità nazionale del Dipartimento della Protezione Civile, dati aperti con licenza <a href="https://creativecommons.org/licenses/by/4.0/deed.it" target="_blank" rel="noopener">CC BY 4.0</a>, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica" target="_blank" rel="noopener">github.com/pcm-dpc</a>. I dati sono mostrati senza modifiche nel contenuto: l'app calcola solo il livello più alto della zona.</p>
     <p><strong>Meteo previsto:</strong> Bollettino di vigilanza meteorologica nazionale del Dipartimento della Protezione Civile, dati aperti con licenza CC BY 4.0, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Vigilanza-Meteorologica" target="_blank" rel="noopener">github.com/pcm-dpc</a>.</p>
     <p><strong>Terremoti:</strong> dati dell'Istituto Nazionale di Geofisica e Vulcanologia (<a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">INGV</a>) e, se non raggiungibile, del Centro Sismologico Euro-Mediterraneo (EMSC). Sono localizzazioni automatiche o rivedute che possono cambiare nelle ore successive.</p>
@@ -483,10 +561,9 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     <p><strong>Cosa fare:</strong> testi riformulati a partire dalle indicazioni della campagna nazionale "Io non rischio" e del Ministero della Salute.</p>
     <p><strong>Defibrillatori:</strong> posizioni dalla mappa pubblica "Mappa DAE Cave" su Google My Maps.</p>
     <p><strong>Numeri e indirizzi:</strong> fonti pubbliche della Regione Lazio e dell'associazione.</p>
-  </div>
+  </div></details>
 
-  <div class="card">
-    <h3>Privacy</h3>
+  <details class="acc info-acc"><summary>Privacy</summary><div class="acc-body info-body">
     <p>L'app non raccoglie dati personali: non ci sono account, cookie di tracciamento o statistiche di utilizzo.</p>
     <p><strong>Posizione:</strong> viene chiesta solo se tocchi "Usa la mia posizione", serve a trovare la zona di allerta e resta sul telefono. Non viene inviata a nessuno.</p>
     <p><strong>Dati salvati sul telefono:</strong> le spunte dello zaino, il comune scelto e l'ultimo bollettino, per far funzionare l'app senza connessione. Puoi cancellarli eliminando l'app o i dati del sito.</p>
@@ -494,9 +571,9 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     <p><strong>Notifiche:</strong> se le attivi, il telefono genera un indirizzo anonimo per ricevere i messaggi, che viene salvato sul servizio dell'associazione (Cloudflare) e usato solo per inviare le notifiche di Allerta Cave. Non contiene il tuo nome, il numero o la posizione. Puoi disattivarle in qualsiasi momento dalla pagina Allerte o dalle impostazioni del telefono.</p>
     <p><strong>Ricerca pronto soccorso:</strong> se tocchi "Vicini a me", l'app invia ai servizi pubblici di OpenStreetMap (Nominatim e, in riserva, Overpass) la tua posizione arrotondata a circa 1 km, solo per trovare gli ospedali nel raggio di 30 km.</p>
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
-  </div>
+  </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 2.0 · 22 ottobre 2026</span>
+    <span id="app-version">Versione 2.1 · 23 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -505,13 +582,13 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 <section class="tab" id="tab-dae" role="tabpanel" aria-labelledby="b-dae" hidden>
   <div class="town"><div class="eyebrow">Defibrillatori</div><h2>DAE a Cave</h2><small id="dae-sub"></small></div>
 
-  <a class="sos" href="tel:112"><b>112</b><span>Persona che non risponde e non respira normalmente? Chiama subito il 112 e fatti guidare.</span></a>
+  <p class="ps-info">Per un malore chiama subito il 112 con il pulsante rosso in alto: l'operatore ti guida.</p>
 
   <div class="dae-actions">
     <button class="btn" id="dae-geo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Trova il più vicino</button>
     <a class="btn" id="dae-map" href="https://www.google.com/maps/d/viewer?mid=1i_VWr2qEZsH_mhhseaKbxg-eUrc3HS8X" target="_blank" rel="noopener">Mappa completa</a>
   </div>
-  <div id="dae-list" style="display:grid;gap:10px"></div>
+  <div id="dae-list" class="plist"></div>
 
   <p class="note">Posizioni dalla mappa "Mappa DAE Cave" su Google My Maps. Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.</p>
 </section>
@@ -521,18 +598,20 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
   <div class="town"><div class="eyebrow">Contatti</div><h2>Chi chiamare</h2><small>Emergenze, volontari e servizi per <span id="town-name"></span></small></div>
 
   <div class="eyebrow">Emergenze</div>
-  <div class="nums" id="nums"></div>
-  <div class="card wau">
-    <div class="dae-head"><span class="wau-ic" aria-hidden="true">112</span>
-      <div><strong>Scarica l'app 112 Where ARE U</strong><small>L'app ufficiale del Numero Unico di Emergenza, attiva nel Lazio</small></div></div>
-    <ul class="vig-list">
-      <li>Quando chiami il 112 dall'app, la centrale riceve subito la tua <strong>posizione esatta</strong>.</li>
-      <li>Permette la <strong>chiamata silenziosa</strong> e la <strong>chat</strong>, per chi non può parlare o non sente.</li>
-      <li>Dopo l'installazione registrati e consenti l'accesso alla posizione: in emergenza non c'è tempo.</li>
-    </ul>
-    <div class="dae-btns"><a class="mini" href="https://apps.apple.com/app/id888964800" target="_blank" rel="noopener">App Store</a><a class="mini" href="https://play.google.com/store/apps/details?id=it.Beta80Group.whereareu" target="_blank" rel="noopener">Google Play</a></div>
-  </div>
-  <p class="note">Nel Lazio è attivo il Numero Unico di Emergenza: anche chi compone 113, 115 o 118 viene messo in contatto con la centrale del 112, che smista la chiamata al servizio giusto. Chiama solo per emergenze reali e di' subito dove ti trovi: Comune, via, numero civico.</p>
+  <div class="ntiles" id="nums"></div>
+  <details class="acc wau">
+    <summary><span class="sum-ic"><span class="wau-ic" aria-hidden="true">112</span>Scarica l'app 112 Where ARE U</span></summary>
+    <div class="acc-body">
+      <ul class="vig-list">
+        <li>È l'app ufficiale del Numero Unico di Emergenza, attiva nel Lazio.</li>
+        <li>Quando chiami il 112 dall'app, la centrale riceve subito la tua <strong>posizione esatta</strong>.</li>
+        <li>Permette la <strong>chiamata silenziosa</strong> e la <strong>chat</strong>, per chi non può parlare o non sente.</li>
+        <li>Dopo l'installazione registrati e consenti l'accesso alla posizione.</li>
+      </ul>
+      <div class="dae-btns"><a class="mini" href="https://apps.apple.com/app/id888964800" target="_blank" rel="noopener">App Store</a><a class="mini" href="https://play.google.com/store/apps/details?id=it.Beta80Group.whereareu" target="_blank" rel="noopener">Google Play</a></div>
+    </div>
+  </details>
+  <p class="note">Nel Lazio anche 113, 115 e 118 vengono girati alla centrale del 112. Chiama solo per emergenze reali e di' subito dove ti trovi.</p>
 
   <div class="card group" id="group" hidden></div>
 
@@ -547,11 +626,11 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
     <button class="chip" id="ps-geo" type="button" aria-pressed="false">Vicini a me (30 km)</button>
   </div>
   <p class="ps-info" id="ps-info">Pronto soccorso più vicini a Cave.</p>
-  <div id="places" style="display:grid;gap:10px"></div>
+  <div id="places" class="plist"></div>
   <p class="note" id="ps-note" hidden>Elenco da OpenStreetMap: sono mostrati solo gli ospedali segnati con pronto soccorso, escluse cliniche e case di cura. Può essere incompleto o non aggiornato. In emergenza chiama il 112, che sa dove portarti.</p>
 
   <div class="eyebrow">Comune e Regione</div>
-  <div class="card" id="townhall"></div>
+  <div class="plist" id="townhall"></div>
   <div class="card" id="region"></div>
 
   <div id="support-wrap" style="display:grid;gap:18px" hidden><div class="eyebrow">Sostegno</div><div class="card" id="support"></div></div>
@@ -599,12 +678,13 @@ const KIT = [
   ["Luce e comunicazioni",["Torcia elettrica con pile di ricambio","Radio a pile","Power bank carico","Fischietto per farsi sentire"]],
   ["Acqua e cibo",["Acqua in bottiglia per almeno 3 giorni","Cibo a lunga conservazione (scatolette, barrette)","Apriscatole manuale"]],
   ["Vestiti e riparo",["Coperta isotermica","Cambio di vestiti e scarpe comode","Impermeabile o k-way","Guanti da lavoro"]],
-  ["Utili",["Coltellino multiuso","Duplicato delle chiavi di casa e dell'auto","Sacchetti di plastica resistenti"]]
+  ["Utili",["Coltellino multiuso","Duplicato delle chiavi di casa e dell'auto","Sacchetti di plastica resistenti"]],
+  ["Animali e persone fragili",["Cibo, acqua e guinzaglio o trasportino per gli animali","Occhiali, apparecchi acustici e ausili di scorta","Elenco delle terapie e copia delle ricette","Pannolini, latte e cambi per i più piccoli"]]
 ];
 
 const NUMS = [
-  {n:"112",d:"Numero Unico di Emergenza: soccorso sanitario, Vigili del Fuoco, Carabinieri, Polizia",wide:true},
-  {n:"803 555",d:"Sala Operativa Regionale Protezione Civile Lazio",wide:true},
+  {n:"112",d:"Numero Unico di Emergenza",red:true},
+  {n:"803 555",d:"Sala Operativa Regionale Protezione Civile"},
 ];
 
 /* ===== IL MIO COMUNE: modifica qui i dati del tuo comune =====
@@ -644,12 +724,19 @@ const store = {
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 };
 const $ = s=>document.querySelector(s);
+/* "Portami lì": Apple Mappe su iPhone/iPad, Google Maps altrove */
+const IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const GO_ICON=`<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 11.5 21 3l-8.5 18-2-7.5z"/></svg>`, TEL_ICON=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>`, WEB_ICON=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>`;
+function navUrl(o){ // o: {lat,lon} oppure {q}
+  if(o.q) return IS_IOS?`https://maps.apple.com/?q=${encodeURIComponent(o.q)}${o.lat!=null?`&sll=${o.lat},${o.lon}`:""}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.q)}`;
+  return IS_IOS?`https://maps.apple.com/?daddr=${o.lat},${o.lon}${o.walk?"&dirflg=w":""}`:`https://www.google.com/maps/dir/?api=1&destination=${o.lat},${o.lon}${o.walk?"&travelmode=walking":""}`;
+}
 const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,1800)}
 
 /* orologio */
-function tick(){const d=new Date();$("#clock").innerHTML=d.toLocaleDateString("it-IT",{weekday:"short",day:"numeric",month:"short"})+"<br>"+d.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})}
+function tick(){const d=new Date();$("#clock").innerHTML=`<span>${d.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"})}</span><b>${d.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})}</b>`}
 tick();setInterval(tick,15000);
 
 /* schede */
@@ -683,26 +770,31 @@ $("#check-update").addEventListener("click",async()=>{
 showTab(["allerte","guida","zaino","comune","info","dae"].includes(start)?start:(["allerte","guida","zaino","comune","info","dae"].includes(saved)?saved:"allerte"));}
 
 /* rischi */
+const RISK_ICON={terremoto:"🏚️",alluvione:"🌊",incendio:"🔥",caldo:"🌡️",neve:"❄️"};
 function renderRisk(k){
-  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.k===k));
-  const r=RISKS[k];
-  $("#risk").innerHTML=`<article class="risk"><h2>${esc(r.name)}</h2>${r.phases.map(([t,l])=>`<div class="phase"><h3>${esc(t)}</h3><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</article>`;
+  document.querySelectorAll("#chips .rtile[data-k]").forEach(c=>c.setAttribute("aria-pressed",c.dataset.k===k));
+  const r=RISKS[k]; let first=true;
+  // le fasi "Durante…" e "Se…" sono quelle da leggere in emergenza: aperte ed evidenziate
+  $("#risk").innerHTML=`<h2 class="risk-title">${esc(r.name)}</h2>`+r.phases.map(([t,l])=>{const urgent=/^(Durante|Se )/i.test(t);const lab=urgent&&first?" · cosa fare subito":"";if(urgent)first=false;
+    return `<details class="acc phase${urgent?" urgent":""}"${urgent?" open":""}><summary>${esc(t)}${lab}</summary><ul class="acc-body">${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></details>`;}).join("");
+  if(!$("#risk details[open]")) $("#risk details").open=true;
   store.set("risk",k);
 }
-$("#chips").innerHTML=Object.entries(RISKS).map(([k,r])=>`<button class="chip" type="button" data-k="${k}" aria-pressed="false">${esc(r.name)}</button>`).join("");
-$("#chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(b)renderRisk(b.dataset.k)});
+$("#chips").innerHTML=Object.entries(RISKS).map(([k,r])=>`<button class="rtile" type="button" data-k="${k}" aria-pressed="false"><i aria-hidden="true">${RISK_ICON[k]||"⚠️"}</i>${esc(r.name)}</button>`).join("")+`<button class="rtile" type="button" data-go="zaino"><i aria-hidden="true">🎒</i>Zaino di emergenza</button>`;
+$("#chips").addEventListener("click",e=>{const b=e.target.closest(".rtile");if(!b)return;if(b.dataset.go)showTab(b.dataset.go);else renderRisk(b.dataset.k)});
 renderRisk(RISKS[store.get("risk","terremoto")]?store.get("risk","terremoto"):"terremoto");
 
 /* zaino */
 let done=store.get("kit",{});
 function renderKit(){
   let i=0;
-  $("#kit").innerHTML=KIT.map(([g,items])=>`<div class="group"><h2>${esc(g)}</h2>${items.map(it=>{const id="k"+(i++);return `<label class="item"><input type="checkbox" id="${id}" ${done[id]?"checked":""}><span>${esc(it)}</span></label>`}).join("")}</div>`).join("");
+  $("#kit").innerHTML=KIT.map(([g,items])=>`<div class="group"><h2>${esc(g)} <span class="gcount"></span></h2>${items.map(it=>{const id="k"+(i++);return `<label class="item"><input type="checkbox" id="${id}" ${done[id]?"checked":""}><span>${esc(it)}</span></label>`}).join("")}</div>`).join("");
   updateProgress();
 }
 function updateProgress(){
   const all=document.querySelectorAll("#kit input"),n=[...all].filter(x=>x.checked).length;
   $("#pcount").textContent=n+"/"+all.length;$("#pbar").style.width=(all.length?n/all.length*100:0)+"%";
+  document.querySelectorAll("#kit .group").forEach(g=>{const i=g.querySelectorAll("input"),c=[...i].filter(x=>x.checked).length;const el=g.querySelector(".gcount");el.textContent=c+"/"+i.length;el.classList.toggle("full",c===i.length);});
 }
 $("#kit").addEventListener("change",e=>{if(e.target.matches("input")){done[e.target.id]=e.target.checked;store.set("kit",done);updateProgress();}});
 renderKit();
@@ -715,20 +807,18 @@ $("#resetbox").addEventListener("click",e=>{
 });
 
 /* numeri */
-$("#nums").innerHTML=NUMS.map(x=>`<div class="num${x.wide?" wide":""}"><b>${esc(x.n)}</b><span>${esc(x.d)}</span><div class="row"><a class="mini" href="tel:${x.n.replace(/\s/g,"")}">Chiama</a><button class="mini" type="button" data-copy="${esc(x.n)}">Copia</button></div></div>`).join("");
+$("#nums").innerHTML=NUMS.map(x=>`<a class="ntile${x.red?" red":""}" href="tel:${x.n.replace(/\s/g,"")}"><b>${esc(x.n)}</b><small>${esc(x.d)}</small></a>`).join("");
 /* pronto soccorso: elenco fisso per Cave + ricerca entro 30 km su OpenStreetMap */
 (function(){
   const RADIUS=30000;
   const distM=(a,b)=>{const R=6371e3,r=Math.PI/180,dLa=(b.lat-a.lat)*r,dLo=(b.lon-a.lon)*r;const h=Math.sin(dLa/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));};
   const fmtD=m=>m<1000?Math.round(m/10)*10+" m":(m/1000).toFixed(1).replace(".",",")+" km";
   const card=(p)=>{
-    // le mappe cercano "Pronto soccorso <ospedale>, <indirizzo>" per arrivare all'ingresso del PS; senza indirizzo uso le coordinate
-    const q=p.addr?encodeURIComponent("Pronto soccorso "+p.name+", "+p.addr):null;
-    const apple=q?`https://maps.apple.com/?q=${q}${p.lat!=null?`&sll=${p.lat},${p.lon}`:""}`:`https://maps.apple.com/?daddr=${p.lat},${p.lon}`;
-    const google=q?`https://www.google.com/maps/search/?api=1&query=${q}`:`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`;
-    return `<div class="card dae"><div class="dae-head"><span class="dae-ic ps-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
-      <div><span class="ps-label">Pronto soccorso</span><strong>${esc(p.name)}</strong><small>${[p.addr,p.d!=null?"a "+fmtD(p.d)+" in linea d'aria":""].filter(Boolean).map(esc).join(" · ")}</small></div></div>
-      <div class="dae-btns">${p.phone?`<a class="mini" href="tel:${esc(p.phone.replace(/[^+\d]/g,""))}">Chiama</a>`:""}<a class="mini" href="${apple}" target="_blank" rel="noopener">Apple Mappe</a><a class="mini" href="${google}" target="_blank" rel="noopener">Google Maps</a></div></div>`;
+    // la navigazione cerca "Pronto soccorso <ospedale>, <indirizzo>" per arrivare all'ingresso del PS; senza indirizzo usa le coordinate
+    const nav=p.addr?navUrl({q:"Pronto soccorso "+p.name+", "+p.addr,lat:p.lat,lon:p.lon}):navUrl({lat:p.lat,lon:p.lon});
+    return `<div class="li"><span class="li-ic ps-c" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+      <div><span class="ps-label">Pronto soccorso</span><strong>${esc(p.name)}</strong><small>${[p.addr,p.d!=null?"a "+fmtD(p.d):""].filter(Boolean).map(esc).join(" · ")}</small></div>
+      ${p.phone?`<a class="go" href="tel:${esc(p.phone.replace(/[^+\d]/g,""))}" aria-label="Chiama">${TEL_ICON}</a>`:""}<a class="go" href="${nav}" target="_blank" rel="noopener" aria-label="Portami al pronto soccorso ${esc(p.name)}">${GO_ICON}</a></div>`;
   };
   function showDefault(){
     $("#places").innerHTML=PLACES.map(card).join("");
@@ -909,14 +999,10 @@ const DAE = [
     const list=DAE.map(d=>({...d,m:me?dist(me,d):null}));
     if(me) list.sort((a,b)=>a.m-b.m);
     $("#dae-list").innerHTML=list.map((d,i)=>{
-      const apple=`https://maps.apple.com/?daddr=${d.lat},${d.lon}&dirflg=w`;
-      const google=`https://www.google.com/maps/dir/?api=1&destination=${d.lat},${d.lon}&travelmode=walking`;
       const near=me&&i===0;
-      return `<div class="card dae${near?" near":""}">
-        <div class="dae-head"><span class="dae-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/><path d="M12.8 9.5 10.8 13h2.6l-1.8 3.2"/></svg></span>
-        <div><strong>${esc(d.nome)}</strong><small>${near?"Il più vicino · ":""}${d.m!=null?"a "+fmt(d.m)+" in linea d'aria":"Defibrillatore semiautomatico"}</small></div></div>
-        <div class="dae-btns"><a class="mini" href="${apple}" target="_blank" rel="noopener">Apple Mappe</a><a class="mini" href="${google}" target="_blank" rel="noopener">Google Maps</a></div>
-      </div>`;}).join("");
+      return `<div class="li${near?" near":""}"><span class="li-ic dae-c" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/><path d="M12.8 9.5 10.8 13h2.6l-1.8 3.2"/></svg></span>
+        <div><strong>${esc(d.nome)}</strong><small>${near?"Il più vicino · ":""}${d.m!=null?"a "+fmt(d.m)+" in linea d'aria":"Defibrillatore semiautomatico"}</small></div>
+        <a class="go" href="${navUrl({lat:d.lat,lon:d.lon,walk:true})}" target="_blank" rel="noopener" aria-label="Portami al defibrillatore di ${esc(d.nome)}">${GO_ICON}</a></div>`;}).join("");
   }
   render();
   $("#dae-geo").addEventListener("click",()=>{
@@ -932,6 +1018,13 @@ const DAE = [
   });
 })();
 
+/* riquadri meteo e terremoti: aprono i dettagli */
+document.querySelectorAll(".tile[aria-controls]").forEach(t=>t.addEventListener("click",()=>{
+  const w=document.getElementById(t.getAttribute("aria-controls")); const open=w.hidden;
+  w.hidden=!open; t.setAttribute("aria-expanded",open); t.querySelector(".more").textContent=open?"Chiudi":"Dettagli";
+  if(open) setTimeout(()=>w.scrollIntoView({behavior:"smooth",block:"nearest"}),50);
+}));
+
 /* il mio comune */
 (function(){
   const C=COMUNE, tel=n=>n.replace(/[^\d+]/g,"");
@@ -939,10 +1032,11 @@ const DAE = [
   $("#town-name").textContent=C.nome;
   const g=C.gruppo||{};
   if(g.nome){
-    const tels=(g.telefoni||[]).map(t=>`<div><span style="display:grid"><span>${esc(t.d)}</span><b style="color:var(--fg);font-size:1.05rem">${esc(t.n)}</b></span>${actions(t.n)}</div>`).join("");
+    const tels=(g.telefoni||[]).map(t=>`<a class="ntile" href="tel:${tel(t.n)}"><b class="sm">${esc(t.n.replace(/^\+39\s*/,""))}</b><small>${esc(t.d)}</small></a>`).join("");
     $("#group").innerHTML=`<div class="eyebrow">Protezione civile a ${esc(C.nome)}</div><h3>${esc(g.nome)}</h3>${g.motto?`<p class="muted">${esc(g.motto)}</p>`:""}
-      <div class="kv">${tels}
-      ${g.sede?`<div><span>Sede: ${esc(g.sede)}</span><a class="mini" href="https://maps.apple.com/?q=${encodeURIComponent(g.sede)}" target="_blank" rel="noopener">Mappa</a></div>`:""}
+      <div class="ntiles">${tels}</div>
+      <div class="kv">
+      ${g.sede?`<div><span>Sede: ${esc(g.sede)}</span><a class="mini" href="${navUrl({q:g.sede})}" target="_blank" rel="noopener">Mappa</a></div>`:""}
       ${g.email?`<div><span style="overflow-wrap:anywhere">${esc(g.email)}</span><button class="mini" type="button" data-copy="${esc(g.email)}">Copia</button></div>`:""}
       ${g.facebook?`<div><span>Facebook: ${esc(g.facebook)}</span></div>`:""}</div>`;
     $("#group").hidden=false;
@@ -958,14 +1052,14 @@ const DAE = [
     $("#areas").innerHTML=C.aree.map(a=>`<div class="area"><span class="tag${a.tipo==="accoglienza"?" acc":""}">${a.tipo==="accoglienza"?"Accoglienza":"Attesa"}</span><div><strong>${esc(a.nome)}</strong><small>${esc(a.indirizzo||"")}</small></div><a class="mini" href="https://maps.apple.com/?q=${encodeURIComponent(a.nome+", "+(a.indirizzo||"")+", "+C.nome)}" target="_blank" rel="noopener">Mappa</a></div>`).join("");
     $("#areas-wrap").hidden=false;
   }
-  const m=C.municipio||{};
-  $("#townhall").innerHTML=`<h3>Municipio di ${esc(C.nome)}</h3><p class="muted">${esc(m.indirizzo||"")}</p>
-    <div class="kv">${m.telefono?`<div><b>${esc(m.telefono)}</b>${actions(m.telefono)}</div>`:""}</div>
-    ${m.sito?`<a class="mini" style="justify-self:start" href="${esc(m.sito)}" target="_blank" rel="noopener">Sito del Comune</a>`:""}`;
-  const r=C.regione||{};
-  $("#region").innerHTML=`<h3>${esc(r.nome||"")}</h3><p class="muted">Emette le allerte meteo e idrogeologiche per i comuni della regione.</p>
-    <div class="kv">${r.telefono?`<div><b>${esc(r.telefono)}</b>${actions(r.telefono)}</div>`:""}</div>
-    ${r.bollettini?`<a class="mini" style="justify-self:start" href="${esc(r.bollettini)}" target="_blank" rel="noopener">Bollettini e allerte</a>`:""}`;
+  const m=C.municipio||{}, r=C.regione||{};
+  const row=(title,sub,btns)=>`<div class="li"><div><strong>${esc(title)}</strong><small>${esc(sub)}</small></div>${btns}</div>`;
+  $("#townhall").innerHTML=
+    row("Municipio di "+C.nome,[m.indirizzo,m.telefono].filter(Boolean).join(" · "),
+      (m.telefono?`<a class="go" href="tel:${tel(m.telefono)}" aria-label="Chiama il municipio">${TEL_ICON}</a>`:"")+(m.sito?`<a class="go" href="${esc(m.sito)}" target="_blank" rel="noopener" aria-label="Sito del Comune">${WEB_ICON}</a>`:""))+
+    row(r.nome||"","Emette le allerte meteo · "+(r.telefono||""),
+      (r.telefono?`<a class="go" href="tel:${tel(r.telefono)}" aria-label="Chiama il Centro Funzionale">${TEL_ICON}</a>`:"")+(r.bollettini?`<a class="go" href="${esc(r.bollettini)}" target="_blank" rel="noopener" aria-label="Bollettini e allerte">${WEB_ICON}</a>`:""));
+  $("#region").hidden=true;
 })();
 
 document.addEventListener("click",e=>{
@@ -1128,7 +1222,7 @@ if (typeof document !== "undefined") (function allertaInit() {
     const ch = res.change;
     el.change.hidden = !ch;
     if (ch) el.change.innerHTML = `<b>${ch.dir > 0 ? "▲ Alzata" : "▼ Abbassata"}</b> rispetto alla previsione di ieri, che era <i class="dot l${ch.from}"></i>${BCR.LEVELS[ch.from].toLowerCase()}`;
-    el.risks.innerHTML = s.risks.map((r) => `<li><span>${r.label}</span><span><i class="dot l${r.lvl}"></i>${BCR.SHORT[r.lvl]}</span></li>`).join("");
+    el.risks.innerHTML = s.risks.map((r) => `<span class="rchip"><i class="dot l${r.lvl}"></i>${r.label}${r.lvl ? ": <b>" + BCR.SHORT[r.lvl].toLowerCase() + "</b>" : ""}</span>`).join("");
     el.risks.hidden = false;
     const t = res.tomorrow;
     const tl = "Domani, " + fmtDay(t.date);
@@ -1363,6 +1457,9 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
         if (label === "Oggi" && z) $("#vig-zone").textContent = z.props.Nome_Zona;
       }
       $("#vig-rows").innerHTML = rows.join("");
+      const rt = [...document.querySelectorAll("#vig-rows li")].map((li) => li.lastElementChild.textContent.trim());
+      $("#tv-main").textContent = rt[0] || "Non disponibile";
+      $("#tv-sub").textContent = rt[1] ? "Domani: " + rt[1].toLowerCase() : "";
       const region = currentRegion(p);
       if (!region) {
         $("#vig-lazio").innerHTML = `<p class="vig-sub">Cerco la regione…</p>`;
@@ -1372,6 +1469,7 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
         $("#vig-lazio").innerHTML = groups.length
           ? `<p class="vig-sub">Fenomeni segnalati per ${escH(MS.conReg(region))}</p>` + groups.map(([label, l]) => `<p class="vig-day">${label}</p><ul class="vig-list">${l.map(li).join("")}</ul>`).join("")
           : `<p class="vig-sub">Il bollettino non segnala fenomeni significativi per ${escH(MS.conReg(region))}.</p>`;
+        if (groups.length) $("#tv-sub").textContent += " · fenomeni segnalati";
       }
       const d = idx.key;
       $("#vig-src").innerHTML = `Bollettino di vigilanza meteorologica DPC del ${d.slice(6, 8)}/${d.slice(4, 6)}/${d.slice(0, 4)}${idx.offline ? " · ultimo scaricato" : ""} · <a href="https://mappe.protezionecivile.gov.it/it/mappe-rischi/bollettino-di-vigilanza/" target="_blank" rel="noopener">Bollettino nazionale</a>`;
@@ -1379,7 +1477,7 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
       const keep = [idx.key];
       pruneMeteo(keep);
     } catch (e) {
-      if (!$("#vig-rows").childElementCount) box.hidden = true;
+      if (!$("#vig-rows").childElementCount) { box.hidden = true; $("#tv-main").textContent = "Non disponibile"; $("#tv-sub").textContent = "Bollettino non raggiungibile"; }
     }
   }
 
@@ -1447,7 +1545,7 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
   async function renderQuakes() {
     const p = place();
     const rp = await refPoint(p);
-    if (!rp) { $("#eq-sum").textContent = "Cerco la posizione di " + (p.name || "") + "…"; $("#eq-list").innerHTML = ""; return; }
+    if (!rp) { $("#eq-sum").textContent = "Cerco la posizione di " + (p.name || "") + "…"; $("#eq-list").innerHTML = ""; $("#te-main").textContent = "…"; $("#te-sub").textContent = "Cerco la posizione"; return; }
     const ref = { lat: rp.lat, lon: rp.lon }, refLabel = rp.label, ap = rp.approx ? "circa " : "";
     try {
       const res = await fetchQuakes();
@@ -1461,8 +1559,11 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
         <span class="eq-txt"><strong>${escH(e.place.trim() || "Zona non indicata")}</strong><small>${ago(e.time)} · ${ap}${Math.round(e.d)} km ${refLabel} · prof. ${Math.round(e.depth)} km</small></span></a></li>`).join("");
       $("#eq-src").innerHTML = `Dati ${res.src === "INGV" ? "INGV – Istituto Nazionale di Geofisica e Vulcanologia" : "EMSC – Centro Sismologico Euro-Mediterraneo"}${res.offline ? " · ultimo aggiornamento salvato" : ""} · <a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">terremoti.ingv.it</a>`;
       $("#eq-err").hidden = true; $("#eq-body").hidden = false;
+      $("#te-main").textContent = near.length ? near.length + (near.length === 1 ? " scossa" : " scosse") : "Nessuna scossa";
+      $("#te-sub").textContent = near.length ? "Ultima: M " + near[0].mag.toFixed(1) + ", " + ago(near[0].time) : "M 2+ entro " + RADIUS + " km " + refLabel;
     } catch (e) {
       $("#eq-body").hidden = true; $("#eq-err").hidden = false;
+      $("#te-main").textContent = "Non disponibile"; $("#te-sub").textContent = "Dati INGV non raggiungibili";
     }
   }
 
