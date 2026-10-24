@@ -302,6 +302,26 @@ header.top .wrap{gap:8px}
 .rain.r2{background:#9FE6F5} .rain.r3{background:#3FB8E8} .rain.r4{background:#3C6FE0} .rain.r5{background:#8A3FE0}
 .vig-sub{margin:0;font-size:.85rem;color:var(--muted);font-weight:600}
 .vig-list{margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:.9rem}
+.vday{display:grid;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}
+.vday-top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.93rem}
+.vday-top span:last-child{display:flex;align-items:center;gap:8px;font-weight:700}
+.fen{display:flex;flex-wrap:wrap;gap:6px}
+.fchip{display:inline-flex;align-items:center;gap:5px;font-size:.8rem;font-weight:600;padding:4px 9px;border-radius:999px;background:var(--glass-soft);border:1px solid var(--glass-line)}
+.tile.wide{grid-column:1/-1}
+.fc{display:grid;border-top:1px solid var(--line)}
+.fc-row{display:grid;grid-template-columns:4.8em auto 1fr;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.fc-row .vals{display:flex;gap:10px;align-items:baseline}
+.fc-row .vals.r{justify-content:flex-end;flex-wrap:wrap;gap:4px 12px}
+.fc-row .vals span{white-space:nowrap}
+.fc-row .t{font-weight:800;font-size:1.05rem}
+.src-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.src-row:last-child{border-bottom:0}
+.src-row div{display:grid;gap:2px;min-width:0}
+.src-row small{color:var(--muted);font-size:.8rem}
+.src-row a{color:var(--accent);font-weight:600;font-size:.85rem;white-space:nowrap;text-decoration:none}
+.fresh{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2E9E55;margin-right:6px;vertical-align:middle}
+.fresh.old{background:#E8A317}
+.fresh.none{background:var(--muted)}
 .vig-day{margin:4px 0 0;font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent)}
 /* terremoti */
 .eq-sum{margin:0;font-size:.95rem}
@@ -423,6 +443,36 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
 @media (prefers-reduced-transparency:reduce){
   :root{--glass:var(--surface);--glass-strong:var(--surface);--glass-soft:var(--bg)}
 }
+
+/* 2.7 · scheda allerta: colore del livello più evidente (tinta intermedia) e spiegazione dei colori */
+.now{--lvl-solid:#6B7785;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--lvl-solid) 58%,var(--glass)) 0%,color-mix(in srgb,var(--lvl-solid) 40%,var(--glass)) 100%);
+  border:1px solid color-mix(in srgb,var(--lvl-solid) 55%,transparent);
+  box-shadow:0 14px 34px color-mix(in srgb,var(--lvl-solid) 32%,transparent),var(--hl)}
+.now[data-lvl="0"]{--lvl-solid:#2E8B57}
+.now[data-lvl="1"]{--lvl-solid:#F2C21B}
+.now[data-lvl="2"]{--lvl-solid:#E06A12}
+.now[data-lvl="3"]{--lvl-solid:#C8232B}
+.now .now-level i{background:var(--lvl-solid)}
+.now .now-level i svg{stroke:#fff}
+.now[data-lvl="1"] .now-level i svg{stroke:#3B2F00}
+.now .eyebrow,.now .now-head span:last-child,.now .now-place,.now .now-src,.now .now-src a{color:color-mix(in srgb,var(--fg) 78%,transparent)}
+.now .rchip,.now .tomorrow,.now .now-change{background:color-mix(in srgb,var(--surface) 80%,transparent);border-color:transparent}
+.now .btn{background:color-mix(in srgb,#fff 30%,transparent);border:1px solid color-mix(in srgb,#fff 50%,transparent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .now .btn{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.22)}}
+:root[data-theme="dark"] .now .btn{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.22)}
+.now .colors{background:color-mix(in srgb,var(--surface) 80%,transparent);border-radius:16px;overflow:hidden}
+.now .colors summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;font-size:.93rem;font-weight:600;cursor:pointer}
+.now .colors summary::-webkit-details-marker{display:none}
+.now .colors summary::after{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin:-4px 4px 0 0;opacity:.6;transition:transform .2s}
+.now .colors[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+.now .colors .codes{display:grid;gap:8px;padding:0 10px 10px}
+.now .colors .code{margin:0;padding:9px 11px;border-radius:12px;font-size:.88rem;display:block}
+.now .colors .code .lbl{display:flex;align-items:center;gap:8px;font-size:.85rem}
+.now .colors .code p{margin:2px 0 0}
+.now .colors .code.cur{outline:2px solid var(--lvl-solid);outline-offset:-2px}
+.now .colors .code.cur .lbl::after{content:"OGGI";font-size:.68rem;font-weight:800;letter-spacing:.06em;padding:2px 7px;border-radius:999px;background:var(--lvl-solid);color:#fff}
+.now[data-lvl="1"] .colors .code.cur .lbl::after{color:#3B2F00}
 </style>
 </head>
 <body>
@@ -466,6 +516,15 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
       <datalist id="comuni"></datalist>
       <button class="btn" type="submit">Mostra</button>
     </form>
+    <details class="colors" id="now-colors">
+      <summary>Cosa significano i colori</summary>
+  <div class="codes">
+    <div class="code v"><span class="lbl">Verde</span><p>Nessun fenomeno significativo previsto. Resta informato.</p></div>
+    <div class="code g"><span class="lbl">Gialla</span><p>Fenomeni localizzati: allagamenti di sottopassi, piccole frane, rami caduti. Evita zone basse e corsi d'acqua.</p></div>
+    <div class="code a"><span class="lbl">Arancione</span><p>Fenomeni diffusi, possibili esondazioni e frane. Limita gli spostamenti, non sostare in cantine e seminterrati.</p></div>
+    <div class="code r"><span class="lbl">Rossa</span><p>Fenomeni intensi e diffusi, pericolo per le persone. Resta in un luogo sicuro ai piani alti e segui le indicazioni del Comune.</p></div>
+  </div>
+    </details>
     <p class="now-src" id="now-src"></p>
   </div>
 
@@ -481,14 +540,23 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
   <div class="tiles">
     <button class="tile" id="tile-vig" type="button" aria-expanded="false" aria-controls="vig-wrap"><span class="k">Meteo previsto</span><b id="tv-main">…</b><small id="tv-sub">Carico il bollettino</small><span class="more">Dettagli</span></button>
     <button class="tile" id="tile-eq" type="button" aria-expanded="false" aria-controls="eq-wrap"><span class="k">Terremoti · 7 giorni</span><b id="te-main">…</b><small id="te-sub">Carico i dati INGV</small><span class="more">Dettagli</span></button>
+    <button class="tile wide" id="tile-fc" type="button" aria-expanded="false" aria-controls="fc-wrap"><span class="k">Previsioni · 3 giorni</span><b id="tf-main">…</b><small id="tf-sub">Carico le previsioni</small><span class="more">Dettagli</span></button>
   </div>
 
   <div id="vig-wrap" hidden>
   <div class="card vig" id="vig" hidden>
     <div class="now-head"><span class="eyebrow">Meteo previsto</span><span id="vig-zone" class="muted"></span></div>
-    <ul class="risks" id="vig-rows"></ul>
+    <div id="vig-rows"></div>
     <div id="vig-lazio"></div>
     <p class="now-src" id="vig-src"></p>
+  </div>
+  </div>
+
+  <div id="fc-wrap" hidden>
+  <div class="card" id="fc">
+    <div class="now-head"><span class="eyebrow" id="fc-title">Previsioni</span><span class="muted">modello ICON-2I</span></div>
+    <div class="fc" id="fc-rows"></div>
+    <p class="now-src" id="fc-src"></p>
   </div>
   </div>
 
@@ -522,15 +590,6 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
   </div>
   </details>
 
-  <details class="acc">
-  <summary>Cosa significano i colori dell'allerta</summary>
-  <div class="codes acc-body">
-    <div class="code v"><span class="lbl">Verde</span><p>Nessun fenomeno significativo previsto. Resta informato.</p></div>
-    <div class="code g"><span class="lbl">Gialla</span><p>Fenomeni localizzati: allagamenti di sottopassi, piccole frane, rami caduti. Evita zone basse e corsi d'acqua.</p></div>
-    <div class="code a"><span class="lbl">Arancione</span><p>Fenomeni diffusi, possibili esondazioni e frane. Limita gli spostamenti, non sostare in cantine e seminterrati.</p></div>
-    <div class="code r"><span class="lbl">Rossa</span><p>Fenomeni intensi e diffusi, pericolo per le persone. Resta in un luogo sicuro ai piani alti e segui le indicazioni del Comune.</p></div>
-  </div>
-  </details>
   <p class="note"><strong>App informativa non ufficiale:</strong> fa sempre fede l'allerta della Regione Lazio e del sistema IT-alert. Fonti e dettagli nella pagina ⓘ.</p>
 </section>
 
@@ -565,9 +624,15 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
     <p>Il livello di allerta viene dal bollettino nazionale, pubblicato una volta al giorno entro le 16. La Regione può aggiornare la valutazione anche in altri momenti, e l'app lo mostra solo con il bollettino successivo. Senza connessione l'app mostra l'ultimo bollettino scaricato. In caso di dubbio fa fede la pagina ufficiale della Regione.</p>
   </div></details>
 
+  <div class="card" id="src-card">
+    <div class="now-head"><span class="eyebrow">Fonti e aggiornamenti</span><span class="muted">su questo telefono</span></div>
+    <div id="src-list"></div>
+  </div>
+
   <details class="acc info-acc"><summary>Fonti e licenze</summary><div class="acc-body info-body">
     <p><strong>Allerte:</strong> Bollettino di criticità nazionale del Dipartimento della Protezione Civile, dati aperti con licenza <a href="https://creativecommons.org/licenses/by/4.0/deed.it" target="_blank" rel="noopener">CC BY 4.0</a>, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica" target="_blank" rel="noopener">github.com/pcm-dpc</a>. I dati sono mostrati senza modifiche nel contenuto: l'app calcola solo il livello più alto della zona.</p>
     <p><strong>Meteo previsto:</strong> Bollettino di vigilanza meteorologica nazionale del Dipartimento della Protezione Civile, dati aperti con licenza CC BY 4.0, da <a href="https://github.com/pcm-dpc/DPC-Bollettini-Vigilanza-Meteorologica" target="_blank" rel="noopener">github.com/pcm-dpc</a>.</p>
+    <p><strong>Previsioni 3 giorni:</strong> modello ItaliaMeteo-ARPAE ICON-2I, dati di <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> con licenza CC BY 4.0. È una previsione automatica, non un'allerta.</p>
     <p><strong>Terremoti:</strong> dati dell'Istituto Nazionale di Geofisica e Vulcanologia (<a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">INGV</a>) e, se non raggiungibile, del Centro Sismologico Euro-Mediterraneo (EMSC). Sono localizzazioni automatiche o rivedute che possono cambiare nelle ore successive.</p>
     <p><strong>Pronto soccorso vicini:</strong> ospedali segnati con pronto soccorso su OpenStreetMap, cercati tramite i servizi Nominatim e Overpass.</p>
     <p><strong>Coordinate dei comuni:</strong> © contributori di <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, licenza ODbL.</p>
@@ -584,10 +649,11 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
     <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica i bollettini dai server di GitHub e i dati sui terremoti da INGV (o EMSC). Come per ogni sito, questi server ricevono l'indirizzo IP del telefono per rispondere. La tua posizione non viene inviata: l'app scarica i terremoti di tutta Italia e calcola le distanze sul telefono.</p>
     <p><strong>Notifiche:</strong> se le attivi, il telefono genera un indirizzo anonimo per ricevere i messaggi, che viene salvato sul servizio dell'associazione (Cloudflare) e usato solo per inviare le notifiche di Allerta Cave. Non contiene il tuo nome, il numero o la posizione. Puoi disattivarle in qualsiasi momento dalla pagina Allerte o dalle impostazioni del telefono.</p>
     <p><strong>Ricerca pronto soccorso:</strong> se tocchi "Vicini a me", l'app invia ai servizi pubblici di OpenStreetMap (Nominatim e, in riserva, Overpass) la tua posizione arrotondata a circa 1 km, solo per trovare gli ospedali nel raggio di 30 km.</p>
+    <p><strong>Previsioni:</strong> per le previsioni l'app invia al servizio gratuito Open-Meteo le coordinate del comune scelto, oppure la tua posizione arrotondata a circa 1 km se usi "Usa la mia posizione".</p>
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 2.4 · 23 ottobre 2026</span>
+    <span id="app-version">Versione 2.7 · 24 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1156,7 +1222,7 @@ const BCR = (() => {
     return { today: { file: "today", date: d0 }, tomorrow: { file: "tomorrow", date: d1 }, stale: true };
   }
 
-  return { API, RAW, CACHE, CHECK_EVERY, DEFAULT_COMUNE, LEVELS, SHORT, level, prepare, inRings, byPoint, byComune, comuni, plan, stemDate };
+  return { ymd, API, RAW, CACHE, CHECK_EVERY, DEFAULT_COMUNE, LEVELS, SHORT, level, prepare, inRings, byPoint, byComune, comuni, plan, stemDate };
 })();
 
 if (typeof module !== "undefined") module.exports = BCR;
@@ -1176,9 +1242,16 @@ if (typeof document !== "undefined") (function allertaInit() {
   const zonesMem = {}; // file topojson già decodificati in questa sessione
 
   /* --- rete e cache --- */
+  // Il bollettino esce di solito tra le 14 e le 16 e arriva su GitHub circa 20 minuti dopo la firma.
+  // Finché quello di oggi non c'è, nel pomeriggio controllo ogni 5 minuti; altrimenti ogni 20.
+  function checkEvery(meta) {
+    const now = new Date(), h = now.getHours();
+    const haveToday = meta && +meta.stem.slice(0, 8) === BCR.ymd(now);
+    return !haveToday && h >= 13 && h < 19 ? 5 * 60 * 1000 : BCR.CHECK_EVERY;
+  }
   async function latestStem(force) {
     const meta = ls.get("allerta-meta", null);
-    if (!force && meta && Date.now() - meta.checkedAt < BCR.CHECK_EVERY) return meta.stem;
+    if (!force && meta && Date.now() - meta.checkedAt < checkEvery(meta)) return meta.stem;
     try {
       const r = await fetch(BCR.API + "/commits?path=files/topojson&per_page=1", { cache: "no-store" });
       if (!r.ok) throw new Error("api " + r.status);
@@ -1190,7 +1263,7 @@ if (typeof document !== "undefined") (function allertaInit() {
       ls.set("allerta-meta", { stem, checkedAt: Date.now() });
       return stem;
     } catch (e) {
-      if (meta) return meta.stem; // senza rete o limite superato: uso l'ultimo noto
+      if (meta && !force) return meta.stem; // senza rete o limite superato: uso l'ultimo noto
       throw e;
     }
   }
@@ -1214,7 +1287,10 @@ if (typeof document !== "undefined") (function allertaInit() {
   }
 
   /* --- disegno --- */
-  function setState(lvl) { el.box.dataset.lvl = String(lvl); }
+  function setState(lvl) {
+    el.box.dataset.lvl = String(lvl);
+    document.querySelectorAll("#now-colors .code").forEach((c, i) => c.classList.toggle("cur", i === lvl)); // badge "OGGI" sul livello in vigore
+  }
   function showError(text) {
     setState(-1); el.level.textContent = "Allerta non disponibile"; el.change.hidden = true;
     el.msg.textContent = text; el.msg.hidden = false; el.risks.hidden = true; el.tomorrow.hidden = true; el.retry.hidden = false;
@@ -1301,6 +1377,7 @@ if (typeof document !== "undefined") (function allertaInit() {
   else el.date.textContent = fmtDay(new Date(), { weekday: "long", day: "numeric", month: "long" });
   update();
   document.addEventListener("visibilitychange", () => { if (!document.hidden) update(); });
+  setInterval(() => { if (!document.hidden) update(); }, 60 * 1000); // ad app aperta: il ritmo dei controlli lo decide latestStem
 
   el.retry.addEventListener("click", () => { el.level.textContent = "Carico il bollettino"; update(); });
 
@@ -1316,7 +1393,7 @@ if (typeof document !== "undefined") (function allertaInit() {
       if (stem) toast(stem !== before ? "Nuovo bollettino del " + stemLabel(stem) : "Nessun nuovo bollettino: è già il più recente");
       else toast("Non riesco a controllare: riprova tra poco");
     } catch (e) {
-      toast("Nessuna connessione: mostro l'ultimo bollettino salvato");
+      toast(navigator.onLine === false ? "Nessuna connessione: mostro l'ultimo bollettino salvato" : "GitHub non risponde ora: riprova tra qualche minuto");
     } finally {
       rb.disabled = false; rb.classList.remove("spin"); rb.lastChild.textContent = "Aggiorna";
     }
@@ -1353,7 +1430,7 @@ if (typeof document !== "undefined") (function allertaInit() {
 const MS = (() => {
   const CAVE = { lat: 41.8189, lon: 12.9306, name: "Cave" };
   const VIG_RAW = "https://raw.githubusercontent.com/pcm-dpc/DPC-Bollettini-Vigilanza-Meteorologica/master/files/";
-  const PIOGGIA = ["", "Assenti", "Deboli", "Moderate", "Elevate", "Molto elevate"];
+  const PIOGGIA = ["", "Non rilevanti", "Deboli", "Moderate", "Elevate", "Molto elevate"];
   // Zona di allerta (bollettino di criticità) → regione, ricavata dai bollettini DPC
   const ZONA_REGIONE = {"Alpago Cansiglio - Bacino Piave":"Veneto","Alta Irpinia e Sannio":"Campania","Alta Valtellina":"Lombardia","Alta collina piacentino-parmense":"Emilia Romagna","Alta collina romagnola":"Emilia Romagna","Alta pianura orientale":"Lombardia","Alta pianura trevigiana occidentale - Bacini Piave, Sile, Scolante in Laguna":"Veneto","Alta pianura trevigiana orientale - Bacino Livenza":"Veneto","Alto Tevere":"Umbria","Alto Volturno - Medio Sangro":"Molise","Alto Volturno e Matese":"Campania","Aniene":"Lazio","Appennino di Rieti":"Lazio","Appennino pavese":"Lombardia","Arno-Casentino":"Toscana","Arno-Costa":"Toscana","Arno-Firenze":"Toscana","Arno-Valdarno Sup.":"Toscana","Bacini Costieri Nord":"Lazio","Bacini Costieri Sud":"Lazio","Bacini Flumendosa - Flumineddu":"Sardegna","Bacini Liguri Marittimi di Centro":"Liguria","Bacini Liguri Marittimi di Levante":"Liguria","Bacini Liguri Marittimi di Ponente":"Liguria","Bacini Liguri Padani di Levante":"Liguria","Bacini Liguri Padani di Ponente":"Liguria","Bacini Montevecchio - Pischilappiu":"Sardegna","Bacini Tordino Vomano":"Abruzzo","Bacini del Lato e del Lenne":"Puglia","Bacini di Roma":"Lazio","Bacino Alto del Sangro":"Abruzzo","Bacino Basso del Sangro":"Abruzzo","Bacino Medio Tevere":"Lazio","Bacino del Fiume Simeto":"Sicilia","Bacino del Liri":"Lazio","Bacino del Livenza e del Lemene":"Friuli Venezia Giulia","Bacino del Pescara":"Abruzzo","Bacino del Tirso":"Sardegna","Bacino dell'Aterno":"Abruzzo","Bacino dell'Isonzo e Pianura di Udine e Gorizia":"Friuli Venezia Giulia","Bacino di Levante / Carso":"Friuli Venezia Giulia","Bacino montano del Tagliamento e del Torre":"Friuli Venezia Giulia","Basi-A1":"Basilicata","Basi-A2":"Basilicata","Basi-B":"Basilicata","Basi-C":"Basilicata","Basi-D":"Basilicata","Basi-E1":"Basilicata","Basi-E2":"Basilicata","Bassa Valle d?Aosta, dalla Gola di Montjovet a Pont-Saint-Martin, Valle del torrente Chalamy, Valle d?Ayas, Valle di Champorcher e Valle di Gresso":"Valle d'Aosta","Bassa collina e pianura romagnola":"Emilia Romagna","Bassa collina piacentino-parmense":"Emilia Romagna","Bassa pianura centro-occidentale":"Lombardia","Bassa pianura centro-orientale":"Lombardia","Bassa pianura occidentale":"Lombardia","Bassa pianura orientale":"Lombardia","Basso Cilento":"Campania","Basso Fortore":"Puglia","Basso Ofanto":"Puglia","Belbo e Bormida":"Piemonte","Bisenzio e Ombrone Pt":"Toscana","Campidano":"Sardegna","Centro-Meridionale e isole Pelagie":"Sicilia","Centro-Settentrionale, versante tirrenico":"Sicilia","Chiani - Paglia":"Umbria","Chiascio - Topino":"Umbria","Colli Euganei e Colli Berici - Bacini Bacchiglione Fratta-Gorzone":"Veneto","Collina bolognese":"Emilia Romagna","Collina emiliana centrale":"Emilia Romagna","Costa centro meridionale - Bacini Brenta Bacchiglione, Fratta-Gorzone, Adige, Scolante in Laguna":"Veneto","Costa centro-orientale - Bacini del Piave, Sile, Scolante in Laguna, Pianura tra Livenza e Piave":"Veneto","Costa ferrarese":"Emilia Romagna","Costa meridionale e Delta Po - Bacini Fissero Tartaro Canalbianco, Po, Adige":"Veneto","Costa orientale Bacini Livenza, Lemene, Tagliamento, Pianura tra Livenza e Piave":"Veneto","Costa romagnola":"Emilia Romagna","Dolomiti Occidentali: Agordino, Zoldano, alta Val Boite":"Veneto","Dolomiti orientali: Cadore, Comelico":"Veneto","Dorsale settentrionale e nord-occidentale, Valgrisenche e Valdigne":"Valle d'Aosta","Etruria":"Toscana","Etruria-Costa Nord":"Toscana","Etruria-Costa Sud":"Toscana","Feltrino - Bacino Cismon":"Veneto","Fiora e Albegna":"Toscana","Fiora e Albegna-Costa e Giglio":"Toscana","Frentani - Sannio - Matese":"Molise","Gallura":"Sardegna","Gargano e Tremiti":"Puglia","Iglesiente":"Sardegna","Isole":"Toscana","Laghi e Prealpi Varesine":"Lombardia","Laghi e Prealpi orientali":"Lombardia","Lario e Prealpi occidentali":"Lombardia","Lessinia meridionale e alta pianura veronese - Bacino Adige":"Veneto","Litoranea":"Molise","Logudoro":"Sardegna","Lunigiana":"Toscana","Marc-1":"Marche","Marc-2":"Marche","Marc-3":"Marche","Marc-4":"Marche","Marc-5":"Marche","Marc-6":"Marche","Marsica":"Abruzzo","Media-bassa Valtellina":"Lombardia","Medio Tevere":"Umbria","Montagna bolognese":"Emilia Romagna","Montagna emiliana centrale":"Emilia Romagna","Montagna piacentino-parmense":"Emilia Romagna","Montagna romagnola":"Emilia Romagna","Mugello-Val di Sieve":"Toscana","Nera - Corno":"Umbria","Nodo Idraulico di Milano":"Lombardia","Nord-Occidentale e isole Egadi e Ustica":"Sicilia","Nord-Orientale, versante ionico":"Sicilia","Nord-Orientale, versante tirrenico e isole Eolie":"Sicilia","Ombrone Gr-Alto":"Toscana","Ombrone Gr-Costa":"Toscana","Ombrone Gr-Medio":"Toscana","Orobie bergamasche":"Lombardia","Pedemontana e alta pianura centrale - Bacini Brenta Bacchiglione Agno-Guà Alpone":"Veneto","Penisola sorrentino-amalfitana, Monti di Sarno e Monti Picentini":"Campania","Piana Sele e Alto Cilento":"Campania","Piana campana, Napoli, Isole e Area vesuviana":"Campania","Pianura Cuneese":"Piemonte","Pianura Torinese e Colline":"Piemonte","Pianura bolognese":"Emilia Romagna","Pianura centrale":"Lombardia","Pianura centrale - Bacini Brenta Bacchiglione, Muson, Scolante in Laguna":"Veneto","Pianura centro meridionale - Bacini Bacchiglione Fratta-Gorzone, Adige, Scolante in Laguna, Fissero Tartaro Canalbianco":"Veneto","Pianura centro meridionale e Bassa padovana - Bacini Fratta-Gorzone, Adige, Scolante in Laguna":"Veneto","Pianura centro-orientale - Bacini del Piave, Sile, Scolante in Laguna, Pianura tra Livenza e Piave":"Veneto","Pianura ferrarese":"Emilia Romagna","Pianura modenese":"Emilia Romagna","Pianura orientale - Bacini Livenza, Lemene, Pianura tra Livenza e Piave":"Veneto","Pianura piacentino-parmense":"Emilia Romagna","Pianura polesana centrale - Bacini Fissero Tartaro Canalbianco,Po, Adige":"Veneto","Pianura reggiana":"Emilia Romagna","Pianura reggiana di Po":"Emilia Romagna","Pianura settentrionale":"Piemonte","Polesine occidentale, Bassa Veronese e Valli Grandi Veronesi - Bacini Fissero Tartaro Canalbianco, Po, Adige":"Veneto","Prealpi bellunesi Valbelluna/Feltrino - Bacino Piave":"Veneto","Prealpi orientali, Baldo e Lessinia settentrionale - Bacino Adige":"Veneto","Prealpi trevigiane - Bacino Livenza":"Veneto","Prealpi trevigiane - Bacino Piave":"Veneto","Prealpi vicentine Altopiano dei Sette Comuni - Bacini Brenta Bacchiglione Agno":"Veneto","Provincia Autonoma di Bolzano":"Trentino Alto Adige","Provincia Autonoma di Trento":"Trentino Alto Adige","Puglia Centrale Adriatica":"Puglia","Puglia Centrale Bradanica":"Puglia","Reno":"Toscana","Romagna-Toscana":"Toscana","Salento":"Puglia","Scrivia":"Piemonte","Serchio-Costa":"Toscana","Serchio-Garfagnana-Lima":"Toscana","Serchio-Lucca":"Toscana","Sub-Appennino Dauno":"Puglia","Sud-Occidentale e isola di Pantelleria":"Sicilia","Sud-Orientale, versante Stretto di Sicilia":"Sicilia","Sud-Orientale, versante ionico":"Sicilia","Tanagro":"Campania","Tavoliere - bassi bacini del Candelaro, Cervaro e Carapelle":"Puglia","Toce":"Piemonte","Trasimeno - Nestore":"Umbria","Tusciano e Alto Sele":"Campania","Val Sesia, Cervo e Chiusella":"Piemonte","Valcamonica":"Lombardia","Valchiavenna":"Lombardia","Valdarno Inf.":"Toscana","Valdelsa-Valdera":"Toscana","Valdichiana":"Toscana","Valle Tanaro":"Piemonte","Valle d?Aosta centrale, Valle del Gran San Bernardo da Aosta a Valpelline,Valle di Saint-Barthélemy e Valtournenche":"Valle d'Aosta","Valle di Cogne, Valsavarenche e Valle di Rhêmes":"Valle d'Aosta","Valli Orco, Lanzo e Sangone":"Piemonte","Valli Susa, Chisone, Pellice e Po":"Piemonte","Valli Varaita, Maira e Stura":"Piemonte","Valtiberina":"Toscana","Versante Jionico Centro-meridionale":"Calabria","Versante Jonico Centro-settentrionale":"Calabria","Versante Jonico Meridionale":"Calabria","Versante Jonico Settentrionale":"Calabria","Versante Tirrenico Centro-meridionale":"Calabria","Versante Tirrenico Centro-settentrionale":"Calabria","Versante Tirrenico Meridionale":"Calabria","Versante Tirrenico Settentrionale":"Calabria","Versilia":"Toscana"};
   // Parole con cui il bollettino nomina ogni regione (anche come aggettivo: "coste laziali", "appennino tosco-emiliano")
@@ -1412,7 +1489,27 @@ const MS = (() => {
     const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLon / 2) ** 2;
     return 2 * R * Math.asin(Math.sqrt(h));
   }
-  return { CAVE, VIG_RAW, PIOGGIA, ZONA_REGIONE, REG_RE, conReg, regionOf, forRegion, ymdStr, parseVig, parseFdsn, km };
+  // Fenomeni del bollettino di vigilanza (icone della legenda DPC). Esclusi mari e moto ondoso.
+  const FENOMENI = {
+    1: "💧 Piogge sparse o intermittenti", 2: "🌧️ Piogge diffuse e continue", 3: "❄️ Nevicate deboli o moderate", 4: "❄️ Nevicate abbondanti",
+    5: "⛈️ Rovesci o temporali isolati", 6: "⛈️ Rovesci o temporali sparsi", 7: "⛈️ Rovesci o temporali diffusi",
+    10: "🌬️ Venti forti", 11: "🌬️ Burrasca", 12: "🌪️ Tempesta", 13: "🌬️ Frequenti raffiche",
+    20: "🧊 Gelate in collina", 21: "🧊 Gelate in pianura", 30: "🌫️ Nebbie notturne e al mattino", 31: "🌫️ Nebbie persistenti",
+    60: "🌡️ Temperature elevate o in aumento", 61: "🌡️ Temperature molto elevate", 62: "🌡️ Temperature basse o in calo", 63: "🌡️ Temperature molto basse"
+  };
+  const FEN_KM = 50; // il DPC indica i fenomeni con icone sparse sulla mappa: prendo quelle entro 50 km
+  function fenomeniVicini(topo, ref) {
+    if (!topo || !ref) return [];
+    const obj = Object.values(topo.objects || {})[0]; if (!obj) return [];
+    const ids = [];
+    for (const g of obj.geometries || []) {
+      const p = g.properties || {}, id = +p.id_fenomeno;
+      if (!FENOMENI[id] || ids.includes(id)) continue;
+      if (km(ref, { lat: +p.lat, lon: +p.lon }) <= FEN_KM) ids.push(id);
+    }
+    return ids.sort((a, b) => a - b).map((id) => FENOMENI[id]);
+  }
+  return { FENOMENI, fenomeniVicini, CAVE, VIG_RAW, PIOGGIA, ZONA_REGIONE, REG_RE, conReg, regionOf, forRegion, ymdStr, parseVig, parseFdsn, km };
 })();
 
 if (typeof document !== "undefined") (function meteoSismiInit() {
@@ -1481,19 +1578,25 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
       const idx = await vigIndex();
       const days = idx.shift === 0 ? [["Oggi", idx.j.today], ["Domani", idx.j.tomorrow]] : [["Oggi", idx.j.tomorrow], ["Domani", idx.j.aftertomorrow]];
       const p = place();
-      const rows = [];
+      const rp = await refPoint(p).catch(() => null);
+      const rows = [], rt = [], fl = [];
       for (const [label, d] of days) {
         if (!d || !d.topo_json) continue;
         let z = null;
         try { z = findZone(await vigZones(d.topo_json[0]), p); } catch (e) {}
         const cls = z ? +z.props.id_classificazione : 0;
-        rows.push(`<li><span>${label}</span><span><i class="rain r${cls}"></i>${z ? "Piogge " + MS.PIOGGIA[cls].toLowerCase() : "Non disponibile"}</span></li>`);
+        const rain = z ? "Piogge " + MS.PIOGGIA[cls].toLowerCase() : "Non disponibile";
+        let fen = [];
+        try { if (d.topo_json[1] && rp) fen = MS.fenomeniVicini(await cachedJson(d.topo_json[1]), rp); } catch (e) {}
+        rows.push(`<div class="vday"><div class="vday-top"><span>${label}</span><span><i class="rain r${cls}"></i>${rain}</span></div>${fen.length ? `<div class="fen">${fen.map((f) => `<span class="fchip">${escH(f)}</span>`).join("")}</div>` : ""}</div>`);
+        rt.push(rain); fl.push(fen);
         if (label === "Oggi" && z) $("#vig-zone").textContent = z.props.Nome_Zona;
       }
       $("#vig-rows").innerHTML = rows.join("");
-      const rt = [...document.querySelectorAll("#vig-rows li")].map((li) => li.lastElementChild.textContent.trim());
+      const short = (f) => f.replace(/^\S+\s/, "").toLowerCase();
       $("#tv-main").textContent = rt[0] || "Non disponibile";
-      $("#tv-sub").textContent = rt[1] ? "Domani: " + rt[1].toLowerCase() : "";
+      $("#tv-sub").textContent = fl[0] && fl[0].length ? short(fl[0][0]).replace(/^./, (c) => c.toUpperCase()) : rt[1] ? "Domani: " + rt[1].toLowerCase() + (fl[1] && fl[1].length ? ", " + short(fl[1][0]) : "") : "";
+      ls.set("src-vig", { key: idx.key, at: Date.now(), offline: !!idx.offline });
       const region = currentRegion(p);
       if (!region) {
         $("#vig-lazio").innerHTML = `<p class="vig-sub">Cerco la regione…</p>`;
@@ -1503,7 +1606,6 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
         $("#vig-lazio").innerHTML = groups.length
           ? `<p class="vig-sub">Fenomeni segnalati per ${escH(MS.conReg(region))}</p>` + groups.map(([label, l]) => `<p class="vig-day">${label}</p><ul class="vig-list">${l.map(li).join("")}</ul>`).join("")
           : `<p class="vig-sub">Il bollettino non segnala fenomeni significativi per ${escH(MS.conReg(region))}.</p>`;
-        if (groups.length) $("#tv-sub").textContent += " · fenomeni segnalati";
       }
       const d = idx.key;
       $("#vig-src").innerHTML = `Bollettino di vigilanza meteorologica DPC del ${d.slice(6, 8)}/${d.slice(4, 6)}/${d.slice(0, 4)}${idx.offline ? " · ultimo scaricato" : ""} · <a href="https://mappe.protezionecivile.gov.it/it/mappe-rischi/bollettino-di-vigilanza/" target="_blank" rel="noopener">Bollettino nazionale</a>`;
@@ -1601,18 +1703,89 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
     }
   }
 
-  function refresh() { renderVig(); renderQuakes(); }
+  /* ---------- Previsioni ICON-2I (Open-Meteo) ---------- */
+  const FC_MODEL = "italia_meteo_arpae_icon_2i";
+  const FC_EVERY = 60 * 60 * 1000; // il modello gira ogni 12 ore: ricontrollo al massimo ogni ora
+  const dayName = (iso, i) => i === 0 ? "Oggi" : i === 1 ? "Domani" : new Date(iso + "T12:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric" }).replace(/^./, (c) => c.toUpperCase());
+  async function fetchForecast(rp, force) {
+    const lat = (+rp.lat).toFixed(2), lon = (+rp.lon).toFixed(2), key = lat + "," + lon; // posizione arrotondata a circa 1 km
+    const last = ls.get("fc-ultimo", null);
+    if (!force && last && last.key === key && Date.now() - last.at < FC_EVERY) return last;
+    try {
+      const url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&models=" + FC_MODEL
+        + "&daily=temperature_2m_max,temperature_2m_min,wind_gusts_10m_max,precipitation_sum&timezone=Europe%2FRome&forecast_days=3";
+      const r = await fetch(url);
+      if (!r.ok) throw new Error("http " + r.status);
+      const j = await r.json();
+      let run = null;
+      try { const m = await (await fetch("https://api.open-meteo.com/data/" + FC_MODEL + "/static/meta.json")).json(); if (m.last_run_initialisation_time) run = m.last_run_initialisation_time * 1000; } catch (e) {}
+      const res = { key, at: Date.now(), run, daily: j.daily };
+      ls.set("fc-ultimo", res);
+      return res;
+    } catch (e) {
+      if (last && last.key === key) return { ...last, offline: true };
+      throw e;
+    }
+  }
+  async function renderForecast(force) {
+    const p = place();
+    const rp = await refPoint(p);
+    if (!rp) { $("#tf-main").textContent = "…"; $("#tf-sub").textContent = "Cerco la posizione"; return; }
+    try {
+      const f = await fetchForecast(rp, force), d = f.daily;
+      const n = Math.min(3, (d.time || []).length);
+      if (!n) throw new Error("vuoto");
+      const r1 = (v) => v == null || isNaN(v) ? "–" : Math.round(v);
+      const mm = (v) => v == null || isNaN(v) ? "–" : (+v).toFixed(v > 0 && v < 1 ? 1 : 0);
+      const rows = [];
+      for (let i = 0; i < n; i++) {
+        rows.push(`<div class="fc-row"><b>${dayName(d.time[i], i)}</b><span class="vals"><span class="t">${r1(d.temperature_2m_max[i])}°</span><span class="muted">${r1(d.temperature_2m_min[i])}°</span></span><span class="vals r"><span>🌬️ ${r1(d.wind_gusts_10m_max[i])} km/h</span><span>💧 ${mm(d.precipitation_sum[i])} mm</span></span></div>`);
+      }
+      $("#fc-rows").innerHTML = rows.join("");
+      $("#fc-title").textContent = "Previsioni · " + (p.mode === "geo" ? "la tua posizione" : (p.name || "Cave"));
+      const hm = (t) => new Date(t).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).replace(",", " ore");
+      $("#fc-src").innerHTML = `Previsione automatica del modello ItaliaMeteo-ARPAE ICON-2I${f.run ? ", corsa del " + hm(f.run) : ""}${f.offline ? " · ultimo aggiornamento salvato" : ""}. Non è un'allerta: fa fede la Protezione Civile. Dati <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>.`;
+      $("#tf-main").textContent = "Oggi max " + r1(d.temperature_2m_max[0]) + "° · min " + r1(d.temperature_2m_min[0]) + "°";
+      $("#tf-sub").textContent = "Raffiche fino a " + r1(d.wind_gusts_10m_max[0]) + " km/h · pioggia " + mm(d.precipitation_sum[0]) + " mm";
+    } catch (e) {
+      if (!$("#fc-rows").childElementCount) { $("#tf-main").textContent = "Non disponibile"; $("#tf-sub").textContent = "Previsioni non raggiungibili"; }
+    }
+    renderSources();
+  }
+
+  /* ---------- Fonti e aggiornamenti (pagina Informazioni) ---------- */
+  function renderSources() {
+    const box = $("#src-list"); if (!box) return;
+    const hm = (t) => new Date(t).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).replace(",", " ore");
+    const H = 3600 * 1000, rows = [];
+    const meta = ls.get("allerta-meta", null);
+    rows.push(["Allerta di oggi", meta ? "Bollettino di criticità DPC del " + meta.stem.slice(6, 8) + "/" + meta.stem.slice(4, 6) + " ore " + meta.stem.slice(9, 11) + ":" + meta.stem.slice(11, 13) + " · controllato il " + hm(meta.checkedAt) : "Non ancora scaricato",
+      "https://mappe.protezionecivile.gov.it/it/mappe-rischi/bollettino-di-criticita/", "Ufficiale", meta ? (Date.now() - new Date(+meta.stem.slice(0, 4), +meta.stem.slice(4, 6) - 1, +meta.stem.slice(6, 8)) < 40 * H) : null]);
+    const v = ls.get("src-vig", null);
+    rows.push(["Meteo previsto", v ? "Vigilanza meteorologica DPC del " + v.key.slice(6, 8) + "/" + v.key.slice(4, 6) + " · scaricata il " + hm(v.at) : "Non ancora scaricato",
+      "https://mappe.protezionecivile.gov.it/it/mappe-rischi/bollettino-di-vigilanza/", "Ufficiale", v ? !v.offline && Date.now() - v.at < 24 * H : null]);
+    const f = ls.get("fc-ultimo", null);
+    rows.push(["Previsioni 3 giorni", f ? "Modello ICON-2I" + (f.run ? " · corsa del " + hm(f.run) : "") + " · scaricate il " + hm(f.at) : "Non ancora scaricate",
+      "https://open-meteo.com/en/docs/italia-meteo-arpae-api", "Open-Meteo", f ? Date.now() - f.at < 13 * H : null]);
+    const q = ls.get("sismi-ultimo", null);
+    rows.push(["Terremoti", q ? (q.src || "INGV") + " · aggiornati il " + hm(q.at) : "Non ancora scaricati",
+      "https://terremoti.ingv.it/", q && q.src === "EMSC" ? "EMSC" : "INGV", q ? Date.now() - q.at < 2 * H : null]);
+    box.innerHTML = rows.map(([a, b, u, l, ok]) => `<div class="src-row"><div><strong><i class="fresh${ok === null ? " none" : ok ? "" : " old"}"></i>${a}</strong><small>${escH(b)}</small></div><a href="${u}" target="_blank" rel="noopener">${l} ›</a></div>`).join("");
+  }
+
+  function refresh() { renderVig(); renderQuakes(); renderForecast(); }
   refresh();
   document.addEventListener("luogo", refresh);
-  document.addEventListener("aggiorna-dati", () => { lastVig = Date.now(); refresh(); });
-  document.addEventListener("allerta-zona", () => { renderQuakes(); renderVig(); });
+  document.addEventListener("aggiorna-dati", () => { lastVig = Date.now(); renderVig(); renderQuakes(); renderForecast(true); });
+  document.addEventListener("allerta-zona", () => { renderQuakes(); renderVig(); renderForecast(); });
   let lastVig = Date.now();
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) return;
-    renderQuakes();
+    renderQuakes(); renderForecast();
     if (Date.now() - lastVig > 20 * 60 * 1000) { lastVig = Date.now(); renderVig(); } // ricontrolla la vigilanza meteo al rientro nell'app
   });
   setInterval(() => { if (!document.hidden) renderQuakes(); }, 5 * 60 * 1000);
+  document.getElementById("b-info").addEventListener("click", renderSources); // aggiorna gli orari quando si apre la pagina Informazioni
 })();
 
 </script>
