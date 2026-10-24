@@ -307,7 +307,17 @@ header.top .wrap{gap:8px}
 .vday-top span:last-child{display:flex;align-items:center;gap:8px;font-weight:700}
 .fen{display:flex;flex-wrap:wrap;gap:6px}
 .fchip{display:inline-flex;align-items:center;gap:5px;font-size:.8rem;font-weight:600;padding:4px 9px;border-radius:999px;background:var(--glass-soft);border:1px solid var(--glass-line)}
-.tile.wide{grid-column:1/-1}
+#tab-allerte .tiles{grid-template-columns:1fr;gap:8px}
+.xt{background:var(--glass);border:1px solid var(--glass-line);border-radius:20px;box-shadow:var(--glass-shadow),var(--hl);min-width:0;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);overflow:hidden}
+.xt.open{border-color:color-mix(in srgb,var(--accent) 45%,var(--glass-line))}
+.xt .tile{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;width:100%;border-radius:0;
+  grid-template-columns:1fr auto;grid-template-areas:"k more" "b more" "s more";column-gap:10px;align-items:center;padding:11px 14px}
+.xt .tile .k{grid-area:k} .xt .tile b{grid-area:b;font-size:1.02rem} .xt .tile small{grid-area:s} .xt .tile .more{grid-area:more;align-self:center;margin:0}
+.xt.open .tile small{display:none}
+.xt .tile[aria-expanded="true"]{border:0}
+.xt .xbody{padding:0 14px 14px}
+.xt .xbody>.card{background:none;border:0;box-shadow:none;padding:0;-webkit-backdrop-filter:none;backdrop-filter:none;margin:0}
+.xt .xbody .now-head{display:none}
 .fc{display:grid;border-top:1px solid var(--line)}
 .fc-row{display:grid;grid-template-columns:4.8em auto 1fr;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.92rem}
 .fc-row .vals{display:flex;gap:10px;align-items:baseline}
@@ -538,29 +548,20 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
   </div>
 
   <div class="tiles">
+    <div class="xt">
     <button class="tile" id="tile-vig" type="button" aria-expanded="false" aria-controls="vig-wrap"><span class="k">Meteo previsto</span><b id="tv-main">…</b><small id="tv-sub">Carico il bollettino</small><span class="more">Dettagli</span></button>
-    <button class="tile" id="tile-eq" type="button" aria-expanded="false" aria-controls="eq-wrap"><span class="k">Terremoti · 7 giorni</span><b id="te-main">…</b><small id="te-sub">Carico i dati INGV</small><span class="more">Dettagli</span></button>
-    <button class="tile wide" id="tile-fc" type="button" aria-expanded="false" aria-controls="fc-wrap"><span class="k">Previsioni · 3 giorni</span><b id="tf-main">…</b><small id="tf-sub">Carico le previsioni</small><span class="more">Dettagli</span></button>
-  </div>
-
-  <div id="vig-wrap" hidden>
+    <div class="xbody" id="vig-wrap" hidden>
   <div class="card vig" id="vig" hidden>
     <div class="now-head"><span class="eyebrow">Meteo previsto</span><span id="vig-zone" class="muted"></span></div>
     <div id="vig-rows"></div>
     <div id="vig-lazio"></div>
     <p class="now-src" id="vig-src"></p>
   </div>
-  </div>
-
-  <div id="fc-wrap" hidden>
-  <div class="card" id="fc">
-    <div class="now-head"><span class="eyebrow" id="fc-title">Previsioni</span><span class="muted">modello ICON-2I</span></div>
-    <div class="fc" id="fc-rows"></div>
-    <p class="now-src" id="fc-src"></p>
-  </div>
-  </div>
-
-  <div id="eq-wrap" hidden>
+    </div>
+    </div>
+    <div class="xt">
+    <button class="tile" id="tile-eq" type="button" aria-expanded="false" aria-controls="eq-wrap"><span class="k">Terremoti · 7 giorni</span><b id="te-main">…</b><small id="te-sub">Carico i dati INGV</small><span class="more">Dettagli</span></button>
+    <div class="xbody" id="eq-wrap" hidden>
   <div class="card eq" id="eq">
     <div class="now-head"><span class="eyebrow">Terremoti recenti</span><span class="muted">ultimi 7 giorni</span></div>
     <div id="eq-body">
@@ -570,6 +571,18 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
     </div>
     <p id="eq-err" hidden>Non riesco a scaricare i dati sui terremoti. Controlla la connessione oppure apri <a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">terremoti.ingv.it</a>.</p>
   </div>
+    </div>
+    </div>
+    <div class="xt">
+    <button class="tile" id="tile-fc" type="button" aria-expanded="false" aria-controls="fc-wrap"><span class="k">Previsioni · 3 giorni</span><b id="tf-main">…</b><small id="tf-sub">Carico le previsioni</small><span class="more">Dettagli</span></button>
+    <div class="xbody" id="fc-wrap" hidden>
+  <div class="card" id="fc">
+    <div class="now-head"><span class="eyebrow" id="fc-title">Previsioni</span><span class="muted">modello ICON-2I</span></div>
+    <div class="fc" id="fc-rows"></div>
+    <p class="now-src" id="fc-src"></p>
+  </div>
+    </div>
+    </div>
   </div>
 
   <details class="acc">
@@ -653,7 +666,7 @@ header.top .brand .logo{height:50px;width:auto;flex:none;filter:drop-shadow(0 2p
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 2.7 · 24 ottobre 2026</span>
+    <span id="app-version">Versione 2.8 · 24 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1102,7 +1115,8 @@ const DAE = [
 document.querySelectorAll(".tile[aria-controls]").forEach(t=>t.addEventListener("click",()=>{
   const w=document.getElementById(t.getAttribute("aria-controls")); const open=w.hidden;
   w.hidden=!open; t.setAttribute("aria-expanded",open); t.querySelector(".more").textContent=open?"Chiudi":"Dettagli";
-  if(open) setTimeout(()=>w.scrollIntoView({behavior:"smooth",block:"nearest"}),50);
+  const box=t.closest(".xt"); if(box) box.classList.toggle("open",open);
+  if(open) setTimeout(()=>(box||w).scrollIntoView({behavior:"smooth",block:"nearest"}),50);
 }));
 
 /* il mio comune */
@@ -1696,7 +1710,7 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
       $("#eq-src").innerHTML = `Dati ${res.src === "INGV" ? "INGV – Istituto Nazionale di Geofisica e Vulcanologia" : "EMSC – Centro Sismologico Euro-Mediterraneo"}${res.offline ? " · ultimo aggiornamento salvato" : ""} · <a href="https://terremoti.ingv.it/" target="_blank" rel="noopener">terremoti.ingv.it</a>`;
       $("#eq-err").hidden = true; $("#eq-body").hidden = false;
       $("#te-main").textContent = near.length ? near.length + (near.length === 1 ? " scossa" : " scosse") : "Nessuna scossa";
-      $("#te-sub").textContent = near.length ? "Ultima: M " + near[0].mag.toFixed(1) + ", " + ago(near[0].time) : "M 2+ entro " + RADIUS + " km " + refLabel;
+      $("#te-sub").textContent = "Entro " + RADIUS + " km " + refLabel + (near.length ? " · ultima M " + near[0].mag.toFixed(1) + ", " + ago(near[0].time) : " · magnitudo 2 o più");
     } catch (e) {
       $("#eq-body").hidden = true; $("#eq-err").hidden = false;
       $("#te-main").textContent = "Non disponibile"; $("#te-sub").textContent = "Dati INGV non raggiungibili";
