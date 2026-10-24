@@ -1,7 +1,7 @@
-// Allerta Cave: funzionamento offline.
+// Cave Informa: funzionamento offline.
 // Quando cambi i file dell'app, aumenta il numero di versione qui sotto (2.0, 2.1, 2.2…)
 // e scrivi lo stesso numero in index.html, nella riga "Versione …" della pagina Informazioni.
-const VERSION = "allerta-cave-2.8";
+const VERSION = "allerta-cave-2.9";
 const CORE = [
   "./",
   "./index.html",
@@ -64,7 +64,7 @@ self.addEventListener("message", (e) => { if (e.data === "skip") self.skipWaitin
 self.addEventListener("push", (e) => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch (err) { d = { body: e.data && e.data.text() }; }
-  e.waitUntil(self.registration.showNotification(d.title || "Allerta Cave", {
+  e.waitUntil(self.registration.showNotification(d.title || "Cave Informa", {
     body: d.body || "",
     icon: "icons/icon-192.png",
     badge: "icons/icon-192.png",

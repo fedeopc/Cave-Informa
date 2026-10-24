@@ -1,7 +1,7 @@
 {
-  "name": "Allerta Cave",
-  "short_name": "Allerta Cave",
-  "description": "Guida di emergenza per Cave (RM): allerte, cosa fare, zaino di emergenza e numeri utili.",
+  "name": "Cave Informa",
+  "short_name": "Cave Informa",
+  "description": "Cave Informa: allerte di protezione civile, meteo, terremoti, defibrillatori e numeri utili per Cave (RM), a cura dell'Associazione Italiana Protezione Civile Cave – OdV.",
   "lang": "it",
   "start_url": "./",
   "scope": "./",
