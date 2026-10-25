@@ -360,6 +360,26 @@ header.top .wrap{gap:8px}
 .dae-btns .mini{text-decoration:none}
 .steps{margin:0;padding-left:1.3em;display:grid;gap:8px;font-size:.93rem}
 nav.tabs button{font-size:.7rem;white-space:nowrap}
+/* bacheca: eventi e comunicazioni dal foglio Google */
+.bb-banner{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg);padding:12px 14px;border-radius:20px;background:linear-gradient(150deg,color-mix(in srgb,var(--accent) 18%,var(--glass)),var(--glass));border:1px solid var(--glass-line);box-shadow:var(--glass-shadow),var(--hl)}
+.bb-ic{width:44px;height:46px;border-radius:12px;flex:none;display:grid;place-items:center;align-content:center;background:var(--surface);border:1px solid var(--glass-line);line-height:1;text-align:center}
+.bb-ic b{display:block;font-size:1.15rem;font-weight:800}
+.bb-ic small{display:block;font-size:.62rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#C0262D}
+.bb-ic.msg{font-size:1.3rem}
+.bb-banner .t{display:grid;min-width:0;flex:1}
+.bb-banner .t span{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bb-banner .t strong{font-size:1rem;line-height:1.25}
+.bb-banner .t small{color:var(--muted);font-size:.82rem}
+.bb-banner .go{color:var(--accent);font-weight:700;font-size:1.2rem}
+.bb-h{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:2px 0 4px}
+.bb-item{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+.bb-h + .bb-item{border-top:0}
+.bb-item .t{display:grid;gap:3px;min-width:0}
+.bb-item strong{font-size:.98rem}
+.bb-item p{margin:0;font-size:.9rem;white-space:pre-line}
+.bb-item small{color:var(--muted);font-size:.8rem}
+.bb-item a{color:var(--accent);font-weight:600;font-size:.85rem;text-decoration:none}
+.bb-sep{height:10px}
 /* notifiche e comunicazioni */
 .notif-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-size:1.2rem}
 .notif small{color:var(--muted);font-size:.85rem}
@@ -541,6 +561,7 @@ header.top .brand{gap:12px}
   </div>
 
   <a class="card avviso-banner" id="avviso-banner" href="#comune" hidden></a>
+  <a class="bb-banner" id="bb-banner" href="#bacheca" hidden></a>
 
   <div class="card notif" id="notif" hidden>
     <div class="dae-head"><span class="notif-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg></span>
@@ -663,12 +684,13 @@ header.top .brand{gap:12px}
     <p><strong>Dati salvati sul telefono:</strong> le spunte dello zaino, il comune scelto e l'ultimo bollettino, per far funzionare l'app senza connessione. Puoi cancellarli eliminando l'app o i dati del sito.</p>
     <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica i bollettini dai server di GitHub e i dati sui terremoti da INGV (o EMSC). Come per ogni sito, questi server ricevono l'indirizzo IP del telefono per rispondere. La tua posizione non viene inviata: l'app scarica i terremoti di tutta Italia e calcola le distanze sul telefono.</p>
     <p><strong>Notifiche:</strong> se le attivi, il telefono genera un indirizzo anonimo per ricevere i messaggi, che viene salvato sul servizio dell'associazione (Cloudflare) e usato solo per inviare le notifiche di Cave Informa. Non contiene il tuo nome, il numero o la posizione. Puoi disattivarle in qualsiasi momento dalla pagina Allerte o dalle impostazioni del telefono.</p>
+    <p><strong>Bacheca:</strong> eventi e comunicazioni vengono letti da un foglio Google pubblicato dall'associazione. Come per ogni sito, Google riceve l'indirizzo IP del telefono per rispondere; non viene inviato nessun altro dato.</p>
     <p><strong>Ricerca pronto soccorso:</strong> se tocchi "Vicini a me", l'app invia ai servizi pubblici di OpenStreetMap (Nominatim e, in riserva, Overpass) la tua posizione arrotondata a circa 1 km, solo per trovare gli ospedali nel raggio di 30 km.</p>
     <p><strong>Previsioni:</strong> per le previsioni l'app invia al servizio gratuito Open-Meteo le coordinate del comune scelto, oppure la tua posizione arrotondata a circa 1 km se usi "Usa la mia posizione".</p>
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 2.9 · 24 ottobre 2026</span>
+    <span id="app-version">Versione 3.0 · 25 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -709,6 +731,8 @@ header.top .brand{gap:12px}
   <p class="note">Nel Lazio anche 113, 115 e 118 vengono girati alla centrale del 112. Chiama solo per emergenze reali e di' subito dove ti trovi.</p>
 
   <div class="card group" id="group" hidden></div>
+
+  <div id="bacheca-wrap" style="display:grid;gap:18px;scroll-margin-top:190px" hidden><div class="eyebrow">Bacheca dell'associazione</div><div class="card" id="bacheca"></div></div>
 
   <div id="avvisi-wrap" style="display:grid;gap:18px" hidden><div class="eyebrow">Comunicazioni dell'associazione</div><div class="card" id="avvisi"></div></div>
 
@@ -1804,6 +1828,108 @@ if (typeof document !== "undefined") (function meteoSismiInit() {
   document.getElementById("b-info").addEventListener("click", renderSources); // aggiorna gli orari quando si apre la pagina Informazioni
 })();
 
+</script>
+<script>
+/* ===== Bacheca: eventi e comunicazioni dal foglio Google =====
+   Incolla qui il link "Pubblica sul web" del foglio in formato CSV (File → Condividi → Pubblica sul web → .csv).
+   Lascia vuoto per nascondere la bacheca. Colonne (in qualsiasi ordine): tipo, titolo, testo, data, ora, luogo, mostra fino al, link
+   tipo: "evento", "avviso" oppure "urgente". Obbligatori: tipo, titolo, data. */
+const BACHECA_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRJZXJKEyewVrHMYbJ4-22ceQiaA9FOSylEEp2Sm6Xxjbw8BSiYP6kDrFe1VM45ZzoM7fUhppEaiXPZ/pub?gid=1840933248&single=true&output=csv";
+
+const BB = (() => {
+  // CSV con virgolette e a capo dentro le celle
+  function parseCSV(t) {
+    const rows = []; let row = [], cell = "", q = false;
+    t = String(t || "").replace(/^﻿/, "");
+    for (let i = 0; i < t.length; i++) {
+      const c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+      else if (c === '"') q = true;
+      else if (c === ",") { row.push(cell); cell = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+      else cell += c;
+    }
+    if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  // date scritte come 7/11/2026, 07-11-2026, 7.11.26 oppure 2026-11-07
+  function parseDate(v) {
+    v = String(v || "").trim(); let m;
+    if ((m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return new Date(+m[1], +m[2] - 1, +m[3]);
+    if ((m = v.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) { let y = +m[3]; if (y < 100) y += 2000; return new Date(y, +m[2] - 1, +m[1]); }
+    return null;
+  }
+  const norm = (h) => String(h || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
+  const KEYS = { tipo: "tipo", titolo: "titolo", testo: "testo", descrizione: "testo", data: "data", ora: "ora", orario: "ora", luogo: "luogo", dove: "luogo", mostrafinoal: "fino", mostrafino: "fino", finoal: "fino", scadenza: "fino", link: "link" };
+  function items(csv, now) {
+    const rows = parseCSV(csv).filter((r) => r.some((c) => c.trim()));
+    if (rows.length < 2) return { eventi: [], avvisi: [] };
+    const cols = rows[0].map((h) => KEYS[norm(h)] || null);
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const eventi = [], avvisi = [];
+    for (const r of rows.slice(1)) {
+      const o = {}; cols.forEach((k, i) => { if (k) o[k] = (r[i] || "").trim(); });
+      const tipo = norm(o.tipo), d = parseDate(o.data), fino = parseDate(o.fino);
+      if (!o.titolo || !d) continue;
+      if (o.link && !/^https?:\/\//i.test(o.link)) o.link = "";
+      const it = { ...o, d, fino, urgente: tipo === "urgente" };
+      if (tipo === "evento") { if ((fino || d) >= today) eventi.push(it); }
+      else if (tipo === "avviso" || tipo === "comunicazione" || tipo === "urgente") { if (d <= today && (!fino || fino >= today)) avvisi.push(it); }
+    }
+    eventi.sort((a, b) => a.d - b.d);
+    avvisi.sort((a, b) => (b.urgente - a.urgente) || (b.d - a.d));
+    return { eventi, avvisi };
+  }
+  return { parseCSV, parseDate, items };
+})();
+if (typeof module !== "undefined") module.exports = BB;
+
+if (typeof document !== "undefined") (function bachecaInit() {
+  const wrap = document.getElementById("bacheca-wrap"), box = document.getElementById("bacheca"), ban = document.getElementById("bb-banner");
+  if (!BACHECA_CSV) return;
+  const ls = { get(k, f) { try { const v = localStorage.getItem(k); return v == null ? f : JSON.parse(v); } catch (e) { return f; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+  const giorno = (d) => d.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" }).replace(/^./, (c) => c.toUpperCase());
+  const cal = (d) => `<span class="bb-ic" aria-hidden="true"><small>${MESI[d.getMonth()]}</small><b>${d.getDate()}</b></span>`;
+  const quando = (e) => [giorno(e.d), e.ora ? (/^\d/.test(e.ora) ? "ore " + e.ora : e.ora) : "", e.luogo || ""].filter(Boolean).map(esc).join(" · ");
+  const linkHtml = (e) => e.link ? `<a href="${esc(e.link)}" target="_blank" rel="noopener">Maggiori informazioni ›</a>` : "";
+  function render(csv) {
+    const now = new Date();
+    const { eventi, avvisi } = BB.items(csv, now);
+    if (!eventi.length && !avvisi.length) { wrap.hidden = true; ban.hidden = true; return; }
+    box.innerHTML = (eventi.length ? `<div class="bb-h">Eventi in programma</div>` + eventi.map((e) => `<div class="bb-item">${cal(e.d)}<span class="t"><strong>${esc(e.titolo)}</strong>${e.testo ? `<p>${esc(e.testo)}</p>` : ""}<small>${quando(e)}</small>${linkHtml(e)}</span></div>`).join("") : "")
+      + (eventi.length && avvisi.length ? `<div class="bb-sep"></div>` : "")
+      + (avvisi.length ? `<div class="bb-h">Comunicazioni</div>` + avvisi.map((a) => `<div class="bb-item"><span class="bb-ic msg" aria-hidden="true">${a.urgente ? "⚠️" : "📢"}</span><span class="t"><strong>${esc(a.titolo)}</strong>${a.testo ? `<p>${esc(a.testo)}</p>` : ""}<small>Pubblicato il ${a.d.toLocaleDateString("it-IT", { day: "numeric", month: "long" })}</small>${linkHtml(a)}</span></div>`).join("") : "");
+    wrap.hidden = false;
+    // prima pagina: avviso urgente o recente (ultimi 2 giorni), altrimenti il prossimo evento
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const fresh = avvisi.find((a) => a.urgente || today - a.d <= 2 * 864e5);
+    if (fresh) ban.innerHTML = `<span class="bb-ic msg" aria-hidden="true">${fresh.urgente ? "⚠️" : "📢"}</span><span class="t"><span>${fresh.urgente ? "Avviso importante" : "Nuova comunicazione"}</span><strong>${esc(fresh.titolo)}</strong><small>Bacheca dell'associazione</small></span><span class="go" aria-hidden="true">›</span>`;
+    else if (eventi.length) { const e = eventi[0]; ban.innerHTML = `${cal(e.d)}<span class="t"><span>Prossimo evento</span><strong>${esc(e.titolo)}</strong><small>${[giorno(e.d), e.ora ? (/^\d/.test(e.ora) ? "ore " + e.ora : e.ora) : ""].filter(Boolean).map(esc).join(" · ")}</small></span><span class="go" aria-hidden="true">›</span>`; }
+    ban.hidden = !(fresh || eventi.length);
+  }
+  ban.addEventListener("click", (ev) => { ev.preventDefault(); showTab("comune"); setTimeout(() => wrap.scrollIntoView({ behavior: "smooth", block: "start" }), 60); });
+  const last = ls.get("bacheca", null);
+  if (last) render(last.csv);
+  const EVERY = 10 * 60 * 1000; // il foglio si controlla al massimo ogni 10 minuti
+  async function load(force) {
+    const l = ls.get("bacheca", null);
+    if (!force && l && Date.now() - l.at < EVERY) return;
+    try {
+      const r = await fetch(BACHECA_CSV + (BACHECA_CSV.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) throw new Error("http " + r.status);
+      const csv = await r.text();
+      if (/^\s*</.test(csv)) throw new Error("non è un CSV"); // link sbagliato: pagina HTML invece del CSV
+      ls.set("bacheca", { csv, at: Date.now() }); render(csv);
+    } catch (e) {}
+  }
+  load(true);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
+  document.addEventListener("aggiorna-dati", () => load(true));
+  setInterval(() => { if (!document.hidden) load(); }, EVERY);
+  setInterval(() => { const l = ls.get("bacheca", null); if (l) render(l.csv); }, 30 * 60 * 1000); // a mezzanotte gli eventi passati spariscono
+})();
 </script>
 <script>
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{}));}
