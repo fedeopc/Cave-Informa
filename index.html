@@ -690,7 +690,7 @@ header.top .brand{gap:12px}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 3.0 · 25 ottobre 2026</span>
+    <span id="app-version">Versione 3.1 · 25 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1898,9 +1898,10 @@ if (typeof document !== "undefined") (function bachecaInit() {
     const now = new Date();
     const { eventi, avvisi } = BB.items(csv, now);
     if (!eventi.length && !avvisi.length) { wrap.hidden = true; ban.hidden = true; return; }
-    box.innerHTML = (eventi.length ? `<div class="bb-h">Eventi in programma</div>` + eventi.map((e) => `<div class="bb-item">${cal(e.d)}<span class="t"><strong>${esc(e.titolo)}</strong>${e.testo ? `<p>${esc(e.testo)}</p>` : ""}<small>${quando(e)}</small>${linkHtml(e)}</span></div>`).join("") : "")
+    // prima le comunicazioni (urgenti in cima), poi gli eventi in programma
+    box.innerHTML = (avvisi.length ? `<div class="bb-h">Comunicazioni</div>` + avvisi.map((a) => `<div class="bb-item"><span class="bb-ic msg" aria-hidden="true">${a.urgente ? "⚠️" : "📢"}</span><span class="t"><strong>${esc(a.titolo)}</strong>${a.testo ? `<p>${esc(a.testo)}</p>` : ""}<small>Pubblicato il ${a.d.toLocaleDateString("it-IT", { day: "numeric", month: "long" })}</small>${linkHtml(a)}</span></div>`).join("") : "")
       + (eventi.length && avvisi.length ? `<div class="bb-sep"></div>` : "")
-      + (avvisi.length ? `<div class="bb-h">Comunicazioni</div>` + avvisi.map((a) => `<div class="bb-item"><span class="bb-ic msg" aria-hidden="true">${a.urgente ? "⚠️" : "📢"}</span><span class="t"><strong>${esc(a.titolo)}</strong>${a.testo ? `<p>${esc(a.testo)}</p>` : ""}<small>Pubblicato il ${a.d.toLocaleDateString("it-IT", { day: "numeric", month: "long" })}</small>${linkHtml(a)}</span></div>`).join("") : "");
+      + (eventi.length ? `<div class="bb-h">Eventi in programma</div>` + eventi.map((e) => `<div class="bb-item">${cal(e.d)}<span class="t"><strong>${esc(e.titolo)}</strong>${e.testo ? `<p>${esc(e.testo)}</p>` : ""}<small>${quando(e)}</small>${linkHtml(e)}</span></div>`).join("") : "");
     wrap.hidden = false;
     // prima pagina: avviso urgente o recente (ultimi 2 giorni), altrimenti il prossimo evento
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
