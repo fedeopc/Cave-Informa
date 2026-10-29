@@ -381,6 +381,11 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 .bb-item a{color:var(--accent);font-weight:600;font-size:.85rem;text-decoration:none}
 .bb-sep{height:10px}
 .dae-desc{display:block;white-space:pre-line;margin-top:2px}
+.li.ko .li-ic{background:#F2C21B;color:#3B2F00;border-color:transparent}
+.li.ko strong{opacity:.8}
+.ko-txt{color:#8A6100;font-weight:700}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ko-txt{color:#F2C21B}}
+:root[data-theme="dark"] .ko-txt{color:#F2C21B}
 /* notifiche e comunicazioni */
 .notif-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-size:1.2rem}
 .notif small{color:var(--muted);font-size:.85rem}
@@ -691,7 +696,7 @@ header.top .brand{gap:12px}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 3.2 · 29 ottobre 2026</span>
+    <span id="app-version">Versione 3.3 · 29 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1115,15 +1120,22 @@ let DAE = [
   let me=null;
   const dist=(a,b)=>{const R=6371e3,r=Math.PI/180,dLa=(b.lat-a.lat)*r,dLo=(b.lon-a.lon)*r;const h=Math.sin(dLa/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));};
   const fmt=m=>m<1000?Math.round(m/10)*10+" m":(m/1000).toFixed(1).replace(".",",")+" km";
+  // non disponibile: la Croce Rossa lo scrive nel nome o nella descrizione del punto sulla mappa
+  const KO=/fuori\s*servizio|non\s*(funzionante|attivo|disponibile|operativo)|guast|manutenzion|rimoss|sospes|in\s*riparazione/i;
+  const isKo=d=>KO.test(d.nome+" "+(d.descrizione||""));
   function render(){
-    $("#dae-sub").textContent=DAE.length+" defibrillatori semiautomatici sul territorio comunale";
+    const nKo=DAE.filter(isKo).length;
+    $("#dae-sub").textContent=(DAE.length-nKo)+" defibrillatori disponibili sul territorio comunale"+(nKo?" · "+nKo+" non disponibil"+(nKo===1?"e":"i")+" al momento":"");
     $("#dae-src").textContent="Posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana, controllata ogni ora"+(daeAgg?" · elenco aggiornato il "+new Date(daeAgg).toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"}):"")+". Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.";
-    const list=DAE.map(d=>({...d,m:me?dist(me,d):null}));
-    if(me) list.sort((a,b)=>a.m-b.m);
+    const list=DAE.map(d=>({...d,ko:isKo(d),m:me?dist(me,d):null}));
+    // con la posizione: in cima il più vicino DISPONIBILE; i non disponibili vanno in fondo
+    list.sort((a,b)=>(a.ko-b.ko)||(me?a.m-b.m:0));
+    const nearestAll=me?list.reduce((x,d)=>(!x||d.m<x.m?d:x),null):null;
+    const skipped=nearestAll&&nearestAll.ko; // il più vicino in assoluto non è disponibile
     $("#dae-list").innerHTML=list.map((d,i)=>{
-      const near=me&&i===0;
-      return `<div class="li${near?" near":""}"><span class="li-ic dae-c" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/><path d="M12.8 9.5 10.8 13h2.6l-1.8 3.2"/></svg></span>
-        <div><strong>${esc(d.nome)}</strong><small>${near?"Il più vicino · ":""}${d.m!=null?"a "+fmt(d.m)+" in linea d'aria":"Defibrillatore semiautomatico"}</small>${d.descrizione?`<small class="dae-desc">${esc(d.descrizione)}</small>`:""}</div>
+      const near=me&&i===0&&!d.ko;
+      return `<div class="li${near?" near":""}${d.ko?" ko":""}"><span class="li-ic dae-c" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/><path d="M12.8 9.5 10.8 13h2.6l-1.8 3.2"/></svg></span>
+        <div><strong>${esc(d.nome)}</strong><small>${d.ko?`<b class="ko-txt">⚠️ Non disponibile al momento</b>${d.m!=null?" · a "+fmt(d.m):""}`:(near?(skipped?"Il più vicino disponibile · ":"Il più vicino · "):"")+(d.m!=null?"a "+fmt(d.m)+" in linea d'aria":"Defibrillatore semiautomatico")}</small>${d.descrizione&&!(d.ko&&KO.test(d.descrizione)&&d.descrizione.length<60)?`<small class="dae-desc">${esc(d.descrizione)}</small>`:""}</div>
         <a class="go" href="${navUrl({lat:d.lat,lon:d.lon,walk:true})}" target="_blank" rel="noopener" aria-label="Portami al defibrillatore di ${esc(d.nome)}">${GO_ICON}</a></div>`;}).join("");
   }
   // elenco aggiornato: dae.json sullo stesso sito, con l'ultimo valido salvato sul telefono
