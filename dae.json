@@ -1,42 +1,49 @@
 {
   "fonte": "Mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana",
   "mappa": "https://www.google.com/maps/d/viewer?mid=1i_VWr2qEZsH_mhhseaKbxg-eUrc3HS8X",
-  "aggiornato": "2026-10-22T00:00:00.000Z",
+  "aggiornato": "2026-10-29T08:39:18.965Z",
   "dae": [
     {
-      "nome": "Viale Giulio Venzi, 1",
+      "nome": "Defibrillatore semiautomatico",
       "lat": 41.8219052,
-      "lon": 12.9294543
+      "lon": 12.9294543,
+      "descrizione": "Defibrillatore Viale Giulio Venzi, 1"
     },
     {
-      "nome": "Via Speciano, 5",
+      "nome": "Defibrillatore semiautomatico",
       "lat": 41.8159704,
-      "lon": 12.9391443
+      "lon": 12.9391443,
+      "descrizione": "Defibrillatore Via Speciano, 5"
     },
     {
-      "nome": "Via G. D'Annunzio",
+      "nome": "Defibrillatore semiautomatico",
       "lat": 41.8145234,
-      "lon": 12.9309421
+      "lon": 12.9309421,
+      "descrizione": "Defibrillatore Via G. D'Annunzio"
     },
     {
-      "nome": "Via dell'Artigianato, 4",
+      "nome": "Defibrillatore semiautomatico",
       "lat": 41.8187452,
-      "lon": 12.94853
+      "lon": 12.94853,
+      "descrizione": "Defibrillatore Via dell'Artigianato, 4"
     },
     {
-      "nome": "Via della Selce",
+      "nome": "Defibrillatore semiautomatico",
       "lat": 41.819704,
-      "lon": 12.9170557
+      "lon": 12.9170557,
+      "descrizione": "Defibrillatore Via della Selce MOMENTANEAMENTE FUORI SERVIZIO"
     },
     {
-      "nome": "Viale Giorgioli",
+      "nome": "Defibrillatore semiautomatico",
       "lat": 41.8183068,
-      "lon": 12.9318414
+      "lon": 12.9318414,
+      "descrizione": "Defibrillatore Viale Giorgioli"
     },
     {
-      "nome": "Via Filippo Venzi / Piazza delle Erbe",
+      "nome": "Defibrillatore semiautomatico",
       "lat": 41.8182472,
-      "lon": 12.9292479
+      "lon": 12.9292479,
+      "descrizione": "Via Filippo Venzi/Piazza delle Erbe"
     }
   ]
 }
