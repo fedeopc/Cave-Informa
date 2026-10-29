@@ -1,0 +1,57 @@
+# Cave Informa · aggiorna ogni ora l'elenco dei defibrillatori dalla mappa della Croce Rossa.
+# Si può avviare anche a mano: scheda Actions → "Aggiorna DAE" → Run workflow.
+name: Aggiorna DAE
+
+on:
+  schedule:
+    - cron: "23 * * * *"   # ogni ora, al minuto 23 (orario UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write   # solo per salvare dae.json
+  pages: write      # solo per chiedere la ripubblicazione del sito
+
+concurrency:
+  group: aggiorna-dae
+  cancel-in-progress: false
+
+jobs:
+  dae:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Leggi la mappa e aggiorna dae.json
+        run: node scripts/aggiorna-dae.mjs
+
+      - name: Salva le modifiche (e tieni attivi i controlli automatici)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- dae.json; then
+            git add dae.json
+            git commit -m "DAE: elenco aggiornato dalla mappa della Croce Rossa"
+          else
+            # GitHub sospende i controlli programmati dopo 60 giorni senza modifiche:
+            # se l'ultima modifica ha più di 50 giorni, registro una modifica vuota per tenerli attivi.
+            last=$(git log -1 --format=%ct)
+            if [ $(( $(date +%s) - last )) -gt $(( 50 * 86400 )) ]; then
+              git commit --allow-empty -m "Controllo automatico DAE attivo (nessuna modifica)"
+            else
+              echo "Niente da salvare."; exit 0
+            fi
+          fi
+          git push
+          echo "SALVATO=1" >> "$GITHUB_ENV"
+
+      - name: Ripubblica il sito
+        if: env.SALVATO == '1'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
