@@ -1,7 +1,7 @@
 // Cave Informa: funzionamento offline.
 // Quando cambi i file dell'app, aumenta il numero di versione qui sotto (2.0, 2.1, 2.2…)
 // e scrivi lo stesso numero in index.html, nella riga "Versione …" della pagina Informazioni.
-const VERSION = "allerta-cave-3.3";
+const VERSION = "allerta-cave-3.5";
 const CORE = [
   "./",
   "./index.html",

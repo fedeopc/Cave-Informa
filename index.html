@@ -680,7 +680,7 @@ header.top .brand{gap:12px}
     <p><strong>Coordinate dei comuni:</strong> © contributori di <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, licenza ODbL.</p>
     <p><strong>Cosa fare:</strong> testi riformulati a partire dalle indicazioni della campagna nazionale "Io non rischio" e del Ministero della Salute.</p>
     <p><strong>Logo:</strong> © Associazione Italiana Protezione Civile Cave – OdV.</p>
-    <p><strong>Defibrillatori:</strong> posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana (Google My Maps), lette automaticamente ogni ora.</p>
+    <p><strong>Defibrillatori:</strong> posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana - Comitato di Monti Prenestini-ODV (Google My Maps), lette automaticamente ogni ora.</p>
     <p><strong>Numeri e indirizzi:</strong> fonti pubbliche della Regione Lazio e dell'associazione.</p>
   </div></details>
 
@@ -696,7 +696,7 @@ header.top .brand{gap:12px}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 3.3 · 29 ottobre 2026</span>
+    <span id="app-version">Versione 3.5 · 29 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -713,7 +713,7 @@ header.top .brand{gap:12px}
   </div>
   <div id="dae-list" class="plist"></div>
 
-  <p class="note" id="dae-src">Posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana. Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.</p>
+  <p class="note" id="dae-src">Posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana - Comitato di Monti Prenestini-ODV. Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.</p>
 </section>
 
 <!-- CONTATTI -->
@@ -1126,7 +1126,7 @@ let DAE = [
   function render(){
     const nKo=DAE.filter(isKo).length;
     $("#dae-sub").textContent=(DAE.length-nKo)+" defibrillatori disponibili sul territorio comunale"+(nKo?" · "+nKo+" non disponibil"+(nKo===1?"e":"i")+" al momento":"");
-    $("#dae-src").textContent="Posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana, controllata ogni ora"+(daeAgg?" · elenco aggiornato il "+new Date(daeAgg).toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"}):"")+". Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.";
+    $("#dae-src").textContent="Posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana - Comitato di Monti Prenestini-ODV, controllata ogni ora"+(daeAgg?" · elenco aggiornato il "+new Date(daeAgg).toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"}):"")+". Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.";
     const list=DAE.map(d=>({...d,ko:isKo(d),m:me?dist(me,d):null}));
     // con la posizione: in cima il più vicino DISPONIBILE; i non disponibili vanno in fondo
     list.sort((a,b)=>(a.ko-b.ko)||(me?a.m-b.m:0));
