@@ -380,6 +380,7 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 .bb-item small{color:var(--muted);font-size:.8rem}
 .bb-item a{color:var(--accent);font-weight:600;font-size:.85rem;text-decoration:none}
 .bb-sep{height:10px}
+.dae-desc{display:block;white-space:pre-line;margin-top:2px}
 /* notifiche e comunicazioni */
 .notif-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-size:1.2rem}
 .notif small{color:var(--muted);font-size:.85rem}
@@ -674,7 +675,7 @@ header.top .brand{gap:12px}
     <p><strong>Coordinate dei comuni:</strong> © contributori di <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, licenza ODbL.</p>
     <p><strong>Cosa fare:</strong> testi riformulati a partire dalle indicazioni della campagna nazionale "Io non rischio" e del Ministero della Salute.</p>
     <p><strong>Logo:</strong> © Associazione Italiana Protezione Civile Cave – OdV.</p>
-    <p><strong>Defibrillatori:</strong> posizioni dalla mappa pubblica "Mappa DAE Cave" su Google My Maps.</p>
+    <p><strong>Defibrillatori:</strong> posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana (Google My Maps), lette automaticamente ogni ora.</p>
     <p><strong>Numeri e indirizzi:</strong> fonti pubbliche della Regione Lazio e dell'associazione.</p>
   </div></details>
 
@@ -690,7 +691,7 @@ header.top .brand{gap:12px}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 3.1 · 25 ottobre 2026</span>
+    <span id="app-version">Versione 3.2 · 29 ottobre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -707,7 +708,7 @@ header.top .brand{gap:12px}
   </div>
   <div id="dae-list" class="plist"></div>
 
-  <p class="note">Posizioni dalla mappa "Mappa DAE Cave" su Google My Maps. Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.</p>
+  <p class="note" id="dae-src">Posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana. Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.</p>
 </section>
 
 <!-- CONTATTI -->
@@ -1100,7 +1101,8 @@ const PUSH_API = ""; // da riattivare: "https://allerta-cave-push.secondo-violen
 })();
 
 /* ===== DEFIBRILLATORI: modifica qui l'elenco (lat, lon) ===== */
-const DAE = [
+// Elenco di riserva: l'app usa dae.json, aggiornato ogni ora dalla mappa della Croce Rossa (GitHub Actions)
+let DAE = [
   { nome: "Viale Giulio Venzi, 1", lat: 41.8219052, lon: 12.9294543 },
   { nome: "Via Speciano, 5", lat: 41.8159704, lon: 12.9391443 },
   { nome: "Via G. D'Annunzio", lat: 41.8145234, lon: 12.9309421 },
@@ -1115,15 +1117,31 @@ const DAE = [
   const fmt=m=>m<1000?Math.round(m/10)*10+" m":(m/1000).toFixed(1).replace(".",",")+" km";
   function render(){
     $("#dae-sub").textContent=DAE.length+" defibrillatori semiautomatici sul territorio comunale";
+    $("#dae-src").textContent="Posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana, controllata ogni ora"+(daeAgg?" · elenco aggiornato il "+new Date(daeAgg).toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"}):"")+". Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.";
     const list=DAE.map(d=>({...d,m:me?dist(me,d):null}));
     if(me) list.sort((a,b)=>a.m-b.m);
     $("#dae-list").innerHTML=list.map((d,i)=>{
       const near=me&&i===0;
       return `<div class="li${near?" near":""}"><span class="li-ic dae-c" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/><path d="M12.8 9.5 10.8 13h2.6l-1.8 3.2"/></svg></span>
-        <div><strong>${esc(d.nome)}</strong><small>${near?"Il più vicino · ":""}${d.m!=null?"a "+fmt(d.m)+" in linea d'aria":"Defibrillatore semiautomatico"}</small></div>
+        <div><strong>${esc(d.nome)}</strong><small>${near?"Il più vicino · ":""}${d.m!=null?"a "+fmt(d.m)+" in linea d'aria":"Defibrillatore semiautomatico"}</small>${d.descrizione?`<small class="dae-desc">${esc(d.descrizione)}</small>`:""}</div>
         <a class="go" href="${navUrl({lat:d.lat,lon:d.lon,walk:true})}" target="_blank" rel="noopener" aria-label="Portami al defibrillatore di ${esc(d.nome)}">${GO_ICON}</a></div>`;}).join("");
   }
+  // elenco aggiornato: dae.json sullo stesso sito, con l'ultimo valido salvato sul telefono
+  let daeAgg=null;
+  const okList=l=>Array.isArray(l)&&l.length&&l.every(d=>d&&d.nome&&isFinite(d.lat)&&isFinite(d.lon));
+  try{const c=JSON.parse(localStorage.getItem("dae-elenco")||"null"); if(c&&okList(c.dae)){DAE=c.dae;daeAgg=c.aggiornato;}}catch(e){}
   render();
+  async function loadDae(){
+    try{
+      const r=await fetch("dae.json?t="+Date.now(),{cache:"no-store"}); if(!r.ok) return;
+      const j=await r.json(); if(!okList(j.dae)) return;
+      DAE=j.dae.map(d=>({nome:String(d.nome),lat:+d.lat,lon:+d.lon,descrizione:d.descrizione?String(d.descrizione):""})); daeAgg=j.aggiornato||null;
+      try{localStorage.setItem("dae-elenco",JSON.stringify({dae:DAE,aggiornato:daeAgg}));}catch(e){}
+      render();
+    }catch(e){}
+  }
+  loadDae();
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden) loadDae(); });
   $("#dae-geo").addEventListener("click",()=>{
     if(!("geolocation" in navigator)){toast("Posizione non disponibile su questo dispositivo");return;}
     const b=$("#dae-geo"); b.disabled=true; b.lastChild.textContent="Cerco la posizione…";

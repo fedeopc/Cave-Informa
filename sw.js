@@ -1,7 +1,7 @@
 // Cave Informa: funzionamento offline.
 // Quando cambi i file dell'app, aumenta il numero di versione qui sotto (2.0, 2.1, 2.2…)
 // e scrivi lo stesso numero in index.html, nella riga "Versione …" della pagina Informazioni.
-const VERSION = "allerta-cave-3.1";
+const VERSION = "allerta-cave-3.2";
 const CORE = [
   "./",
   "./index.html",
@@ -39,6 +39,15 @@ self.addEventListener("fetch", (e) => {
         })
         .catch(() => caches.match("./index.html"))
     );
+    return;
+  }
+
+  // Elenco dei DAE: prima la rete (si aggiorna ogni ora), poi la copia salvata.
+  if (url.origin === self.location.origin && url.pathname.endsWith("/dae.json")) {
+    e.respondWith(fetch(req, { cache: "no-store" }).then((res) => {
+      if (res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put("./dae.json", copy)); }
+      return res;
+    }).catch(() => caches.match("./dae.json")));
     return;
   }
 

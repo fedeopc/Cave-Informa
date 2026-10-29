@@ -1,0 +1,42 @@
+{
+  "fonte": "Mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana",
+  "mappa": "https://www.google.com/maps/d/viewer?mid=1i_VWr2qEZsH_mhhseaKbxg-eUrc3HS8X",
+  "aggiornato": "2026-10-22T00:00:00.000Z",
+  "dae": [
+    {
+      "nome": "Viale Giulio Venzi, 1",
+      "lat": 41.8219052,
+      "lon": 12.9294543
+    },
+    {
+      "nome": "Via Speciano, 5",
+      "lat": 41.8159704,
+      "lon": 12.9391443
+    },
+    {
+      "nome": "Via G. D'Annunzio",
+      "lat": 41.8145234,
+      "lon": 12.9309421
+    },
+    {
+      "nome": "Via dell'Artigianato, 4",
+      "lat": 41.8187452,
+      "lon": 12.94853
+    },
+    {
+      "nome": "Via della Selce",
+      "lat": 41.819704,
+      "lon": 12.9170557
+    },
+    {
+      "nome": "Viale Giorgioli",
+      "lat": 41.8183068,
+      "lon": 12.9318414
+    },
+    {
+      "nome": "Via Filippo Venzi / Piazza delle Erbe",
+      "lat": 41.8182472,
+      "lon": 12.9292479
+    }
+  ]
+}
