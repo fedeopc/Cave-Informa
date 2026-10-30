@@ -1,7 +1,7 @@
 {
   "fonte": "Mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana",
   "mappa": "https://www.google.com/maps/d/viewer?mid=1i_VWr2qEZsH_mhhseaKbxg-eUrc3HS8X",
-  "aggiornato": "2026-10-29T08:39:18.965Z",
+  "aggiornato": "2026-10-30T14:17:19.441Z",
   "dae": [
     {
       "nome": "Defibrillatore semiautomatico",
@@ -29,12 +29,6 @@
     },
     {
       "nome": "Defibrillatore semiautomatico",
-      "lat": 41.819704,
-      "lon": 12.9170557,
-      "descrizione": "Defibrillatore Via della Selce MOMENTANEAMENTE FUORI SERVIZIO"
-    },
-    {
-      "nome": "Defibrillatore semiautomatico",
       "lat": 41.8183068,
       "lon": 12.9318414,
       "descrizione": "Defibrillatore Viale Giorgioli"
@@ -44,6 +38,12 @@
       "lat": 41.8182472,
       "lon": 12.9292479,
       "descrizione": "Via Filippo Venzi/Piazza delle Erbe"
+    },
+    {
+      "nome": "Defibrillatore semiautomatico",
+      "lat": 41.8198108,
+      "lon": 12.91705,
+      "descrizione": "Defibrillatore Via della Selce"
     }
   ]
 }
