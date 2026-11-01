@@ -1,7 +1,7 @@
 // Cave Informa: funzionamento offline.
 // Quando cambi i file dell'app, aumenta il numero di versione qui sotto (2.0, 2.1, 2.2…)
 // e scrivi lo stesso numero in index.html, nella riga "Versione …" della pagina Informazioni.
-const VERSION = "allerta-cave-3.7";
+const VERSION = "allerta-cave-3.9";
 const CORE = [
   "./",
   "./index.html",
@@ -34,10 +34,11 @@ self.addEventListener("fetch", (e) => {
     e.respondWith(
       fetch(req.url, { cache: "no-cache", credentials: "same-origin" }) // salta la cache del browser (GitHub Pages tiene le pagine per 10 minuti)
         .then((res) => {
-          if (res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put("./index.html", copy)); }
+          // ogni pagina salvata col suo nome (app e pagina amministratori sono pagine diverse)
+          if (res.ok) { const copy = res.clone(); const key = /admin\.html$/.test(url.pathname) ? "./admin.html" : "./index.html"; caches.open(VERSION).then((c) => c.put(key, copy)); }
           return res;
         })
-        .catch(() => caches.match("./index.html"))
+        .catch(() => caches.match(/admin\.html$/.test(url.pathname) ? "./admin.html" : "./index.html"))
     );
     return;
   }

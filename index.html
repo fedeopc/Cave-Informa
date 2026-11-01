@@ -387,6 +387,10 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ko-txt{color:#F2C21B}}
 :root[data-theme="dark"] .ko-txt{color:#F2C21B}
 /* notifiche e comunicazioni */
+.gialla-opt{display:flex;gap:12px;align-items:flex-start;margin:4px 0 12px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,#F2C200 14%,transparent);border:1px solid color-mix(in srgb,#F2C200 40%,transparent);cursor:pointer}
+.gialla-opt input{width:22px;height:22px;flex:none;margin:1px 0 0;accent-color:#C99A00;cursor:pointer}
+.gialla-opt b{display:block;font-weight:650}
+.gialla-opt small{display:block;color:var(--muted);margin-top:2px;line-height:1.35}
 .notif-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-size:1.2rem}
 .notif small{color:var(--muted);font-size:.85rem}
 .avviso-banner{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg);background:linear-gradient(150deg,color-mix(in srgb,var(--accent) 20%,var(--glass)),var(--glass))}
@@ -573,6 +577,7 @@ header.top .brand{gap:12px}
     <div class="dae-head"><span class="notif-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg></span>
       <div><strong>Notifiche</strong><small id="notif-state">Ricevi un avviso in caso di allerta arancione o rossa, terremoti vicini e comunicazioni dell'associazione.</small></div></div>
     <p class="now-msg" id="notif-help" hidden></p>
+    <label class="gialla-opt" id="notif-gialla-row" hidden><input type="checkbox" id="notif-gialla"><span><b>Avvisami anche per l'allerta gialla</b><small>In autunno e in inverno può capitare anche più volte a settimana.</small></span></label>
     <div class="dae-btns"><button class="btn" id="notif-on" type="button">Attiva notifiche</button><button class="btn" id="notif-off" type="button" hidden>Disattiva</button></div>
   </div>
 
@@ -696,7 +701,7 @@ header.top .brand{gap:12px}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 3.7 · 1 novembre 2026</span>
+    <span id="app-version">Versione 3.9 · 1 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1045,12 +1050,13 @@ const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // 
   const standalone=navigator.standalone===true||matchMedia("(display-mode: standalone)").matches;
   const supported="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
   const b64=s=>{const p="=".repeat((4-s.length%4)%4);const r=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(r,c=>c.charCodeAt(0));};
-  const box=$("#notif"), state=$("#notif-state"), help=$("#notif-help"), on=$("#notif-on"), off=$("#notif-off");
+  const box=$("#notif"), state=$("#notif-state"), help=$("#notif-help"), on=$("#notif-on"), off=$("#notif-off"), gRow=$("#notif-gialla-row"), gBox=$("#notif-gialla");
   box.hidden=false;
+  gBox.checked=!!store.get("push-gialla",false);
 
   function show(active){
-    on.hidden=active; off.hidden=!active;
-    state.textContent=active?"Attive su questo telefono: ti avvisiamo in caso di allerta arancione o rossa, terremoti vicini e comunicazioni dell'associazione.":"Ricevi un avviso in caso di allerta arancione o rossa, terremoti vicini e comunicazioni dell'associazione.";
+    on.hidden=active; off.hidden=!active; gRow.hidden=!active;
+    state.textContent=active?"Attive su questo telefono: ti avvisiamo in caso di allerta "+(gBox.checked?"gialla, arancione":"arancione")+" o rossa, terremoti vicini e comunicazioni dell'associazione.":"Ricevi un avviso in caso di allerta arancione o rossa, terremoti vicini e comunicazioni dell'associazione.";
   }
   async function current(){ if(!supported) return null; const reg=await navigator.serviceWorker.ready; return reg.pushManager.getSubscription(); }
   async function send(path,body){ const r=await fetch(api+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); if(!r.ok) throw new Error("server "+r.status); }
@@ -1066,7 +1072,7 @@ const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // 
   current().then(sub=>{
     show(!!sub && Notification.permission==="granted");
     // ricorda al server l'iscrizione una volta al giorno (se il server l'avesse persa)
-    if(sub){ const last=store.get("push-sync",0); if(Date.now()-last>864e5){ send("/subscribe",sub.toJSON()).then(()=>store.set("push-sync",Date.now())).catch(()=>{}); } }
+    if(sub){ const last=store.get("push-sync",0); if(Date.now()-last>864e5){ send("/subscribe",{...sub.toJSON(),gialla:gBox.checked}).then(()=>store.set("push-sync",Date.now())).catch(()=>{}); } }
   }).catch(()=>{});
 
   on.addEventListener("click",async()=>{
@@ -1078,10 +1084,16 @@ const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // 
       const {publicKey}=await (await fetch(api+"/vapid")).json();
       let sub=await reg.pushManager.getSubscription();
       if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64(publicKey)});
-      await send("/subscribe",sub.toJSON()); store.set("push-sync",Date.now());
+      await send("/subscribe",{...sub.toJSON(),gialla:gBox.checked}); store.set("push-sync",Date.now());
       show(true); toast("Notifiche attivate");
     }catch(e){ help.hidden=false; help.textContent="Non sono riuscito ad attivare le notifiche. Controlla la connessione e riprova."; }
     finally{ on.disabled=false; on.textContent="Attiva notifiche"; }
+  });
+  gBox.addEventListener("change",async()=>{
+    const v=gBox.checked; gBox.disabled=true;
+    try{ const sub=await current(); if(!sub) throw 0; await send("/subscribe",{...sub.toJSON(),gialla:v}); store.set("push-gialla",v); store.set("push-sync",Date.now()); show(true); toast(v?"Riceverai anche le allerte gialle":"Solo allerte arancioni e rosse"); }
+    catch(e){ gBox.checked=!v; toast("Non riuscito, controlla la connessione e riprova"); }
+    finally{ gBox.disabled=false; }
   });
   off.addEventListener("click",async()=>{
     off.disabled=true;
@@ -1090,20 +1102,7 @@ const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // 
     finally{ off.disabled=false; }
   });
 
-  /* comunicazioni dell'associazione */
-  function renderAvvisi(list){
-    if(!list||!list.length){ $("#avvisi-wrap").hidden=true; $("#avviso-banner").hidden=true; return; }
-    const fmt=d=>new Date(d).toLocaleDateString("it-IT",{weekday:"short",day:"numeric",month:"short"})+" "+new Date(d).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
-    $("#avvisi").innerHTML=list.slice(0,5).map(a=>`<div class="area"><div><strong>${esc(a.titolo)}</strong><p>${esc(a.testo)}</p><small>${fmt(a.data)}</small></div></div>`).join("");
-    $("#avvisi-wrap").hidden=false;
-    const recent=list[0]; const b=$("#avviso-banner");
-    if(Date.now()-new Date(recent.data)<48*3600e3){ b.innerHTML=`<span class="notif-ic" aria-hidden="true">📢</span><span><strong>${esc(recent.titolo)}</strong><small>Comunicazione dell'associazione · ${fmt(recent.data)}</small></span>`; b.hidden=false; } else b.hidden=true;
-  }
-  renderAvvisi(store.get("avvisi",[]));
-  const loadAvvisi=()=>fetch(api+"/avvisi",{cache:"no-store"}).then(r=>r.json()).then(l=>{store.set("avvisi",l);renderAvvisi(l);}).catch(()=>{});
-  loadAvvisi();
-  document.addEventListener("visibilitychange",()=>{ if(!document.hidden) loadAvvisi(); });
-  setInterval(()=>{ if(!document.hidden) loadAvvisi(); },2*60*1000); // un avviso cancellato sparisce anche ad app aperta
+  /* le comunicazioni dell'associazione ora compaiono nella bacheca (vedi bachecaInit) */
 })();
 
 /* ===== DEFIBRILLATORI: modifica qui l'elenco (lat, lon) ===== */
@@ -1917,13 +1916,30 @@ const BB = (() => {
     avvisi.sort((a, b) => (b.urgente - a.urgente) || (b.d - a.d));
     return { eventi, avvisi };
   }
-  return { parseCSV, parseDate, items };
+  // avvisi ed eventi pubblicati dalla pagina amministratori (servizio Cloudflare)
+  function fromService(list, now) {
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const eventi = [], avvisi = [];
+    for (const a of Array.isArray(list) ? list : []) {
+      if (!a || !a.titolo) continue;
+      if (a.tipo === "evento") { const d = parseDate(a.giorno); if (d && d >= today) eventi.push({ titolo: a.titolo, testo: a.testo || "", d, ora: a.ora || "", luogo: a.luogo || "", link: "" }); }
+      else { const t = new Date(a.data); if (isNaN(t)) continue; avvisi.push({ titolo: a.titolo, testo: a.testo || "", d: new Date(t.getFullYear(), t.getMonth(), t.getDate()), urgente: a.tipo === "urgente", link: "" }); }
+    }
+    return { eventi, avvisi };
+  }
+  function merge(a, b) {
+    const eventi = a.eventi.concat(b.eventi).sort((x, y) => x.d - y.d);
+    const avvisi = a.avvisi.concat(b.avvisi).sort((x, y) => (y.urgente - x.urgente) || (y.d - x.d));
+    return { eventi, avvisi };
+  }
+  return { parseCSV, parseDate, items, fromService, merge };
 })();
 if (typeof module !== "undefined") module.exports = BB;
 
 if (typeof document !== "undefined") (function bachecaInit() {
   const wrap = document.getElementById("bacheca-wrap"), box = document.getElementById("bacheca"), ban = document.getElementById("bb-banner");
-  if (!BACHECA_CSV) return;
+  const SVC = typeof PUSH_API !== "undefined" && PUSH_API ? PUSH_API.replace(/\/$/, "") + "/avvisi" : "";
+  if (!BACHECA_CSV && !SVC) return;
   const ls = { get(k, f) { try { const v = localStorage.getItem(k); return v == null ? f : JSON.parse(v); } catch (e) { return f; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
@@ -1931,9 +1947,11 @@ if (typeof document !== "undefined") (function bachecaInit() {
   const cal = (d) => `<span class="bb-ic" aria-hidden="true"><small>${MESI[d.getMonth()]}</small><b>${d.getDate()}</b></span>`;
   const quando = (e) => [giorno(e.d), e.ora ? (/^\d/.test(e.ora) ? "ore " + e.ora : e.ora) : "", e.luogo || ""].filter(Boolean).map(esc).join(" · ");
   const linkHtml = (e) => e.link ? `<a href="${esc(e.link)}" target="_blank" rel="noopener">Maggiori informazioni ›</a>` : "";
-  function render(csv) {
+  // una sola bacheca: foglio Google + avvisi pubblicati dalla pagina amministratori
+  let csvText = (ls.get("bacheca", null) || {}).csv || "", svcList = ls.get("bacheca-servizio", []);
+  function render() {
     const now = new Date();
-    const { eventi, avvisi } = BB.items(csv, now);
+    const { eventi, avvisi } = BB.merge(BB.items(csvText, now), BB.fromService(svcList, now));
     if (!eventi.length && !avvisi.length) { wrap.hidden = true; ban.hidden = true; return; }
     // prima le comunicazioni (urgenti in cima), poi gli eventi in programma
     box.innerHTML = (avvisi.length ? `<div class="bb-h">Comunicazioni</div>` + avvisi.map((a) => `<div class="bb-item"><span class="bb-ic msg" aria-hidden="true">${a.urgente ? "⚠️" : "📢"}</span><span class="t"><strong>${esc(a.titolo)}</strong>${a.testo ? `<p>${esc(a.testo)}</p>` : ""}<small>Pubblicato il ${a.d.toLocaleDateString("it-IT", { day: "numeric", month: "long" })}</small>${linkHtml(a)}</span></div>`).join("") : "")
@@ -1948,10 +1966,16 @@ if (typeof document !== "undefined") (function bachecaInit() {
     ban.hidden = !(fresh || eventi.length);
   }
   ban.addEventListener("click", (ev) => { ev.preventDefault(); showTab("comune"); setTimeout(() => wrap.scrollIntoView({ behavior: "smooth", block: "start" }), 60); });
-  const last = ls.get("bacheca", null);
-  if (last) render(last.csv);
+  render();
   const EVERY = 10 * 60 * 1000; // il foglio si controlla al massimo ogni 10 minuti
+  async function loadSvc() {
+    if (!SVC) return;
+    try { const r = await fetch(SVC + "?t=" + Date.now(), { cache: "no-store" }); if (!r.ok) return; const l = await r.json();
+      if (Array.isArray(l)) { svcList = l; ls.set("bacheca-servizio", l); render(); } } catch (e) {}
+  }
   async function load(force) {
+    loadSvc();
+    if (!BACHECA_CSV) return;
     const l = ls.get("bacheca", null);
     if (!force && l && Date.now() - l.at < EVERY) return;
     try {
@@ -1959,14 +1983,15 @@ if (typeof document !== "undefined") (function bachecaInit() {
       if (!r.ok) throw new Error("http " + r.status);
       const csv = await r.text();
       if (/^\s*</.test(csv)) throw new Error("non è un CSV"); // link sbagliato: pagina HTML invece del CSV
-      ls.set("bacheca", { csv, at: Date.now() }); render(csv);
+      ls.set("bacheca", { csv, at: Date.now() }); csvText = csv; render();
     } catch (e) {}
   }
   load(true);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
   document.addEventListener("aggiorna-dati", () => load(true));
   setInterval(() => { if (!document.hidden) load(); }, EVERY);
-  setInterval(() => { const l = ls.get("bacheca", null); if (l) render(l.csv); }, 30 * 60 * 1000); // a mezzanotte gli eventi passati spariscono
+  setInterval(() => { if (!document.hidden) loadSvc(); }, 2 * 60 * 1000); // un avviso cancellato sparisce anche ad app aperta
+  setInterval(render, 30 * 60 * 1000); // a mezzanotte gli eventi passati spariscono
 })();
 </script>
 <script>
