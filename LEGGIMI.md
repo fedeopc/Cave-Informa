@@ -1,6 +1,6 @@
-# Allerta Cave
+# Cave Informa
 
-App di emergenza per Cave (RM), installabile su iPhone e Android senza App Store.
+App informativa di protezione civile per Cave (RM), a cura dell'Associazione Italiana Protezione Civile Cave – OdV. Installabile su iPhone e Android senza App Store. (Fino alla versione 2.8 si chiamava "Allerta Cave".)
 
 ## Contenuto
 
@@ -15,7 +15,7 @@ App di emergenza per Cave (RM), installabile su iPhone e Android senza App Store
 2. Crea un nuovo repository pubblico, per esempio `allerta-cave`.
 3. Clicca "Add file" → "Upload files" e carica tutti i file di questa cartella, compresa la cartella `icons`. Conferma con "Commit changes".
 4. Vai in Settings → Pages. In "Branch" scegli `main` e la cartella `/ (root)`, poi Save.
-5. Dopo un minuto l'app sarà online a un indirizzo tipo `https://tuonome.github.io/allerta-cave/`.
+5. Dopo un minuto l'app sarà online a un indirizzo tipo `https://tuonome.github.io/Cave-Informa/`.
 
 L'indirizzo deve essere https, altrimenti installazione e modalità offline non funzionano. GitHub Pages lo fa già da solo.
 
@@ -29,7 +29,7 @@ Dopo la prima apertura, guide, zaino e numeri funzionano anche senza connessione
 ## Aggiornare l'app
 
 1. Modifica i file e ricaricali su GitHub.
-2. In `sw.js` aumenta la versione, per esempio da `allerta-cave-v1` a `allerta-cave-v2`.
+2. Aumenta il numero di versione (2.0 → 2.1 → 2.2…) in `sw.js` e nella riga "Versione" di `index.html`.
 
 Così i telefoni scaricano la nuova versione alla prossima apertura con internet.
 
@@ -39,3 +39,19 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 
 - L'app cerca un nuovo bollettino al massimo ogni 20 minuti e salva l'ultimo scaricato, così funziona anche senza connessione.
 - La posizione viene usata solo sul telefono per trovare la zona di allerta e non viene inviata a nessuno.
+
+## Defibrillatori (DAE): aggiornamento automatico
+
+- `dae.json`: elenco dei DAE letto dall'app. Non va modificato a mano.
+- `scripts/aggiorna-dae.mjs` e `.github/workflows/dae.yml`: ogni ora GitHub Actions legge la mappa pubblica dei DAE della Croce Rossa e, se è cambiata, aggiorna `dae.json`.
+- Protezioni: punti a più di 15 km da Cave ignorati; se la mappa non risponde, è vuota o i DAE calano di oltre la metà, `dae.json` non viene toccato (GitHub manda un'email di errore).
+- Se il repository resta senza modifiche per 50 giorni, il controllo registra una modifica vuota, così GitHub non sospende i controlli automatici.
+- Avvio manuale: scheda Actions → "Aggiorna DAE" → Run workflow.
+
+## Area amministratori (admin.html)
+
+- Pagina separata, non collegata dall'app: `https://fedeopc.github.io/Cave-Informa/admin.html`. Su iPhone: Condividi → Aggiungi alla schermata Home (icona "Cave Admin").
+- Chiede il codice a ogni apertura e si blocca dopo 5 minuti in sospeso; il codice non viene salvato sul telefono (si può salvare nel Portachiavi e inserire con Face ID).
+- Amministratore principale: la password `ADMIN_TOKEN` del servizio Cloudflare. Dalla scheda "Persone" crea e revoca i codici personali degli altri volontari.
+- Avvisi, urgenti ed eventi pubblicati da qui compaiono nella stessa bacheca dell'app insieme a quelli del foglio Google.
+- Dopo 10 codici sbagliati dallo stesso collegamento, l'accesso è bloccato per 15 minuti.
