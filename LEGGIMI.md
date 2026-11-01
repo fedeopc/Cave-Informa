@@ -55,3 +55,9 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 - Amministratore principale: la password `ADMIN_TOKEN` del servizio Cloudflare. Dalla scheda "Persone" crea e revoca i codici personali degli altri volontari.
 - Avvisi, urgenti ed eventi pubblicati da qui compaiono nella stessa bacheca dell'app insieme a quelli del foglio Google.
 - Dopo 10 codici sbagliati dallo stesso collegamento, l'accesso è bloccato per 15 minuti.
+
+## Bollettini della Regione Lazio
+- Il servizio Cloudflare controlla ogni 10 minuti le pagine "Allertamenti" e "Bollettini di criticità" della Regione Lazio, legge la tabella delle zone nel PDF (zona G, Bacino del Liri) e invia la notifica appena esce, di solito prima del bollettino nazionale.
+- Se poi il bollettino nazionale conferma lo stesso livello, non parte una seconda notifica.
+- Gli allertamenti senza tabella delle zone (per esempio solo vento) vengono ignorati.
+- Controllo: pagina admin → Stato → riga "Bollettini Regione Lazio" e tasto "Leggi ora la Regione Lazio".

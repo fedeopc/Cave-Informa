@@ -624,6 +624,7 @@ section[data-p]{display:grid;gap:12px}
         <button class="sec" type="button" id="st-r">↻ Aggiorna</button></div>
       <div class="card"><div class="eyebrow">Strumenti</div>
         <div class="row2"><button type="button" id="t-me">🔔 Notifica di prova a questo telefono</button><button type="button" id="t-dae">🔄 Aggiorna DAE ora</button></div>
+        <div class="row2"><button type="button" id="t-lazio">📄 Leggi ora la Regione Lazio</button></div>
         <p class="msg" id="tmsg" role="status"></p>
         <p class="hint">La notifica di prova arriva solo a questo telefono. Se non è ancora iscritto, ti viene chiesto il permesso: da quel momento riceve anche le notifiche dei cittadini (allerte, terremoti, avvisi).</p></div>
     </section>
@@ -744,10 +745,12 @@ section[data-p]{display:grid;gap:12px}
       const j = await call("/stato");
       const b = j.ultimoBollettino ? j.ultimoBollettino.slice(6, 8) + "/" + j.ultimoBollettino.slice(4, 6) + " ore " + j.ultimoBollettino.slice(9, 11) + ":" + j.ultimoBollettino.slice(11, 13) : null;
       const dc = j.dae && j.dae.controllo, ui = j.ultimoInvio;
+      const lz = j.lazio, lzG = lz && [...new Map((lz.esiti || []).flatMap((x) => x.giorni || []).map((g) => [g.slice(0, 8), g])).values()].sort(), lzNote = lzG && lzG.length ? "Bacino del Liri: " + lzG.map((g) => g.slice(6, 8) + "/" + g.slice(4, 6) + " " + ["verde", "gialla", "arancione", "rossa"][Math.max(...g.slice(9).split("").map(Number))]).join(", ") : "";
       const rows = [
         ["Telefoni con notifiche attive", String(j.iscritti), ""],
         ["Ultimo bollettino letto", b ? b + " ✓" : "non ancora letto", b ? "ok" : "ko"],
         ["Mappa DAE (Croce Rossa)", dc ? (dc.ok ? (j.dae.n + " DAE · " + t(dc.at) + " ✓") : "errore: " + dc.errore) : "non ancora letta", dc && dc.ok ? "ok" : "ko"],
+        ["Bollettini Regione Lazio", lz ? (lz.ok ? "letti " + t(lz.at) + (lzNote ? " · " + lzNote : "") + " ✓" : "errore: " + ((lz.esiti || []).filter((x) => !x.ok).map((x) => x.errore).join("; ") || "sconosciuto")) : "non ancora letti", lz && lz.ok ? "ok" : "ko"],
         ["Ultima notifica inviata", ui ? t(ui.at) + " · " + ui.sent + " consegnate" + (ui.failed ? ", " + ui.failed + " non riuscite" : "") : "nessuna", ""],
       ];
       box.innerHTML = rows.map(([a, v, c]) => `<span>${esc(a)}</span><span class="${c}">${esc(v)}</span>`).join("");
@@ -757,6 +760,11 @@ section[data-p]{display:grid;gap:12px}
   $("#t-dae").onclick = async () => {
     msg($("#tmsg"), "Leggo la mappa…", true);
     try { const j = await call("/dae-aggiorna", {}); j.ok ? msg($("#tmsg"), "Mappa DAE letta: " + j.n + " defibrillatori.", true) : msg($("#tmsg"), "DAE: " + j.errore, false); loadStato(); }
+    catch (err) { if (err.message !== "401") msg($("#tmsg"), err.message, false); }
+  };
+  $("#t-lazio").onclick = async () => {
+    msg($("#tmsg"), "Leggo i bollettini della Regione…", true);
+    try { const j = await call("/lazio-aggiorna", {}); const ko = j.filter((x) => !x.ok); ko.length ? msg($("#tmsg"), "Regione: " + ko.map((x) => x.errore).join("; "), false) : msg($("#tmsg"), "Bollettini della Regione letti.", true); loadStato(); }
     catch (err) { if (err.message !== "401") msg($("#tmsg"), err.message, false); }
   };
   const b64 = (s) => { const p = "=".repeat((4 - s.length % 4) % 4); const r = atob((s + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(r, (c) => c.charCodeAt(0)); };
