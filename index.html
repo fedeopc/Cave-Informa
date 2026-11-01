@@ -696,7 +696,7 @@ header.top .brand{gap:12px}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 3.5 · 29 ottobre 2026</span>
+    <span id="app-version">Versione 3.6 · 1 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1036,7 +1036,7 @@ $("#nums").innerHTML=NUMS.map(x=>`<a class="ntile${x.red?" red":""}" href="tel:$
 })();
 /* ===== NOTIFICHE: indirizzo del servizio Cloudflare (es. "https://allerta-cave-push.nomeutente.workers.dev")
    Lascia vuoto per nascondere notifiche e comunicazioni. ===== */
-const PUSH_API = ""; // da riattivare: "https://allerta-cave-push.secondo-violento3m.workers.dev"
+const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // servizio Cloudflare: notifiche e comunicazioni
 
 (function(){
   if(!PUSH_API) return;
