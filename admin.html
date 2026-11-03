@@ -554,6 +554,25 @@ section[data-p]{display:grid;gap:12px}
 .msg{margin:0;font-size:.9rem;font-weight:600}.msg:empty{display:none}
 .ok{color:#2E8B57}.ko{color:#C0262D}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ok{color:#5CC08A}:root:not([data-theme="light"]) .ko{color:#F06A6F}}
+.seg[hidden]{display:none}
+.row2 .pri{background:var(--accent);color:#fff;border:0;padding:12px 22px;font-weight:700}
+.opt{font-weight:400;color:var(--muted)}
+#scad[hidden],#pv-nw[hidden]{display:none}#scad{display:grid;gap:6px}
+.pv{display:grid;gap:8px;padding:12px;border-radius:14px;border:1px dashed var(--line)}
+.pv-lab{font-size:.72rem;color:var(--muted);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.pv-app{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.pv-app.urg{background:color-mix(in srgb,#D23B40 14%,transparent);border-color:color-mix(in srgb,#D23B40 45%,transparent)}
+.pv-app .ic{font-size:1.3rem;line-height:1}.pv-app .cal{flex:none;width:44px;border-radius:10px;overflow:hidden;text-align:center;border:1px solid var(--line);background:var(--surface)}
+.pv-app .cal small{display:block;background:#C0262D;color:#fff;font-size:.66rem;font-weight:700;text-transform:uppercase;padding:2px 0}.pv-app .cal b{display:block;font-size:1.15rem;padding:2px 0}
+.pv-app b.t{display:block;font-size:.98rem}.pv-app p{margin:3px 0 0;font-size:.88rem;color:var(--muted);white-space:pre-line}.pv-app .q{font-size:.8rem;color:var(--muted);margin-top:4px}
+.pv-not{padding:11px 14px;border-radius:18px;background:rgba(240,240,245,.92);color:#111;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.pv-not .h{display:flex;gap:8px;align-items:center;font-size:.72rem;color:#555;font-weight:600;text-transform:uppercase}.pv-not .h img{width:18px;height:18px;border-radius:5px}.pv-not .h span{margin-left:auto;text-transform:none;font-weight:400}
+.pv-not b{display:block;font-size:.92rem;margin-top:4px}.pv-not p{margin:2px 0 0;font-size:.86rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tag2{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;margin:4px 4px 0 0;background:var(--surface);border:1px solid var(--line)}
+.tag2.prog{background:color-mix(in srgb,#2D6CDF 16%,transparent);border-color:color-mix(in srgb,#2D6CDF 45%,transparent)}.tag2.old{opacity:.65}
+.li2 .acts{display:flex;gap:6px;margin-left:auto;flex:none}.li2 .acts button{font:inherit;font-size:.8rem;font-weight:600;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.li2.off>div{opacity:.6}
+.trend{display:grid;gap:6px}.trend svg{width:100%;height:auto;display:block}.trend .nums{display:flex;justify-content:space-between;font-size:.84rem;color:var(--muted)}.trend .nums b{color:var(--fg);font-size:1.4rem}
 .sem{display:flex;gap:14px;align-items:center;padding:14px;border-radius:14px;background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 40%,transparent);--c:#8a94a6}
 .sem.ok{--c:#2E9E5B}.sem.warn{--c:#E0A100}.sem.ko{--c:#D23B40}
 .sem-dot{width:30px;height:30px;border-radius:50%;background:var(--c);flex:none;box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 22%,transparent)}
@@ -611,7 +630,7 @@ section[data-p]{display:grid;gap:12px}
 
     <section data-p="avvisi">
       <form class="card" id="fa">
-        <div class="eyebrow">Pubblica nella bacheca</div>
+        <div class="eyebrow" id="fa-t">Pubblica nella bacheca</div>
         <div class="seg" id="tipo">
           <button type="button" data-v="avviso" class="on">📢 Avviso</button>
           <button type="button" data-v="urgente">⚠️ Urgente</button>
@@ -624,8 +643,16 @@ section[data-p]{display:grid;gap:12px}
           <div class="two"><div><label for="ed">Data</label><input id="ed" type="date"></div><div><label for="eo">Ora</label><input id="eo" placeholder="Es. 10:00"></div></div>
           <label for="el">Luogo</label><input id="el" maxlength="80" placeholder="Es. Piazza Garibaldi">
         </div>
-        <label class="chk"><input id="nt" type="checkbox" checked> Invia anche come notifica a tutti</label>
-        <button class="pri" type="submit" id="pub">Pubblica</button>
+        <div id="scad"><label for="fi">Mostra fino al <span class="opt">(facoltativo)</span></label><input id="fi" type="date">
+          <p class="hint">Dopo questa data l'avviso sparisce da solo dalla bacheca.</p></div>
+        <label>Quando pubblicare</label>
+        <div class="seg" id="qm"><button type="button" data-v="ora" class="on">Subito</button><button type="button" data-v="prog">🕗 Programma</button></div>
+        <input id="qd" type="datetime-local" hidden>
+        <label class="chk"><input id="nt" type="checkbox" checked> <span id="nt-l">Invia anche come notifica a tutti</span></label>
+        <div class="pv" id="pv"><div class="eyebrow">Anteprima</div>
+          <div class="pv-lab">Nella bacheca dell'app</div><div class="pv-app" id="pv-app"></div>
+          <div id="pv-nw"><div class="pv-lab">Notifica sul telefono</div><div class="pv-not" id="pv-not"></div></div></div>
+        <div class="row2"><button class="pri" type="submit" id="pub">Pubblica</button><button type="button" class="sec" id="ann" hidden>Annulla modifica</button></div>
         <p class="msg" id="amsg" role="status"></p>
       </form>
       <div class="card"><div class="eyebrow">Pubblicati dalla pagina amministratori</div><div id="alist"><p class="hint">Caricamento…</p></div>
@@ -638,6 +665,7 @@ section[data-p]{display:grid;gap:12px}
         <div id="sem-pb"></div>
         <div id="ctl"></div>
         <button class="sec" type="button" id="st-r">↻ Aggiorna</button></div>
+      <div class="card"><div class="eyebrow">Telefoni iscritti</div><div id="trend"><p class="hint">Caricamento…</p></div></div>
       <div class="card"><div class="eyebrow">Strumenti</div>
         <div class="row2"><button type="button" id="t-me">🔔 Notifica di prova a questo telefono</button><button type="button" id="t-dae">🔄 Aggiorna DAE ora</button></div>
         <div class="row2"><button type="button" id="t-lazio">📄 Leggi ora la Regione Lazio</button></div>
@@ -721,44 +749,112 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   $$(".tabs2 button").forEach((b) => (b.onclick = () => show(b.dataset.t)));
 
   /* ---------- avvisi ---------- */
-  let tipo = "avviso";
+  let tipo = "avviso", qm = "ora", editId = null, editProg = false, cache = [];
   const HINT = { avviso: "Comunicazione nella bacheca dell'app.", urgente: "In evidenza in prima pagina, sotto l'allerta, e in cima alla bacheca.", evento: "Nella bacheca tra gli eventi in programma; sparisce da solo il giorno dopo." };
-  $$("#tipo button").forEach((b) => (b.onclick = () => { tipo = b.dataset.v; $$("#tipo button").forEach((x) => x.classList.toggle("on", x === b)); $("#ev").hidden = tipo !== "evento"; $("#tipo-hint").textContent = HINT[tipo]; }));
-  const oggi = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
-  $("#ed").min = oggi();
+  const pad = (n) => String(n).padStart(2, "0");
+  const oggi = () => { const d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
+  const dLoc = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  const gg = (iso) => iso.split("-").reverse().join("/");
+  const dh = (iso) => new Date(iso).toLocaleString("it-IT", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  const MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+  function setTipo(v) { tipo = v; $$("#tipo button").forEach((x) => x.classList.toggle("on", x.dataset.v === v)); $("#ev").hidden = v !== "evento"; $("#scad").hidden = v === "evento"; $("#tipo-hint").textContent = HINT[v]; preview(); }
+  function setQm(v) { qm = v; $$("#qm button").forEach((x) => x.classList.toggle("on", x.dataset.v === v)); $("#qd").hidden = v !== "prog"; if (v === "prog" && !$("#qd").value) { const d = new Date(Date.now() + 864e5); d.setHours(8, 0, 0, 0); $("#qd").value = dLoc(d); } labels(); preview(); }
+  function labels() {
+    const prog = qm === "prog" && (!editId || editProg);
+    $("#nt-l").textContent = editId && !editProg ? "Invia di nuovo la notifica a tutti" : prog ? "Invia la notifica a tutti al momento della pubblicazione" : "Invia anche come notifica a tutti";
+    $("#pub").textContent = editId ? "Salva modifiche" : prog ? "Programma" : "Pubblica";
+    $("#qm").previousElementSibling.hidden = $("#qm").hidden = !!editId && !editProg; if (editId && !editProg) $("#qd").hidden = true;
+  }
+  $$("#tipo button").forEach((b) => (b.onclick = () => setTipo(b.dataset.v)));
+  $$("#qm button").forEach((b) => (b.onclick = () => setQm(b.dataset.v)));
+  $("#ed").min = oggi(); $("#fi").min = oggi(); $("#qd").min = dLoc(new Date());
+  // anteprima: come appare nella bacheca dell'app e come arriva la notifica
+  function preview() {
+    const ti = $("#ti").value.trim() || "Titolo dell'avviso", te = $("#te").value.trim(), fi = $("#fi").value;
+    const ic = tipo === "urgente" ? "⚠️" : "📢";
+    let q = "";
+    if (tipo === "evento") {
+      const d = $("#ed").value ? new Date($("#ed").value + "T12:00") : new Date();
+      q = [d.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" }).replace(/^./, (c) => c.toUpperCase()), $("#eo").value.trim() ? (/^\d/.test($("#eo").value.trim()) ? "ore " : "") + $("#eo").value.trim() : "", $("#el").value.trim()].filter(Boolean).join(" · ");
+      $("#pv-app").className = "pv-app";
+      $("#pv-app").innerHTML = `<span class="cal"><small>${MESI[d.getMonth()]}</small><b>${d.getDate()}</b></span><div><b class="t">${esc(ti)}</b><div class="q">${esc(q)}</div>${te ? `<p>${esc(te)}</p>` : ""}</div>`;
+    } else {
+      $("#pv-app").className = "pv-app" + (tipo === "urgente" ? " urg" : "");
+      $("#pv-app").innerHTML = `<span class="ic">${ic}</span><div><b class="t">${esc(ti)}</b>${te ? `<p>${esc(te)}</p>` : ""}${fi ? `<div class="q">Visibile fino al ${esc(gg(fi))}</div>` : ""}</div>`;
+    }
+    const notif = $("#nt").checked;
+    $("#pv-nw").hidden = !notif;
+    const nIc = tipo === "urgente" ? "⚠️ " : tipo === "evento" ? "📅 " : "📢 ";
+    const quando = qm === "prog" && (!editId || editProg) && $("#qd").value ? dh($("#qd").value) : "ora";
+    $("#pv-not").innerHTML = `<div class="h"><img src="icons/icon-192.png" alt="">Cave Informa<span>${esc(quando)}</span></div><b>${esc(nIc + ti)}</b><p>${esc(((tipo === "evento" && q ? q + ". " : "") + te).slice(0, 180) || "Comunicazione dell'associazione")}</p>`;
+  }
+  ["#ti", "#te", "#fi", "#ed", "#eo", "#el", "#qd", "#nt"].forEach((id) => $(id).addEventListener("input", preview));
+  $("#nt").addEventListener("change", preview);
+  function resetForm() {
+    editId = null; editProg = false; $("#fa").reset(); $("#nt").checked = true; $("#fa-t").textContent = "Pubblica nella bacheca"; $("#ann").hidden = true;
+    setTipo("avviso"); setQm("ora"); $("#qd").value = "";
+  }
+  $("#ann").onclick = () => { resetForm(); msg($("#amsg"), ""); };
+  function edit(a) {
+    editId = a.id; editProg = !!a.programmato;
+    $("#fa-t").textContent = "Modifica avviso"; $("#ann").hidden = false;
+    $("#ti").value = a.titolo || ""; $("#te").value = a.testo || ""; $("#fi").value = a.fino || "";
+    $("#ed").value = a.giorno || ""; $("#eo").value = a.ora || ""; $("#el").value = a.luogo || "";
+    setTipo(a.tipo || "avviso");
+    if (editProg) { $("#qd").value = dLoc(new Date(a.data)); setQm("prog"); $("#nt").checked = a.notifica !== false; } else { setQm("ora"); $("#nt").checked = false; }
+    labels(); preview(); $("#fa").scrollIntoView({ behavior: "smooth" });
+  }
   $("#fa").addEventListener("submit", async (e) => {
     e.preventDefault();
     const body = { tipo, titolo: $("#ti").value.trim(), testo: $("#te").value.trim(), notifica: $("#nt").checked };
+    if (editId) body.id = editId;
     if (tipo === "evento") { body.data = $("#ed").value; body.ora = $("#eo").value.trim(); body.luogo = $("#el").value.trim(); if (!body.data) { msg($("#amsg"), "Scegli la data dell'evento.", false); return; } }
-    if (body.notifica && !confirm("Pubblicare e inviare la notifica a tutti i telefoni iscritti?")) return;
+    else if ($("#fi").value) body.fino = $("#fi").value;
+    const prog = qm === "prog" && (!editId || editProg);
+    if (prog) { if (!$("#qd").value) { msg($("#amsg"), "Scegli giorno e ora di pubblicazione.", false); return; } body.quando = new Date($("#qd").value).toISOString(); }
+    if (!prog && body.notifica && !confirm(editId ? "Salvare e inviare di nuovo la notifica a tutti i telefoni iscritti?" : "Pubblicare e inviare la notifica a tutti i telefoni iscritti?")) return;
     $("#pub").disabled = true; msg($("#amsg"), "");
     try {
       const j = await call("/avviso", body);
-      msg($("#amsg"), "Pubblicato" + (j.esito ? " e inviato a " + j.esito.sent + " telefoni" : "") + ".", true);
-      $("#ti").value = ""; $("#te").value = ""; $("#eo").value = ""; $("#el").value = ""; loadAvvisi();
+      msg($("#amsg"), (editId ? "Modifiche salvate" : prog ? "Programmato per " + dh(body.quando) : "Pubblicato") + (j.esito ? " e inviato a " + j.esito.sent + " telefoni" : "") + ".", true);
+      resetForm(); loadAvvisi();
     } catch (err) { if (err.message !== "401") msg($("#amsg"), err.message, false); }
     finally { $("#pub").disabled = false; }
   });
   async function loadAvvisi() {
     try {
-      const l = await call("/avvisi");
+      const l = cache = await call("/avvisi");
       const box = $("#alist");
       if (!l.length) { box.innerHTML = '<p class="hint">Nessun avviso pubblicato da qui.</p>'; return; }
+      const o = oggi();
       box.innerHTML = l.map((a) => {
         const ic = a.tipo === "urgente" ? "⚠️" : a.tipo === "evento" ? "📅" : "📢";
-        const quando = a.tipo === "evento" && a.giorno ? a.giorno.split("-").reverse().join("/") + (a.ora ? " ore " + a.ora : "") : new Date(a.data).toLocaleDateString("it-IT", { day: "numeric", month: "long" });
-        return `<div class="li2"><span class="ic">${ic}</span><div>${esc(a.titolo)}<small>${esc(a.tipo || "avviso")} · ${esc(quando)}${a.autore ? " · da " + esc(a.autore) : ""}</small></div><button type="button" data-id="${esc(a.id)}">Togli</button></div>`;
+        const scaduto = (a.fino && a.fino < o) || (a.tipo === "evento" && a.giorno && a.giorno < o);
+        const quando = a.tipo === "evento" && a.giorno ? gg(a.giorno) + (a.ora ? " ore " + a.ora : "") : new Date(a.data).toLocaleDateString("it-IT", { day: "numeric", month: "long" });
+        const tags = (a.programmato ? `<span class="tag2 prog">🕗 esce ${esc(dh(a.data))}${a.notifica ? " · con notifica" : ""}</span>` : "") + (a.fino ? `<span class="tag2${scaduto ? " old" : ""}">${scaduto ? "scaduto il " : "fino al "}${esc(gg(a.fino))}</span>` : "") + (scaduto && !a.fino ? '<span class="tag2 old">concluso</span>' : "");
+        return `<div class="li2${scaduto ? " off" : ""}"><span class="ic">${ic}</span><div>${esc(a.titolo)}<small>${esc(a.tipo || "avviso")} · ${esc(quando)}${a.autore ? " · da " + esc(a.autore) : ""}${a.modificatoDa ? " · modificato da " + esc(a.modificatoDa) : ""}</small>${tags}</div><span class="acts">${scaduto ? "" : `<button type="button" data-e="${esc(a.id)}">Modifica</button>`}<button type="button" data-id="${esc(a.id)}">Togli</button></span></div>`;
       }).join("");
-      box.querySelectorAll("button").forEach((b) => (b.onclick = async () => {
-        if (!confirm("Togliere questo avviso dalla bacheca? La notifica già inviata resta sui telefoni.")) return;
-        try { await call("/avviso-elimina", { id: b.dataset.id }); toast("Avviso tolto"); loadAvvisi(); } catch (err) { if (err.message !== "401") toast(err.message); }
+      box.querySelectorAll("button[data-e]").forEach((b) => (b.onclick = () => { const a = cache.find((x) => x.id === b.dataset.e); if (a) edit(a); }));
+      box.querySelectorAll("button[data-id]").forEach((b) => (b.onclick = async () => {
+        if (!confirm("Togliere questo avviso dalla bacheca? Una notifica già inviata resta sui telefoni.")) return;
+        try { await call("/avviso-elimina", { id: b.dataset.id }); toast("Avviso tolto"); if (editId === b.dataset.id) resetForm(); loadAvvisi(); } catch (err) { if (err.message !== "401") toast(err.message); }
       }));
     } catch (err) { if (err.message !== "401") $("#alist").innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
   }
+  setTipo("avviso"); setQm("ora");
 
   /* ---------- stato ---------- */
   const t = (iso) => iso ? new Date(iso).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";
   const fa = (iso) => { if (!iso) return "—"; const m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? "adesso" : m < 60 ? m + " min fa" : m < 1440 ? Math.floor(m / 60) + " h fa" : t(iso); };
+  // andamento dei telefoni iscritti (un punto al giorno, ultimi 60 giorni)
+  function trend(st, ora) {
+    const box = $("#trend");
+    if (st.length < 2) { box.innerHTML = `<p class="hint">Oggi ${ora} telefoni iscritti. Il grafico compare dopo qualche giorno: il servizio salva un conteggio al giorno.</p>`; return; }
+    const W = 320, H = 90, max = Math.max(...st.map((x) => x.n), 1), bw = W / st.length;
+    const bars = st.map((x, i) => { const h = Math.max(2, Math.round((x.n / max) * (H - 14))); return `<rect x="${(i * bw + bw * 0.15).toFixed(1)}" y="${H - h}" width="${Math.max(1, bw * 0.7).toFixed(1)}" height="${h}" rx="2" fill="var(--accent)" opacity="${i === st.length - 1 ? 1 : 0.55}"><title>${gg(x.d)}: ${x.n}</title></rect>`; }).join("");
+    const d0 = st[0], d7 = st[Math.max(0, st.length - 8)], diff = ora - d7.n;
+    box.innerHTML = `<div class="trend"><div class="nums"><span><b>${ora}</b> oggi</span><span>${diff >= 0 ? "+" : ""}${diff} negli ultimi 7 giorni</span></div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Telefoni iscritti dal ${gg(d0.d)}">${bars}</svg><div class="nums"><span>${esc(gg(d0.d))}</span><span>oggi</span></div></div>`;
+  }
   async function loadStato() {
     const sem = $("#sem"), ctl = $("#ctl"), pb = $("#sem-pb");
     sem.className = "sem"; sem.innerHTML = '<span class="sem-dot"></span><div><b>Controllo…</b><small></small></div>';
@@ -769,6 +865,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       sem.className = "sem " + lv;
       sem.innerHTML = `<span class="sem-dot"></span><div><b>${lv === "ok" ? "Tutto funziona" : pr.length === 1 ? "1 problema" : pr.length + " problemi"}</b><small>Ultimo controllo automatico: ${esc(fa(sa.giro))} · ${j.iscritti} telefoni con notifiche</small></div>`;
       pb.innerHTML = pr.map((c) => `<div class="pb ${c.stato}"><b>${esc(c.nome)}:</b> ${esc(c.testo)}</div>`).join("");
+      trend(j.storico || [], j.iscritti);
       const gruppi = [...new Set(sa.controlli.map((c) => c.gruppo))];
       ctl.innerHTML = gruppi.map((g) => `<div class="ctl-g"><div>${esc(g)}</div>` + sa.controlli.filter((c) => c.gruppo === g).map((c) =>
         `<div class="ctl-r"><span class="i ${c.stato}">${c.stato === "ok" ? "✓" : c.stato === "warn" ? "!" : "✕"}</span><span>${esc(c.nome)}</span><span class="v">${esc(c.breve || "")}</span></div>`).join("") + "</div>").join("");

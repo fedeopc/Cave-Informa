@@ -380,6 +380,10 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 .bb-item small{color:var(--muted);font-size:.8rem}
 .bb-item a{color:var(--accent);font-weight:600;font-size:.85rem;text-decoration:none}
 .bb-sep{height:10px}
+.dae-modo{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.9rem}
+.dae-modo span{color:var(--muted);margin-right:4px}
+.dae-modo button{font:inherit;font-size:.92rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.dae-modo button[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .dae-desc{display:block;white-space:pre-line;margin-top:2px}
 #dae-list .li{padding:14px 14px}
 #dae-list .li strong{font-size:1.14rem;line-height:1.25}
@@ -705,7 +709,7 @@ header.top .brand{gap:12px}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 3.10 · 2 novembre 2026</span>
+    <span id="app-version">Versione 3.11 · 3 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -720,6 +724,7 @@ header.top .brand{gap:12px}
     <button class="btn" id="dae-geo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Trova il più vicino</button>
     <a class="btn" id="dae-map" href="https://www.google.com/maps/d/viewer?mid=1i_VWr2qEZsH_mhhseaKbxg-eUrc3HS8X" target="_blank" rel="noopener">Mappa completa</a>
   </div>
+  <div class="dae-modo" role="radiogroup" aria-label="Indicazioni stradali"><span>Indicazioni</span><button type="button" data-m="walk" role="radio">🚶 A piedi</button><button type="button" data-m="car" role="radio">🚗 In auto</button></div>
   <div id="dae-list" class="plist"></div>
 
   <p class="note" id="dae-src">Posizioni dalla mappa pubblica dei defibrillatori di Cave curata dalla Croce Rossa Italiana - Comitato di Monti Prenestini-ODV. Se un defibrillatore manca o è stato spostato, segnalalo all'associazione.</p>
@@ -863,7 +868,7 @@ const IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==
 const GO_ICON=`<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 11.5 21 3l-8.5 18-2-7.5z"/></svg>`, TEL_ICON=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>`, WEB_ICON=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>`;
 function navUrl(o){ // o: {lat,lon} oppure {q}
   if(o.q) return IS_IOS?`https://maps.apple.com/?q=${encodeURIComponent(o.q)}${o.lat!=null?`&sll=${o.lat},${o.lon}`:""}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.q)}`;
-  return IS_IOS?`https://maps.apple.com/?daddr=${o.lat},${o.lon}${o.walk?"&dirflg=w":""}`:`https://www.google.com/maps/dir/?api=1&destination=${o.lat},${o.lon}${o.walk?"&travelmode=walking":""}`;
+  return IS_IOS?`https://maps.apple.com/?daddr=${o.lat},${o.lon}${o.walk?"&dirflg=w":o.car?"&dirflg=d":""}`:`https://www.google.com/maps/dir/?api=1&destination=${o.lat},${o.lon}${o.walk?"&travelmode=walking":o.car?"&travelmode=driving":""}`;
 }
 const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -1138,6 +1143,12 @@ let DAE = [
     resto=resto.map(strip).filter(x=>x&&x.toLowerCase()!==titolo.toLowerCase());
     return {titolo, nota:resto.join(" · ")};
   }
+  // modo delle indicazioni (a piedi / in auto), ricordato sul telefono
+  let modo="walk"; try{ if(localStorage.getItem("dae-modo")==="car") modo="car"; }catch(e){}
+  const modoBtns=[...document.querySelectorAll(".dae-modo button")];
+  const setModo=m=>{ modo=m; try{localStorage.setItem("dae-modo",m);}catch(e){} modoBtns.forEach(b=>b.setAttribute("aria-checked",String(b.dataset.m===m))); };
+  modoBtns.forEach(b=>b.addEventListener("click",()=>{ setModo(b.dataset.m); render(); }));
+  setModo(modo);
   function render(){
     const nKo=DAE.filter(isKo).length;
     $("#dae-sub").textContent=(DAE.length-nKo)+" defibrillatori disponibili sul territorio comunale"+(nKo?" · "+nKo+" non disponibil"+(nKo===1?"e":"i")+" al momento":"");
@@ -1152,7 +1163,7 @@ let DAE = [
       const L=label(d);
       return `<div class="li${near?" near":""}${d.ko?" ko":""}"><span class="li-ic dae-c" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/><path d="M12.8 9.5 10.8 13h2.6l-1.8 3.2"/></svg></span>
         <div><strong>${esc(L.titolo)}</strong><small>${d.ko?`<b class="ko-txt">⚠️ Non disponibile al momento</b>${d.m!=null?" · a "+fmt(d.m):""}`:(near?(skipped?"Il più vicino disponibile · ":"Il più vicino · "):"")+(d.m!=null?"a "+fmt(d.m)+" in linea d'aria":"Defibrillatore semiautomatico")}</small>${L.nota&&!(d.ko&&KO.test(L.nota)&&L.nota.length<60)?`<small class="dae-desc">${esc(L.nota)}</small>`:""}</div>
-        <a class="go" href="${navUrl({lat:d.lat,lon:d.lon,walk:true})}" target="_blank" rel="noopener" aria-label="Portami al defibrillatore di ${esc(L.titolo)}">${GO_ICON}</a></div>`;}).join("");
+        <a class="go" href="${navUrl({lat:d.lat,lon:d.lon,walk:modo==="walk",car:modo==="car"})}" target="_blank" rel="noopener" aria-label="${modo==="car"?"In auto":"A piedi"} al defibrillatore di ${esc(L.titolo)}">${GO_ICON}</a></div>`;}).join("");
   }
   // elenco aggiornato: dae.json sullo stesso sito, con l'ultimo valido salvato sul telefono
   let daeAgg=null;
@@ -1937,7 +1948,8 @@ const BB = (() => {
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const eventi = [], avvisi = [];
     for (const a of Array.isArray(list) ? list : []) {
-      if (!a || !a.titolo) continue;
+      if (!a || !a.titolo || a.programmato) continue;
+      if (a.fino) { const f = parseDate(a.fino); if (f && f < today) continue; } // scaduto ("mostra fino al")
       if (a.tipo === "evento") { const d = parseDate(a.giorno); if (d && d >= today) eventi.push({ titolo: a.titolo, testo: a.testo || "", d, ora: a.ora || "", luogo: a.luogo || "", link: "" }); }
       else { const t = new Date(a.data); if (isNaN(t)) continue; avvisi.push({ titolo: a.titolo, testo: a.testo || "", d: new Date(t.getFullYear(), t.getMonth(), t.getDate()), urgente: a.tipo === "urgente", link: "" }); }
     }

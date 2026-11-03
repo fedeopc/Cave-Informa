@@ -66,3 +66,11 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 - Semaforo con il riassunto e l'elenco dei controlli: giro automatico, notifiche, bollettino nazionale, Regione Lazio, mappa DAE, foglio della bacheca, INGV, Open-Meteo, GitHub del Dipartimento, app e pagina admin pubblicate (versione).
 - Casella "Avvisami su questo telefono se qualcosa non funziona": notifica solo agli amministratori se un problema dura più di un'ora, al massimo una volta al giorno per problema.
 - Il servizio salva i dati solo quando cambiano: circa 150 salvataggi al giorno, sotto il limite gratuito di 1000.
+
+## Avvisi dalla pagina admin (versione 3.11)
+- Modifica di un avviso già pubblicato (di base senza inviare di nuovo la notifica).
+- "Mostra fino al": l'avviso sparisce da solo dalla bacheca dopo quella data (resta in grigio nell'elenco admin).
+- Pubblicazione programmata: l'avviso compare, ed eventualmente notifica, all'ora scelta (controllo ogni 10 minuti, quindi con al massimo 10 minuti di ritardo).
+- Anteprima dal vivo di bacheca e notifica mentre si scrive.
+- Scheda Stato: andamento dei telefoni iscritti (un conteggio al giorno).
+- App: nell'elenco DAE scelta "A piedi / In auto" per le indicazioni, ricordata sul telefono.
