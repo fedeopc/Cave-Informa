@@ -555,6 +555,7 @@ section[data-p]{display:grid;gap:12px}
 .ok{color:#2E8B57}.ko{color:#C0262D}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ok{color:#5CC08A}:root:not([data-theme="light"]) .ko{color:#F06A6F}}
 .seg[hidden]{display:none}
+.row2 .svuota{color:var(--muted)}
 .row2 .pri{background:var(--accent);color:#fff;border:0;padding:12px 22px;font-weight:700}
 .opt{font-weight:400;color:var(--muted)}
 #scad[hidden],#pv-nw[hidden]{display:none}#scad{display:grid;gap:6px}
@@ -652,7 +653,7 @@ section[data-p]{display:grid;gap:12px}
         <div class="pv" id="pv"><div class="eyebrow">Anteprima</div>
           <div class="pv-lab">Nella bacheca dell'app</div><div class="pv-app" id="pv-app"></div>
           <div id="pv-nw"><div class="pv-lab">Notifica sul telefono</div><div class="pv-not" id="pv-not"></div></div></div>
-        <div class="row2"><button class="pri" type="submit" id="pub">Pubblica</button><button type="button" class="sec" id="ann" hidden>Annulla modifica</button></div>
+        <div class="row2"><button class="pri" type="submit" id="pub">Pubblica</button><button type="button" class="sec" id="ann" hidden>Annulla modifica</button><button type="button" class="sec svuota" id="svu" hidden>🗑 Svuota campi</button></div>
         <p class="msg" id="amsg" role="status"></p>
       </form>
       <div class="card"><div class="eyebrow">Pubblicati dalla pagina amministratori</div><div id="alist"><p class="hint">Caricamento…</p></div>
@@ -758,7 +759,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   const dh = (iso) => new Date(iso).toLocaleString("it-IT", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
   const MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
   function setTipo(v) { tipo = v; $$("#tipo button").forEach((x) => x.classList.toggle("on", x.dataset.v === v)); $("#ev").hidden = v !== "evento"; $("#scad").hidden = v === "evento"; $("#tipo-hint").textContent = HINT[v]; preview(); }
-  function setQm(v) { qm = v; $$("#qm button").forEach((x) => x.classList.toggle("on", x.dataset.v === v)); $("#qd").hidden = v !== "prog"; if (v === "prog" && !$("#qd").value) { const d = new Date(Date.now() + 864e5); d.setHours(8, 0, 0, 0); $("#qd").value = dLoc(d); } labels(); preview(); }
+  function setQm(v) { qm = v; $$("#qm button").forEach((x) => x.classList.toggle("on", x.dataset.v === v)); $("#qd").hidden = v !== "prog"; if (v === "prog" && !$("#qd").value) { const d = new Date(Date.now() + 864e5); d.setHours(8, 0, 0, 0); $("#qd").value = dLoc(d); } labels(); preview(); aggSvuota(); }
   function labels() {
     const prog = qm === "prog" && (!editId || editProg);
     $("#nt-l").textContent = editId && !editProg ? "Invia di nuovo la notifica a tutti" : prog ? "Invia la notifica a tutti al momento della pubblicazione" : "Invia anche come notifica a tutti";
@@ -792,9 +793,17 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   $("#nt").addEventListener("change", preview);
   function resetForm() {
     editId = null; editProg = false; $("#fa").reset(); $("#nt").checked = true; $("#fa-t").textContent = "Pubblica nella bacheca"; $("#ann").hidden = true;
-    setTipo("avviso"); setQm("ora"); $("#qd").value = "";
+    setTipo("avviso"); setQm("ora"); $("#qd").value = ""; aggSvuota();
   }
   $("#ann").onclick = () => { resetForm(); msg($("#amsg"), ""); };
+  // "Svuota campi": compare quando c'è qualcosa di scritto in un nuovo avviso
+  function scritto() { return ["#ti", "#te", "#fi", "#ed", "#eo", "#el"].some((id) => $(id).value.trim()) || qm === "prog"; }
+  function aggSvuota() { $("#svu").hidden = !!editId || !scritto(); }
+  $("#svu").onclick = () => {
+    if (($("#ti").value + $("#te").value).trim().length > 40 && !confirm("Cancellare tutto quello che hai scritto?")) return;
+    resetForm(); msg($("#amsg"), ""); $("#ti").focus();
+  };
+  ["#ti", "#te", "#fi", "#ed", "#eo", "#el", "#qd"].forEach((id) => $(id).addEventListener("input", aggSvuota));
   function edit(a) {
     editId = a.id; editProg = !!a.programmato;
     $("#fa-t").textContent = "Modifica avviso"; $("#ann").hidden = false;
@@ -802,7 +811,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     $("#ed").value = a.giorno || ""; $("#eo").value = a.ora || ""; $("#el").value = a.luogo || "";
     setTipo(a.tipo || "avviso");
     if (editProg) { $("#qd").value = dLoc(new Date(a.data)); setQm("prog"); $("#nt").checked = a.notifica !== false; } else { setQm("ora"); $("#nt").checked = false; }
-    labels(); preview(); $("#fa").scrollIntoView({ behavior: "smooth" });
+    labels(); preview(); aggSvuota(); $("#fa").scrollIntoView({ behavior: "smooth" });
   }
   $("#fa").addEventListener("submit", async (e) => {
     e.preventDefault();
