@@ -553,6 +553,18 @@ section[data-p]{display:grid;gap:12px}
 .msg{margin:0;font-size:.9rem;font-weight:600}.msg:empty{display:none}
 .ok{color:#2E8B57}.ko{color:#C0262D}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ok{color:#5CC08A}:root:not([data-theme="light"]) .ko{color:#F06A6F}}
+.sem{display:flex;gap:14px;align-items:center;padding:14px;border-radius:14px;background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 40%,transparent);--c:#8a94a6}
+.sem.ok{--c:#2E9E5B}.sem.warn{--c:#E0A100}.sem.ko{--c:#D23B40}
+.sem-dot{width:30px;height:30px;border-radius:50%;background:var(--c);flex:none;box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 22%,transparent)}
+.sem b{display:block;font-size:1.12rem}.sem small{display:block;color:var(--muted);font-size:.84rem;margin-top:2px}
+#sem-pb:empty{display:none}#sem-pb{display:grid;gap:6px}
+.pb{font-size:.9rem;padding:9px 12px;border-radius:10px;background:color-mix(in srgb,var(--c) 10%,transparent);border-left:4px solid var(--c);--c:#D23B40}.pb.warn{--c:#E0A100}
+.ctl-g{margin-top:6px}
+.ctl-g>div:first-child{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:6px 0 2px}
+.ctl-r{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:7px 0;border-top:1px solid var(--line);font-size:.92rem}
+.ctl-r .i{font-weight:800;text-align:center}.ctl-r .i.ok{color:#2E9E5B}.ctl-r .i.warn{color:#C88F00}.ctl-r .i.ko{color:#D23B40}
+.ctl-r .v{color:var(--muted);text-align:right;font-size:.86rem;max-width:11.5em}
+.sorv{align-items:flex-start!important;margin-top:4px}.sorv b{display:block;font-weight:650}.sorv small{display:block;color:var(--muted);font-size:.82rem;font-weight:400;margin-top:2px;line-height:1.35}
 .st{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:8px 12px;font-size:.92rem;align-items:baseline}
 .st span:nth-child(even){font-weight:700;text-align:right}
 .li2{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:.93rem}
@@ -620,13 +632,17 @@ section[data-p]{display:grid;gap:12px}
     </section>
 
     <section data-p="stato" hidden>
-      <div class="card"><div class="eyebrow">Stato dei servizi</div><div class="st" id="st"><span>Caricamento…</span><span></span></div>
+      <div class="card"><div class="eyebrow">Stato dei servizi</div>
+        <div class="sem" id="sem"><span class="sem-dot"></span><div><b>Caricamento…</b><small></small></div></div>
+        <div id="sem-pb"></div>
+        <div id="ctl"></div>
         <button class="sec" type="button" id="st-r">↻ Aggiorna</button></div>
       <div class="card"><div class="eyebrow">Strumenti</div>
         <div class="row2"><button type="button" id="t-me">🔔 Notifica di prova a questo telefono</button><button type="button" id="t-dae">🔄 Aggiorna DAE ora</button></div>
         <div class="row2"><button type="button" id="t-lazio">📄 Leggi ora la Regione Lazio</button></div>
+        <label class="chk sorv"><input type="checkbox" id="t-sorv"> <span><b>🛠️ Avvisami su questo telefono se qualcosa non funziona</b><small>Una notifica se un controllo fallisce per più di un'ora, al massimo una volta al giorno per lo stesso problema. Arriva solo agli amministratori, non ai cittadini.</small></span></label>
         <p class="msg" id="tmsg" role="status"></p>
-        <p class="hint">La notifica di prova arriva solo a questo telefono. Se non è ancora iscritto, ti viene chiesto il permesso: da quel momento riceve anche le notifiche dei cittadini (allerte, terremoti, avvisi).</p></div>
+        <p class="hint">La notifica di prova e gli avvisi di malfunzionamento arrivano solo a questo telefono. Se non è ancora iscritto, ti viene chiesto il permesso: da quel momento riceve anche le notifiche dei cittadini (allerte, terremoti, avvisi).</p></div>
     </section>
 
     <section data-p="persone" hidden>
@@ -697,7 +713,7 @@ section[data-p]{display:grid;gap:12px}
   function show(t) {
     $$(".tabs2 button").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
     $$("section[data-p]").forEach((s) => (s.hidden = s.dataset.p !== t));
-    if (t === "avvisi") loadAvvisi(); if (t === "stato") loadStato(); if (t === "persone") loadPersone();
+    if (t === "avvisi") loadAvvisi(); if (t === "stato") { loadStato(); loadSorv(); } if (t === "persone") loadPersone();
   }
   $$(".tabs2 button").forEach((b) => (b.onclick = () => show(b.dataset.t)));
 
@@ -739,22 +755,21 @@ section[data-p]{display:grid;gap:12px}
 
   /* ---------- stato ---------- */
   const t = (iso) => iso ? new Date(iso).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";
+  const fa = (iso) => { if (!iso) return "—"; const m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? "adesso" : m < 60 ? m + " min fa" : m < 1440 ? Math.floor(m / 60) + " h fa" : t(iso); };
   async function loadStato() {
-    const box = $("#st"); box.innerHTML = "<span>Caricamento…</span><span></span>";
+    const sem = $("#sem"), ctl = $("#ctl"), pb = $("#sem-pb");
+    sem.className = "sem"; sem.innerHTML = '<span class="sem-dot"></span><div><b>Controllo…</b><small></small></div>';
     try {
-      const j = await call("/stato");
-      const b = j.ultimoBollettino ? j.ultimoBollettino.slice(6, 8) + "/" + j.ultimoBollettino.slice(4, 6) + " ore " + j.ultimoBollettino.slice(9, 11) + ":" + j.ultimoBollettino.slice(11, 13) : null;
-      const dc = j.dae && j.dae.controllo, ui = j.ultimoInvio;
-      const lz = j.lazio, lzG = lz && [...new Map((lz.esiti || []).flatMap((x) => x.giorni || []).map((g) => [g.slice(0, 8), g])).values()].sort(), lzNote = lzG && lzG.length ? "Bacino del Liri: " + lzG.map((g) => g.slice(6, 8) + "/" + g.slice(4, 6) + " " + ["verde", "gialla", "arancione", "rossa"][Math.max(...g.slice(9).split("").map(Number))]).join(", ") : "";
-      const rows = [
-        ["Telefoni con notifiche attive", String(j.iscritti), ""],
-        ["Ultimo bollettino letto", b ? b + " ✓" : "non ancora letto", b ? "ok" : "ko"],
-        ["Mappa DAE (Croce Rossa)", dc ? (dc.ok ? (j.dae.n + " DAE · " + t(dc.at) + " ✓") : "errore: " + dc.errore) : "non ancora letta", dc && dc.ok ? "ok" : "ko"],
-        ["Bollettini Regione Lazio", lz ? (lz.ok ? "letti " + t(lz.at) + (lzNote ? " · " + lzNote : "") + " ✓" : "errore: " + ((lz.esiti || []).filter((x) => !x.ok).map((x) => x.errore).join("; ") || "sconosciuto")) : "non ancora letti", lz && lz.ok ? "ok" : "ko"],
-        ["Ultima notifica inviata", ui ? t(ui.at) + " · " + ui.sent + " consegnate" + (ui.failed ? ", " + ui.failed + " non riuscite" : "") : "nessuna", ""],
-      ];
-      box.innerHTML = rows.map(([a, v, c]) => `<span>${esc(a)}</span><span class="${c}">${esc(v)}</span>`).join("");
-    } catch (err) { if (err.message !== "401") box.innerHTML = `<span class="ko">${esc(err.message)}</span><span></span>`; }
+      const j = await call("/stato"), sa = j.salute || { controlli: [] };
+      const pr = sa.controlli.filter((c) => c.stato !== "ok");
+      const lv = pr.some((c) => c.stato === "ko") ? "ko" : pr.length ? "warn" : "ok";
+      sem.className = "sem " + lv;
+      sem.innerHTML = `<span class="sem-dot"></span><div><b>${lv === "ok" ? "Tutto funziona" : pr.length === 1 ? "1 problema" : pr.length + " problemi"}</b><small>Ultimo controllo automatico: ${esc(fa(sa.giro))} · ${j.iscritti} telefoni con notifiche</small></div>`;
+      pb.innerHTML = pr.map((c) => `<div class="pb ${c.stato}"><b>${esc(c.nome)}:</b> ${esc(c.testo)}</div>`).join("");
+      const gruppi = [...new Set(sa.controlli.map((c) => c.gruppo))];
+      ctl.innerHTML = gruppi.map((g) => `<div class="ctl-g"><div>${esc(g)}</div>` + sa.controlli.filter((c) => c.gruppo === g).map((c) =>
+        `<div class="ctl-r"><span class="i ${c.stato}">${c.stato === "ok" ? "✓" : c.stato === "warn" ? "!" : "✕"}</span><span>${esc(c.nome)}</span><span class="v">${esc(c.breve || "")}</span></div>`).join("") + "</div>").join("");
+    } catch (err) { if (err.message !== "401") { sem.className = "sem ko"; sem.innerHTML = `<span class="sem-dot"></span><div><b>Servizio non raggiungibile</b><small>${esc(err.message)}</small></div>`; ctl.innerHTML = ""; pb.innerHTML = ""; } }
   }
   $("#st-r").onclick = loadStato;
   $("#t-dae").onclick = async () => {
@@ -768,24 +783,49 @@ section[data-p]{display:grid;gap:12px}
     catch (err) { if (err.message !== "401") msg($("#tmsg"), err.message, false); }
   };
   const b64 = (s) => { const p = "=".repeat((4 - s.length % 4) % 4); const r = atob((s + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(r, (c) => c.charCodeAt(0)); };
+  // iscrive questo telefono alle notifiche (se serve) e restituisce l'iscrizione
+  const pushOk = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+  const noPush = () => /iPhone|iPad/.test(navigator.userAgent) ? "Su iPhone aggiungi prima questa pagina alla schermata Home (Condividi → Aggiungi alla schermata Home) e aprila dall'icona." : "Questo browser non supporta le notifiche.";
+  async function ensureSub() {
+    const reg = await navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(() => navigator.serviceWorker.ready);
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub || Notification.permission !== "granted") {
+      if (await Notification.requestPermission() !== "granted") throw new Error("permesso negato: attivalo in Impostazioni → Notifiche");
+      const { publicKey } = await (await fetch(API + "/vapid")).json();
+      sub = sub || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(publicKey) });
+      await fetch(API + "/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub.toJSON()) });
+    }
+    return sub;
+  }
   $("#t-me").onclick = async () => {
     const el = $("#tmsg");
-    if (!("serviceWorker" in navigator && "PushManager" in window && "Notification" in window)) {
-      msg(el, /iPhone|iPad/.test(navigator.userAgent) ? "Su iPhone aggiungi prima questa pagina alla schermata Home (Condividi → Aggiungi alla schermata Home) e aprila dall'icona." : "Questo browser non supporta le notifiche.", false); return;
-    }
+    if (!pushOk()) { msg(el, noPush(), false); return; }
     try {
       msg(el, "Invio…", true);
-      const reg = await navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(() => navigator.serviceWorker.ready);
-      let sub = await reg.pushManager.getSubscription();
-      if (!sub || Notification.permission !== "granted") {
-        if (await Notification.requestPermission() !== "granted") { msg(el, "Permesso negato: attivalo in Impostazioni → Notifiche.", false); return; }
-        const { publicKey } = await (await fetch(API + "/vapid")).json();
-        sub = sub || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(publicKey) });
-        await fetch(API + "/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub.toJSON()) });
-      }
+      const sub = await ensureSub();
       await call("/prova-me", { endpoint: sub.endpoint });
       msg(el, "Notifica di prova inviata a questo telefono.", true);
     } catch (err) { if (err.message !== "401") msg(el, "Non riuscito: " + err.message, false); }
+  };
+  // avvisi di malfunzionamento su questo telefono
+  async function loadSorv() {
+    const cb = $("#t-sorv"); cb.checked = false;
+    if (!pushOk()) return;
+    try {
+      const reg = await navigator.serviceWorker.getRegistration(); const sub = reg && await reg.pushManager.getSubscription();
+      if (sub) cb.checked = !!(await call("/sorveglianza", { endpoint: sub.endpoint })).on;
+    } catch (e) {}
+  }
+  $("#t-sorv").onchange = async () => {
+    const cb = $("#t-sorv"), on = cb.checked, el = $("#tmsg");
+    if (!pushOk()) { cb.checked = false; msg(el, noPush(), false); return; }
+    cb.disabled = true;
+    try {
+      const sub = await ensureSub();
+      await call("/sorveglianza", { endpoint: sub.endpoint, on });
+      msg(el, on ? "Riceverai su questo telefono gli avvisi se qualcosa non funziona." : "Avvisi di malfunzionamento disattivati su questo telefono.", true);
+    } catch (err) { cb.checked = !on; if (err.message !== "401") msg(el, "Non riuscito: " + err.message, false); }
+    finally { cb.disabled = false; }
   };
 
   /* ---------- persone (solo amministratore principale) ---------- */

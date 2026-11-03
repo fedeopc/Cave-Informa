@@ -61,3 +61,8 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 - Se poi il bollettino nazionale conferma lo stesso livello, non parte una seconda notifica.
 - Gli allertamenti senza tabella delle zone (per esempio solo vento) vengono ignorati.
 - Controllo: pagina admin → Stato → riga "Bollettini Regione Lazio" e tasto "Leggi ora la Regione Lazio".
+
+## Controlli di salute (pagina admin → Stato)
+- Semaforo con il riassunto e l'elenco dei controlli: giro automatico, notifiche, bollettino nazionale, Regione Lazio, mappa DAE, foglio della bacheca, INGV, Open-Meteo, GitHub del Dipartimento, app e pagina admin pubblicate (versione).
+- Casella "Avvisami su questo telefono se qualcosa non funziona": notifica solo agli amministratori se un problema dura più di un'ora, al massimo una volta al giorno per problema.
+- Il servizio salva i dati solo quando cambiano: circa 150 salvataggi al giorno, sotto il limite gratuito di 1000.
