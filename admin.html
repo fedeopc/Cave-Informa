@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Cave Informa · Amministrazione</title>
 <meta name="description" content="Area riservata ai volontari di Cave Informa.">
@@ -662,6 +663,8 @@ section[data-p]{display:grid;gap:12px}
 <div class="toast" id="toast" hidden></div>
 
 <script>
+// la pagina admin non può essere mostrata dentro altri siti (protezione da pagine ingannevoli)
+if (window.top !== window.self) { try { window.top.location = window.location.href; } catch (e) { document.documentElement.innerHTML = ""; } }
 (function () {
   "use strict";
   const API = "https://allerta-cave-push.secondo-violento3m.workers.dev";
