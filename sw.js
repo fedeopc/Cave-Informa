@@ -1,7 +1,7 @@
 // Cave Informa: funzionamento offline.
 // Quando cambi i file dell'app, aumenta il numero di versione qui sotto (2.0, 2.1, 2.2…)
 // e scrivi lo stesso numero in index.html, nella riga "Versione …" della pagina Informazioni.
-const VERSION = "allerta-cave-3.11";
+const VERSION = "allerta-cave-3.12";
 const CORE = [
   "./",
   "./index.html",
@@ -85,9 +85,14 @@ self.addEventListener("push", (e) => {
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();
   const url = new URL((e.notification.data && e.notification.data.url) || "./", self.registration.scope).href;
-  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
-    for (const c of list) {
-      if (c.url.startsWith(self.registration.scope)) { c.navigate(url).catch(() => {}); return c.focus(); }
+  const admin = /admin\.html/.test(url);
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (list) => {
+    // finestra già aperta della stessa pagina (app o pagina admin): la porto in primo piano e le dico dove andare
+    const stessa = list.find((c) => c.url.startsWith(self.registration.scope) && /admin\.html/.test(c.url) === admin);
+    if (stessa) {
+      try { await stessa.focus(); } catch (err) {}
+      stessa.postMessage({ tipo: "apri", url });
+      return;
     }
     return self.clients.openWindow(url);
   }));

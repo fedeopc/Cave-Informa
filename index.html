@@ -709,7 +709,7 @@ header.top .brand{gap:12px}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 3.11 · 3 novembre 2026</span>
+    <span id="app-version">Versione 3.12 · 4 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -886,7 +886,17 @@ function showTab(t){
 }
 document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.t)));
 const hashTab=(location.hash||"").slice(1);
-window.addEventListener("hashchange",()=>{let t=(location.hash||"").slice(1);if(t==="numeri")t="comune";if(document.getElementById("tab-"+t))showTab(t);});
+// apre il punto giusto dell'app (da una notifica o da un link con #): scheda, bacheca o elenco delle scosse
+function apri(dest){
+  dest=String(dest||"").replace(/^.*#/,""); if(dest==="numeri") dest="comune";
+  if(dest==="bacheca"){ showTab("comune"); setTimeout(()=>{const w=document.getElementById("bacheca-wrap"); if(w&&!w.hidden) w.scrollIntoView({behavior:"smooth",block:"start"});},120); return true; }
+  if(dest==="terremoti"){ showTab("allerte"); setTimeout(()=>{const b=document.getElementById("tile-eq"); if(b){ if(b.getAttribute("aria-expanded")!=="true") b.click(); b.scrollIntoView({behavior:"smooth",block:"center"}); }},150); return true; }
+  if(document.getElementById("tab-"+dest)){ showTab(dest); return true; }
+  return false;
+}
+window.addEventListener("hashchange",()=>apri(location.hash));
+// notifica toccata mentre l'app è già aperta: il servizio offline chiede di spostarsi
+if("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message",e=>{ if(e.data&&e.data.tipo==="apri"){ apri(e.data.url); } });
 $("#b-info").addEventListener("click",()=>showTab("info"));
 $("#check-update").addEventListener("click",async()=>{
   const btn=$("#check-update"); btn.disabled=true; btn.textContent="Controllo in corso…";
@@ -906,7 +916,8 @@ $("#check-update").addEventListener("click",async()=>{
   btn.disabled=false; btn.textContent="Controlla aggiornamenti";
 });
 {const fix=t=>t==="numeri"?"comune":t;const start=fix(hashTab)||"";const saved=fix(store.get("tab","allerte"));
-showTab(["allerte","guida","zaino","comune","info","dae"].includes(start)?start:(["allerte","guida","zaino","comune","info","dae"].includes(saved)?saved:"allerte"));}
+showTab(["allerte","guida","zaino","comune","info","dae"].includes(start)?start:(["allerte","guida","zaino","comune","info","dae"].includes(saved)?saved:"allerte"));
+if(start==="bacheca"||start==="terremoti") setTimeout(()=>apri(start),600);}
 
 /* rischi */
 const RISK_ICON={terremoto:"🏚️",alluvione:"🌊",incendio:"🔥",caldo:"🌡️",neve:"❄️"};
