@@ -1,7 +1,7 @@
 // Cave Informa: funzionamento offline.
 // Quando cambi i file dell'app, aumenta il numero di versione qui sotto (2.0, 2.1, 2.2…)
 // e scrivi lo stesso numero in index.html, nella riga "Versione …" della pagina Informazioni.
-const VERSION = "allerta-cave-3.12";
+const VERSION = "allerta-cave-3.13";
 const CORE = [
   "./",
   "./index.html",
@@ -9,7 +9,10 @@ const CORE = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",
-  "./icons/favicon-32.png"
+  "./icons/favicon-32.png",
+  "./icons/maskable-192.png",
+  "./icons/maskable-512.png",
+  "./icons/badge-96.png"
 ];
 
 self.addEventListener("install", (e) => {
@@ -77,7 +80,7 @@ self.addEventListener("push", (e) => {
   e.waitUntil(self.registration.showNotification(d.title || "Cave Informa", {
     body: d.body || "",
     icon: "icons/icon-192.png",
-    badge: "icons/icon-192.png",
+    badge: "icons/badge-96.png", // Android: sagoma bianca nella barra in alto
     tag: d.tag,
     data: { url: d.url || "./" },
   }));
