@@ -670,7 +670,8 @@ section[data-p]{display:grid;gap:12px}
       <div class="card"><div class="eyebrow">Strumenti</div>
         <div class="row2"><button type="button" id="t-me">🔔 Notifica di prova a questo telefono</button><button type="button" id="t-dae">🔄 Aggiorna DAE ora</button></div>
         <div class="row2"><button type="button" id="t-lazio">📄 Leggi ora la Regione Lazio</button></div>
-        <label class="chk sorv"><input type="checkbox" id="t-sorv"> <span><b>🛠️ Avvisami su questo telefono se qualcosa non funziona</b><small>Una notifica se un controllo fallisce per più di un'ora, al massimo una volta al giorno per lo stesso problema. Arriva solo agli amministratori, non ai cittadini.</small></span></label>
+        <label class="chk sorv"><input type="checkbox" id="t-sorv"> <span><b>🛠️ Avvisami su questo telefono se qualcosa non funziona</b><small>Il semaforo segnala subito anche il primo errore; la notifica arriva solo se il problema non si risolve da solo e dura più di mezz'ora, al massimo una volta al giorno per lo stesso problema. Arriva solo agli amministratori, non ai cittadini.</small></span></label>
+        <div class="row2"><button type="button" id="t-sp">🛠️ Prova avviso di malfunzionamento</button></div>
         <p class="msg" id="tmsg" role="status"></p>
         <p class="hint">La notifica di prova e gli avvisi di malfunzionamento arrivano solo a questo telefono. Se non è ancora iscritto, ti viene chiesto il permesso: da quel momento riceve anche le notifiche dei cittadini (allerte, terremoti, avvisi).</p></div>
     </section>
@@ -925,6 +926,15 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       if (sub) cb.checked = !!(await call("/sorveglianza", { endpoint: sub.endpoint })).on;
     } catch (e) {}
   }
+  $("#t-sp").onclick = async () => {
+    const el = $("#tmsg");
+    try {
+      msg(el, "Invio…", true);
+      const r = await call("/sorveglianza-prova", {});
+      if (!r.sent && !r.failed) msg(el, "Nessun telefono ha la spunta \"Avvisami\" attiva: mettila qui sopra e riprova.", false);
+      else msg(el, "Avviso di prova inviato a " + r.sent + (r.sent === 1 ? " telefono" : " telefoni") + " con la spunta" + (r.failed ? " (" + r.failed + " non riusciti)" : "") + ". Se non arriva su questo telefono, togli e rimetti la spunta.", true);
+    } catch (err) { if (err.message !== "401") msg(el, "Non riuscito: " + err.message, false); }
+  };
   $("#t-sorv").onchange = async () => {
     const cb = $("#t-sorv"), on = cb.checked, el = $("#tmsg");
     if (!pushOk()) { cb.checked = false; msg(el, noPush(), false); return; }

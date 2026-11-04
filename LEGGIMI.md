@@ -64,7 +64,7 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 
 ## Controlli di salute (pagina admin → Stato)
 - Semaforo con il riassunto e l'elenco dei controlli: giro automatico, notifiche, bollettino nazionale, Regione Lazio, mappa DAE, foglio della bacheca, INGV, Open-Meteo, GitHub del Dipartimento, app e pagina admin pubblicate (versione).
-- Casella "Avvisami su questo telefono se qualcosa non funziona": notifica solo agli amministratori se un problema dura più di un'ora, al massimo una volta al giorno per problema.
+- Casella "Avvisami su questo telefono se qualcosa non funziona": il semaforo segnala subito anche il primo errore; la notifica arriva solo agli amministratori se il problema dura più di mezz'ora, al massimo una volta al giorno per problema. Tasto "Prova avviso di malfunzionamento" per verificarla.
 - Il servizio salva i dati solo quando cambiano: circa 150 salvataggi al giorno, sotto il limite gratuito di 1000.
 
 ## Avvisi dalla pagina admin (versione 3.11)
