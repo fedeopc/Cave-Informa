@@ -660,6 +660,19 @@ section[data-p]{display:grid;gap:12px}
 .att.annullata b.t{text-decoration:line-through;opacity:.7}
 .att .ann{display:inline-block;margin-top:6px;font-size:.8rem;font-weight:700;color:#D23B40;background:color-mix(in srgb,#D23B40 12%,transparent);border-radius:8px;padding:3px 8px}
 .sa .ann{color:#D23B40;font-weight:700}
+#arch-n[hidden]{display:none}
+details.arc{border-top:1px solid var(--line);padding:4px 0}details.arc:first-child{border-top:0}
+details.arc>summary{cursor:pointer;list-style:none;padding:10px 0;display:grid;gap:3px}details.arc>summary::-webkit-details-marker{display:none}
+details.arc>summary b{font-size:.93rem}details.arc>summary small{color:var(--muted);font-size:.8rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+details.arc>.att{border-top:0;padding-top:0}details.arc>.att>b.t{display:none}
+.chip{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.chip.ok{color:#2E9E5B;border-color:color-mix(in srgb,#2E9E5B 45%,transparent)}.chip.ko{color:#D23B40;border-color:color-mix(in srgb,#D23B40 45%,transparent)}
+details.arcbox,details.mese{margin-top:10px}
+details.arcbox>summary,details.mese>summary{cursor:pointer;font-weight:750;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;gap:8px}
+details.arcbox>summary,details.mese>summary{list-style:none}details.arcbox>summary::-webkit-details-marker,details.mese>summary::-webkit-details-marker{display:none}
+details.arcbox>summary::after,details.mese>summary::after{content:"";width:8px;height:8px;margin-left:auto;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:rotate(-45deg);transition:transform .2s}
+details.arcbox[open]>summary::after,details.mese[open]>summary::after{transform:rotate(45deg)}
+details.mese{margin-left:6px}details.mese>summary{font-weight:650;font-size:.9rem;padding:8px 12px}
 .att .azioni .fin{background:#2E9E5B;border-color:#2E9E5B;color:#fff}
 .att .ann.fin,.sa .ann.fin{color:#2E9E5B;background:color-mix(in srgb,#2E9E5B 14%,transparent)}.sa .ann.fin{background:none}
 </style>
@@ -753,8 +766,11 @@ section[data-p]{display:grid;gap:12px}
         <label class="chk"><input id="s-cf" type="checkbox" checked> <span>Chiedi conferma: <b>Ci sono</b> / <b>Non posso</b>, con nota</span></label>
         <div class="row2"><button class="pri urg" type="submit" id="s-go">🚨 Invia ai volontari</button><button type="button" class="sec svuota" id="s-svu">🗑 Svuota</button></div>
         <p class="msg" id="smsg" role="status"></p></form>
-      <div class="card" data-c="ultime" data-perm="attivazioni risposte"><div class="eyebrow">Ultime attivazioni <span class="hint" id="s-agg" style="margin-left:auto;font-weight:400;letter-spacing:0;text-transform:none"></span></div>
+      <div class="card" data-c="ultime" data-perm="attivazioni risposte"><div class="eyebrow">Attivazioni in corso <span class="hint" id="s-agg" style="margin-left:auto;font-weight:400;letter-spacing:0;text-transform:none"></span></div>
         <div id="s-list"><p class="hint">Caricamento…</p></div></div>
+      <div class="card" id="c-arch" data-c="archiviate" data-chiusa data-perm="attivazioni risposte"><div class="eyebrow">📦 Archiviate <span class="tag" id="arch-n"></span></div>
+        <div id="s-arch"><p class="hint">Caricamento…</p></div>
+        <p class="hint">Qui finiscono da sole le attivazioni concluse o annullate e i messaggi informativi dopo 24 ore. Si vedono le ultime 10 degli ultimi 30 giorni; tutte le altre restano in <b>Storico e presenze</b>.</p></div>
       <div class="card" id="s-storico" data-c="storico" data-chiusa data-perm="storico"><div class="eyebrow">Storico e presenze</div>
         <div class="sto-bar"><select id="st-anno" aria-label="Anno"></select>
           <div class="seg" id="st-vista"><button type="button" data-v="att" class="on">Per attivazione</button><button type="button" data-v="soc">Per volontario</button></div></div>
@@ -1219,9 +1235,9 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       const d = j.dispositivi;
       $("#s-dest").innerHTML = d.totale ? `Arriva a <b>${d.soci}</b> ${d.soci === 1 ? "volontario" : "volontari"} con l'area volontari attiva sull'app${d.soci < d.totale ? ` (su ${d.totale}: ${d.totale - d.soci} non l'hanno ancora attivata)` : ""}.` : "Non ci sono ancora volontari: crea i loro codici più sotto, in <b>Codici dei volontari</b>.";
       $("#s-agg").textContent = "aggiornato " + new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-      const box = $("#s-list");
-      if (!j.messaggi.length) { box.innerHTML = '<p class="hint">Nessuna attivazione inviata.</p>'; return; }
-      box.innerHTML = j.messaggi.map((m) => {
+      const box = $("#s-list"), abox = $("#s-arch");
+      const attiva = (m) => !m.annullata && !m.conclusa && (m.conferma || Date.now() - new Date(m.data) < 864e5);
+      const html = (m) => {
         const si = m.risposte.filter((r) => r.r === "si"), no = m.risposte.filter((r) => r.r === "no");
         const senza = j.nomi ? j.soci.filter((x) => !m.risposte.some((r) => r.socio === x.id)) : Array(Math.max(0, j.soci.length - m.risposte.length)).fill(0);
         const tot = Math.max(1, j.soci.length), pct = (n) => (100 * n / tot).toFixed(1) + "%";
@@ -1239,9 +1255,16 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
           <div class="cnt"><span class="si">✅ ${si.length} ci sono</span><span class="no">❌ ${no.length} non possono</span><span class="att0">⏳ ${senza.length} senza risposta</span></div>` +
           (j.nomi ? `<details data-id="${esc(m.id)}"${aperte.has(m.id) ? " open" : ""}><summary>Vedi i nomi</summary><div class="rl">${si.map((r) => riga(r, "✅")).join("")}${no.map((r) => riga(r, "❌")).join("")}${senza.map((x) => `<div><span>⏳</span><span class="n">${esc(x.nome)}</span></div>`).join("")}</div></details>` : "")
           : `<small>Solo informativo, senza risposta.</small>`) + az + "</div>";
-      }).join("");
-      box.querySelectorAll("details").forEach((dt) => dt.addEventListener("toggle", () => dt.open ? aperte.add(dt.dataset.id) : aperte.delete(dt.dataset.id)));
-      box.querySelectorAll("button[data-az]").forEach((b) => (b.onclick = () => azione(b.closest(".att"), b.dataset.az, j.messaggi.find((x) => x.id === b.closest(".att").dataset.id))));
+      };
+      const att = j.messaggi.filter(attiva), arc = j.messaggi.filter((m) => !attiva(m) && Date.now() - new Date(m.data) < 30 * 864e5).slice(0, 10);   // solo le ultime 10 degli ultimi 30 giorni: le altre restano nello storico
+      const stato = (m) => m.annullata ? '<span class="chip ko">❌ annullata</span>' : m.conclusa ? '<span class="chip ok">🏁 conclusa</span>' : '<span class="chip">ℹ️ informativo</span>';
+      box.innerHTML = att.length ? att.map(html).join("") : '<p class="hint">Nessuna attivazione in corso.</p>';
+      abox.innerHTML = arc.length ? arc.map((m) => `<details class="arc" data-id="a${esc(m.id)}"${aperte.has("a" + m.id) ? " open" : ""}><summary><b>${esc(m.titolo)}</b><small>${esc(new Date(m.data).toLocaleString("it-IT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))} ${stato(m)}${m.conferma ? ` · ✅ ${m.risposte.filter((r) => r.r === "si").length}` : ""}</small></summary>${html(m)}</details>`).join("") : '<p class="hint">Nessuna attivazione archiviata.</p>';
+      $("#arch-n").textContent = arc.length || ""; $("#arch-n").hidden = !arc.length;
+      [box, abox].forEach((bx) => {
+        bx.querySelectorAll("details").forEach((dt) => dt.addEventListener("toggle", () => dt.open ? aperte.add(dt.dataset.id) : aperte.delete(dt.dataset.id)));
+        bx.querySelectorAll("button[data-az]").forEach((b) => (b.onclick = () => azione(b.closest(".att"), b.dataset.az, j.messaggi.find((x) => x.id === b.closest(".att").dataset.id))));
+      });
     } catch (err) { if (err.message !== "401" && !silenzioso) $("#s-list").innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; } finally { inVolo = false; }
   }
 
@@ -1317,6 +1340,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       disegna();
     } catch (err) { if (err.message !== "401") box.innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
   }
+  const apStor = new Set();   // gruppi aperti nello storico (archiviate, mesi)
   function disegna() {
     const A = sto.attivazioni, rs = riepilogo();
     const conf = A.filter((a) => a.conferma), risposteSi = conf.reduce((n, a) => n + a.risposte.filter((r) => r.r === "si").length, 0), attese = conf.reduce((n, a) => n + destinatari(a).length, 0);
@@ -1329,20 +1353,27 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
         rs.map((x) => { const den = x.si + x.no + x.nr; return `<tr><td>${esc(x.nome)}</td><td>${x.att}</td><td>${x.si}</td><td>${x.no}</td><td>${x.nr}</td><td>${x.pres}</td><td>${oreTxt(x.ore)}</td><td>${den ? Math.round(100 * x.si / den) + "%" : "—"}</td></tr>`; }).join("") + "</table>";
       return;
     }
-    box.innerHTML = A.map((a) => {
+    const voce = (a) => {
       const d = destinatari(a), si = d.filter((x) => x.r && x.r.r === "si").length, no = d.filter((x) => x.r && x.r.r === "no").length, nr = a.conferma ? d.length - si - no : 0;
       const pr = Object.values(a.presenze).filter((p) => p.p).length, or = Object.values(a.presenze).reduce((m, p) => m + (p.ore || 0), 0);
       return `<details class="sa" data-id="${esc(a.id)}"><summary><b>${esc(a.titolo)}</b>${a.annullata ? ' <span class="ann">· annullata</span>' : ""}${a.conclusa ? ' <span class="ann fin">· conclusa</span>' : ""}<small>${gg2(a.data)} ${hh2(a.data)} · da ${esc(a.autore || "")}</small>
         <div class="cnt">${a.conferma ? `<span class="si">✅ ${si}</span><span class="no">❌ ${no}</span><span class="att0">⏳ ${nr}</span>` : '<span class="att0">solo informativo</span>'}<span>👥 ${pr} presenti</span>${a.conclusa ? `<span>🏁 durata ${oreTxt(Math.max(0.5, Math.round((new Date(a.conclusa.at) - new Date(a.data)) / 18e5) / 2))} h a testa</span>` : ""}<span>⏱ ${oreTxt(or)} h in totale</span></div></summary>
         <table class="pt"><tr><th>Volontario</th><th>Risposta</th><th>Presente</th><th>Ore</th></tr>${d.map((x) => `<tr data-s="${esc(x.id)}" data-n="${esc(x.nome)}"><td>${esc(x.nome)}</td><td class="r">${x.r ? (x.r.r === "si" ? "✅ ci sono" : "❌ non posso") + (x.r.nota ? " · " + esc(x.r.nota) : "") : a.conferma ? "⏳" : "—"}</td><td><input type="checkbox"${x.p && x.p.p ? " checked" : ""} aria-label="Presente"></td><td><input type="number" min="0" max="48" step="0.5" value="${x.p && x.p.ore ? x.p.ore : ""}" placeholder="0" aria-label="Ore"></td></tr>`).join("")}</table>
         <div class="row2"><button type="button" class="pri" data-salva="${esc(a.id)}">Salva presenze</button></div></details>`;
-    }).join("");
+    };
+    const aperta = (a) => !a.annullata && !a.conclusa && (a.conferma || Date.now() - new Date(a.data) < 864e5);
+    const inCorso = A.filter(aperta), arch = A.filter((a) => !aperta(a)), mesi = new Map();
+    for (const a of arch) { const k = new Date(a.data).toLocaleDateString("it-IT", { month: "long", year: "numeric" }); if (!mesi.has(k)) mesi.set(k, []); mesi.get(k).push(a); }
+    box.innerHTML = (inCorso.length ? inCorso.map(voce).join("") : '<p class="hint">Nessuna attivazione in corso.</p>') +
+      (arch.length ? `<details class="arcbox" data-g="arch"${apStor.has("arch") ? " open" : ""}><summary>📦 Archiviate <span class="tag">${arch.length}</span></summary>` +
+        [...mesi].map(([k, l]) => `<details class="mese" data-g="${esc(k)}"${apStor.has(k) ? " open" : ""}><summary>${esc(k[0].toUpperCase() + k.slice(1))} <span class="tag">${l.length}</span></summary>${l.map(voce).join("")}</details>`).join("") + "</details>" : "");
+    box.querySelectorAll("details[data-g]").forEach((dt) => dt.addEventListener("toggle", () => dt.open ? apStor.add(dt.dataset.g) : apStor.delete(dt.dataset.g)));
     box.querySelectorAll("input[type=number]").forEach((n) => n.addEventListener("input", () => { if (+n.value > 0) n.closest("tr").querySelector("input[type=checkbox]").checked = true; }));
     box.querySelectorAll("button[data-salva]").forEach((b) => (b.onclick = async () => {
       const det = b.closest("details"), presenze = {};
       det.querySelectorAll("tr[data-s]").forEach((tr) => { const p = tr.querySelector("input[type=checkbox]").checked, ore = +tr.querySelector("input[type=number]").value || 0; if (p || ore) presenze[tr.dataset.s] = { p, ore, nome: tr.dataset.n }; });
       b.disabled = true;
-      try { const j = await call("/soci/presenze", { id: b.dataset.salva, presenze }); sto.attivazioni.find((a) => a.id === b.dataset.salva).presenze = j.presenze; toast("Presenze salvate"); const aperto = b.dataset.salva; disegna(); const d2 = $("#st-list").querySelector(`details[data-id="${aperto}"]`); if (d2) d2.open = true; }
+      try { const j = await call("/soci/presenze", { id: b.dataset.salva, presenze }); sto.attivazioni.find((a) => a.id === b.dataset.salva).presenze = j.presenze; toast("Presenze salvate"); const aperto = b.dataset.salva; disegna(); const d2 = $("#st-list").querySelector(`details[data-id="${aperto}"]`); if (d2) { d2.open = true; for (let p = d2.parentElement?.closest("details"); p; p = p.parentElement?.closest("details")) p.open = true; } }
       catch (err) { if (err.message !== "401") toast(err.message); } finally { b.disabled = false; }
     }));
   }

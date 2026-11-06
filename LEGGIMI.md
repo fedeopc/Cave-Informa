@@ -89,6 +89,7 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 - Il volontario risponde "Ci sono / Non posso" con una nota; le risposte compaiono nella pagina admin, aggiornate ogni 5 secondi (versione 3.20).
 - "🏁 Concludi" (versione 3.19): chiude l'intervento, nessuno può più rispondere, notifica facoltativa "Intervento concluso". A ciascun volontario che ha risposto "Ci sono" vengono segnate presenza e ore pari alla durata intera dell'intervento (dall'invio dell'attivazione alla conclusione, arrotondata alla mezz'ora); le ore restano modificabili in Storico e presenze.
 - Attivazioni già inviate: "Correggi" (con notifica facoltativa "🔁 Aggiornamento"), "Annulla" (notifica facoltativa "❌ Annullata", resta nello storico come annullata e non si può più rispondere), "Elimina" (solo amministratore principale: sparisce anche dallo storico, per prove ed errori).
+- Archivio (versione 3.21): in "Attivazioni in corso" restano solo quelle aperte; concluse, annullate e messaggi informativi dopo 24 ore passano da soli in "📦 Archiviate" (ultime 10 degli ultimi 30 giorni). Nello storico le archiviate sono raggruppate per mese.
 - Storico e presenze: tutte le attivazioni per anno, vista per attivazione o per volontario, presenze e ore di servizio, file per Excel. Conservazione 5 anni, poi cancellazione automatica.
 
 ## Direttivo e autorizzazioni (versione 3.18)
