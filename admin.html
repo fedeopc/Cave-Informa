@@ -1295,7 +1295,10 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
         <label class="chk"><input class="e-nt" type="checkbox" checked> <span>Avvisa i volontari: <b>❌ Annullata, non serve presentarsi</b></span></label>
         <p class="hint">L'attivazione resta nello storico, segnata come annullata. Nessuno potrà più rispondere.</p>
         <div class="row2"><button type="button" class="pri urg e-ok">Annulla l'attivazione</button><button type="button" class="sec e-no">Lascia stare</button></div>`;
-    box.appendChild(ed); (ed.querySelector("input,textarea")).focus();
+    box.appendChild(ed);
+    // niente tastiera automatica (la nota è facoltativa): porto il riquadro al centro dello schermo
+    requestAnimationFrame(() => ed.scrollIntoView({ behavior: "smooth", block: "center" }));
+    ed.querySelectorAll("input,textarea").forEach((x) => x.addEventListener("focus", () => setTimeout(() => ed.scrollIntoView({ behavior: "smooth", block: "center" }), 350)));
     ed.querySelector(".e-no").onclick = () => { ed.remove(); modifica = null; };
     ed.querySelector(".e-ok").onclick = async (e) => {
       const nt = ed.querySelector(".e-nt").checked; e.target.disabled = true;

@@ -453,6 +453,7 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
 #sov-risp{display:grid;gap:12px}#sov-risp[hidden]{display:none}.sov-c textarea{font:inherit;font-size:1.02rem;width:100%;min-height:84px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);resize:vertical}
 .sov-ok{font-weight:700;color:#2E9E5B;font-size:.98rem;margin:0}
 #sov-invia{width:100%;font-size:1.12rem;font-weight:800;padding:17px 14px;min-height:58px;border-radius:16px;justify-content:center;text-align:center}
+.sov-fatto{margin:0;padding:18px 16px;border-radius:16px;background:#2E9E5B;color:#fff;font-size:1.2rem;font-weight:800;text-align:center}.sov-fatto[hidden]{display:none}
 .sov-ann{margin:0;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,#C62A31 16%,transparent);border:1px solid color-mix(in srgb,#C62A31 45%,transparent);font-weight:700;font-size:1rem}
 .sm .rb.ann{color:#D23B40}.sm .rb.fin{color:#2E9E5B}.sov-ann.fin{background:color-mix(in srgb,#2E9E5B 16%,transparent);border-color:color-mix(in srgb,#2E9E5B 45%,transparent)}.sm.ann b{text-decoration:line-through;opacity:.7}
 .acc{background:var(--glass);border:1px solid var(--glass-line);border-radius:18px;box-shadow:var(--hl);overflow:hidden;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
@@ -752,7 +753,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.20 · 6 novembre 2026</span>
+    <span id="app-version">Versione 3.21 · 6 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -840,6 +841,7 @@ header.top .brand{gap:12px}
     <button class="btn" type="button" id="sov-invia">Invia risposta</button>
   </div>
   <p class="sov-ok" id="sov-esito" role="status"></p>
+  <div class="sov-fatto" id="sov-ok" hidden role="status"></div>
 </div></div>
 <script>
 const RISKS = {
@@ -2142,7 +2144,7 @@ const SOCI=(()=>{
     if(!me){ showTab("info"); box.open=true; box.scrollIntoView({behavior:"smooth"}); nota("Per vedere le comunicazioni ai volontari attiva l'area volontari con il tuo codice.",false); return; }
     if(!msgs.some(m=>m.id===id)) await carica();
     const m=msgs.find(x=>x.id===id); if(!m){ toast("Comunicazione non trovata"); return; }
-    cur=m; $("#sov-t").textContent=m.titolo; $("#sov-tx").textContent=m.testo||""; $("#sov-m").textContent=quando(m.data)+(m.autore?" · da "+m.autore:"");
+    $("#sov-ok").hidden=true; cur=m; $("#sov-t").textContent=m.titolo; $("#sov-tx").textContent=m.testo||""; $("#sov-m").textContent=quando(m.data)+(m.autore?" · da "+m.autore:"");
     const hh=(iso)=>new Date(iso).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
     $("#sov-ann").hidden=!m.annullata&&!m.conclusa; $("#sov-ann").classList.toggle("fin",!!m.conclusa&&!m.annullata);
     if(m.annullata) $("#sov-ann").textContent="❌ Attivazione annullata alle "+hh(m.annullata.at)+": non serve presentarsi.";
@@ -2156,7 +2158,11 @@ const SOCI=(()=>{
   $("#sov-invia").onclick=async()=>{
     if(!cur) return; if(!scelta){ $("#sov-esito").textContent="Scegli “Ci sono” o “Non posso”."; return; }
     $("#sov-invia").disabled=true;
-    try{ const j=await post("/soci/rispondi",{token:me.token,id:cur.id,r:scelta,nota:$("#sov-nota").value.trim()}); cur.risposta=j.risposta; $("#sov-esito").textContent="✓ Risposta inviata. Grazie!"; $("#sov-invia").textContent="Aggiorna risposta"; view(); }
+    try{ const j=await post("/soci/rispondi",{token:me.token,id:cur.id,r:scelta,nota:$("#sov-nota").value.trim()}); cur.risposta=j.risposta; view();
+      // conferma ben visibile, poi la finestra si chiude da sola
+      $("#sov-ok").textContent=scelta==="si"?"✓ Risposta inviata: ci sei. Grazie!":"✓ Risposta inviata. Grazie!"; $("#sov-ok").hidden=false; $("#sov-risp").hidden=true; $("#sov-esito").textContent="";
+      if(navigator.vibrate) navigator.vibrate(60);
+      const id=cur.id; setTimeout(()=>{ if(cur&&cur.id===id) chiudi(); $("#sov-ok").hidden=true; },2000); }
     catch(e){ $("#sov-esito").textContent="Non riuscito: "+e.message; } finally{ $("#sov-invia").disabled=false; }
   };
   view(); carica();
