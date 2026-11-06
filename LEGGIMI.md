@@ -84,5 +84,5 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 ## Area soci (versione 3.15)
 - Pagina admin → Persone → Soci: l'amministratore principale crea un codice personale per ogni socio (e lo revoca quando serve). I codici soci non entrano nella pagina admin.
 - App → Area soci: la voce NON è visibile ai cittadini. Il socio la apre con il link personale …/Cave-Informa/#soci (inviato con "Condividi" insieme al codice), inserisce il codice una volta (servono le notifiche attive); da quel momento la voce resta visibile solo sul suo telefono. Sul telefono resta solo un gettone di accesso.
-- Pagina admin → Soci (amministratore e volontari abilitati): invio di attivazioni con modelli pronti; il messaggio non parte se restano "___" da completare.
+- Pagina admin → Soci (amministratore e volontari abilitati): invio di attivazioni con modelli pronti e menu a tendina (evento, luogo, ritrovo, ora, cosa portare…): titolo e messaggio si compongono da soli e restano modificabili; il messaggio non parte se restano "___" da completare.
 - Il socio risponde "Ci sono / Non posso" con una nota; le risposte compaiono nella pagina admin con i nomi, aggiornate ogni 15 secondi.

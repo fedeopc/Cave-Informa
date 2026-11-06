@@ -555,6 +555,12 @@ section[data-p]{display:grid;gap:12px}
 .ok{color:#2E8B57}.ko{color:#C0262D}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ok{color:#5CC08A}:root:not([data-theme="light"]) .ko{color:#F06A6F}}
 .seg[hidden]{display:none}
+.campi{display:grid;gap:10px;padding:12px;border-radius:14px;background:color-mix(in srgb,var(--accent) 8%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.campi .f{display:grid;gap:6px}.campi .f>span{font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.campi select,.campi input{font:inherit;font-size:1rem;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);width:100%}
+.campi .chips{display:flex;flex-wrap:wrap;gap:6px}.campi .chips button{font:inherit;font-size:.85rem;font-weight:650;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.campi .chips button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.campi .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .modelli{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .modelli button{font:inherit;font-size:.85rem;font-weight:650;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;line-height:1.25}
 .modelli button.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 40%,transparent)}
@@ -694,9 +700,11 @@ section[data-p]{display:grid;gap:12px}
         <p class="hint" id="s-dest">…</p>
         <label>Modelli pronti</label>
         <div class="modelli" id="s-mod"></div>
+        <div class="campi" id="s-campi" hidden></div>
         <label for="s-ti">Titolo</label><input id="s-ti" maxlength="90" required placeholder="Es. 🚨 Attivazione: allagamento via Roma">
         <label for="s-te">Messaggio</label><textarea id="s-te" maxlength="600" rows="4" placeholder="Dove, quando, cosa portare"></textarea>
         <p class="hint" id="s-blank" hidden>⚠️ Completa le parti con ___ prima di inviare.</p>
+        <p class="hint" id="s-auto" hidden>Titolo e messaggio si compongono da soli dalle scelte qui sopra; puoi comunque correggerli a mano.</p>
         <label class="chk"><input id="s-cf" type="checkbox" checked> <span>Chiedi conferma: <b>Ci sono</b> / <b>Non posso</b>, con nota</span></label>
         <div class="row2"><button class="pri urg" type="submit" id="s-go">🚨 Invia ai soci</button><button type="button" class="sec svuota" id="s-svu">🗑 Svuota</button></div>
         <p class="msg" id="smsg" role="status"></p></form>
@@ -1012,26 +1020,78 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
 
 
   /* ---------- soci: attivazioni ---------- */
+  /* modelli con campi a scelta: il messaggio si compone da solo */
+  const EVENTI = ["Allagamento", "Incendio boschivo", "Incendio di sterpaglie", "Frana / smottamento", "Albero caduto", "Ricerca persona dispersa", "Neve e ghiaccio", "Black-out / assistenza alla popolazione", "Supporto a un evento pubblico"];
+  const ORE = ["Subito", "Tra 30 minuti", "Tra 1 ora", "Alle…"];
+  const PORTARE = ["Divisa", "DPI", "Stivali", "Torcia", "Radio", "Guanti da lavoro", "Motosega", "Kit primo soccorso"];
+  const RISCHI = ["temporali", "idrogeologico", "idraulico", "neve", "vento forte"];
   const MODELLI = [
-    ["🚨 Attivazione immediata", "🚨 Attivazione: ___", "Ritrovo in sede alle ___. Portare divisa e DPI. Rispondete se ci siete."],
-    ["⚠️ Preallerta", "⚠️ Preallerta soci", "Possibile attivazione nelle prossime ore per ___. Restate reperibili e tenete il telefono acceso."],
-    ["🌧️ Reperibilità allerta meteo", "🌧️ Allerta ___: reperibilità", "Per l'allerta meteo di ___ chiediamo reperibilità. Indicate se siete disponibili e da che ora."],
-    ["🗣️ Riunione urgente", "🗣️ Riunione urgente", "Riunione in sede oggi alle ___. Argomento: ___."],
-    ["🧪 Esercitazione", "🧪 Esercitazione", "Esercitazione ___ alle ___, ritrovo in sede. Confermate la partecipazione."],
-    ["✅ Fine emergenza", "✅ Fine attivazione", "L'emergenza è rientrata: grazie a tutti. Chi è ancora in servizio rientri in sede per il riordino."],
+    { n: "🚨 Attivazione immediata", conf: true, campi: [
+      { k: "ev", t: "Evento", sel: EVENTI }, { k: "luogo", t: "Dove", txt: "Es. via Roma, località Collepardo…" },
+      { k: "rit", t: "Ritrovo", sel: ["In sede", "Direttamente sul posto"] }, { k: "ora", t: "Quando", sel: ORE },
+      { k: "port", t: "Portare", multi: PORTARE, def: ["Divisa", "DPI"] } ],
+      fa: (v) => [`🚨 Attivazione: ${v.ev}${v.luogo ? " – " + v.luogo : ""}`, `${v.rit} ${quando(v.ora, v.oraX)}.${v.port.length ? " Portare: " + v.port.map((x) => x === "DPI" ? x : x.toLowerCase()).join(", ") + "." : ""} Rispondete se ci siete.`] },
+    { n: "⚠️ Preallerta", conf: true, campi: [
+      { k: "ev", t: "Per cosa", sel: EVENTI }, { k: "qn", t: "Quando", sel: ["Nelle prossime ore", "Stanotte", "Domani", "Nel fine settimana"] } ],
+      fa: (v) => [`⚠️ Preallerta: ${v.ev.toLowerCase()}`, `${v.qn} possibile attivazione per ${v.ev.toLowerCase()}. Restate reperibili e tenete il telefono acceso. Indicate se siete disponibili.`] },
+    { n: "🌧️ Reperibilità allerta meteo", conf: true, campi: [
+      { k: "col", t: "Allerta", sel: ["Gialla", "Arancione", "Rossa"] }, { k: "ris", t: "Rischio", sel: RISCHI },
+      { k: "gg", t: "Giorno", sel: ["Oggi", "Domani"] }, { k: "dalle", t: "Reperibilità dalle", sel: ["Subito", "Ore 8", "Ore 14", "Ore 20", "Alle…"] } ],
+      fa: (v) => [`🌧️ Allerta ${v.col.toLowerCase()} ${v.gg.toLowerCase()}: reperibilità`, `Allerta ${v.col.toLowerCase()} per rischio ${v.ris} ${v.gg.toLowerCase()}. Chiediamo reperibilità ${v.dalle === "Subito" ? "da subito" : "dalle " + (v.dalle === "Alle…" ? (v.dalleX || "___") : v.dalle.replace("Ore ", "ore "))}. Indicate se siete disponibili, con eventuali orari nella nota.`] },
+    { n: "🗣️ Riunione urgente", conf: true, campi: [
+      { k: "gg", t: "Giorno", sel: ["Oggi", "Domani"] }, { k: "ora", t: "Ora", time: "21:00" },
+      { k: "dove", t: "Dove", sel: ["In sede", "Online"] }, { k: "arg", t: "Argomento (facoltativo)", txt: "Es. organizzazione turni" } ],
+      fa: (v) => [`🗣️ Riunione urgente ${v.gg.toLowerCase()} alle ${v.ora}`, `Riunione ${v.dove.toLowerCase()} ${v.gg.toLowerCase()} alle ${v.ora}.${v.arg ? " Argomento: " + v.arg + "." : ""} Confermate la presenza.`] },
+    { n: "🧪 Esercitazione", conf: true, campi: [
+      { k: "tipo", t: "Tipo", sel: ["Evacuazione scuola", "Antincendio boschivo", "Comunicazioni radio", "Ricerca persona", "Montaggio tende / campo base", "Esercitazione con il Comune"] },
+      { k: "data", t: "Giorno", date: true }, { k: "ora", t: "Ora", time: "09:00" } ],
+      fa: (v) => [`🧪 Esercitazione: ${v.tipo.toLowerCase()}`, `Esercitazione "${v.tipo.toLowerCase()}" ${v.data ? giorno(v.data) : "___"} alle ${v.ora}, ritrovo in sede. Confermate la partecipazione.`] },
+    { n: "✅ Fine emergenza", conf: false, campi: [ { k: "ev", t: "Emergenza", sel: ["Attivazione in corso", ...EVENTI] } ],
+      fa: (v) => [`✅ Fine attivazione`, `${v.ev === "Attivazione in corso" ? "L'emergenza" : v.ev} è rientrat${/^(Allagamento|Incendio|Albero|Black)/.test(v.ev) ? "o" : "a"}: grazie a tutti. Chi è ancora in servizio rientri in sede per il riordino.`] },
   ];
-  $("#s-mod").innerHTML = MODELLI.map((m, i) => `<button type="button" data-i="${i}">${esc(m[0])}</button>`).join("");
+  function quando(o, x) { return o === "Subito" ? "subito" : o === "Alle…" ? "alle " + (x || "___") : o.toLowerCase(); }
+  function giorno(iso) { return new Date(iso + "T12:00").toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" }); }
+  $("#s-mod").innerHTML = MODELLI.map((m, i) => `<button type="button" data-i="${i}">${esc(m.n)}</button>`).join("");
   const blanks = () => /___/.test($("#s-ti").value + $("#s-te").value);
   const aggBlank = () => { $("#s-blank").hidden = !blanks(); };
+  let mod = null, val = {};
+  function componi() {
+    if (!mod) return;
+    const [t, x] = mod.fa(val); $("#s-ti").value = t.slice(0, 90); $("#s-te").value = x.slice(0, 600); aggBlank();
+  }
+  function campi(m) {
+    const box = $("#s-campi"); val = {};
+    box.innerHTML = m.campi.map((c) => {
+      if (c.sel) { val[c.k] = c.sel[0]; return `<label class="f"><span>${esc(c.t)}</span><select data-k="${c.k}">${c.sel.map((o) => `<option>${esc(o)}</option>`).join("")}${c.k === "ev" || c.k === "tipo" ? "<option value=\"__altro\">Altro…</option>" : ""}</select><input data-x="${c.k}" hidden placeholder="Scrivi…"></label>`; }
+      if (c.multi) { val[c.k] = [...(c.def || [])]; return `<div class="f"><span>${esc(c.t)}</span><div class="chips" data-m="${c.k}">${c.multi.map((o) => `<button type="button" class="${val[c.k].includes(o) ? "on" : ""}">${esc(o)}</button>`).join("")}</div></div>`; }
+      if (c.time) { val[c.k] = c.time; return `<label class="f"><span>${esc(c.t)}</span><input type="time" data-k="${c.k}" value="${c.time}"></label>`; }
+      if (c.date) { const d = new Date(Date.now() + 864e5 * 3); val[c.k] = d.toISOString().slice(0, 10); return `<label class="f"><span>${esc(c.t)}</span><input type="date" data-k="${c.k}" value="${val[c.k]}"></label>`; }
+      val[c.k] = ""; return `<label class="f"><span>${esc(c.t)}</span><input data-k="${c.k}" maxlength="60" placeholder="${esc(c.txt || "")}"></label>`;
+    }).join("");
+    box.hidden = !m.campi.length;
+    box.querySelectorAll("select[data-k]").forEach((el) => el.addEventListener("change", () => {
+      const x = box.querySelector(`input[data-x="${el.dataset.k}"]`), altro = el.value === "__altro" || el.value === "Alle…";
+      x.hidden = !altro; if (altro) { x.type = el.value === "Alle…" ? "time" : "text"; x.focus(); }
+      val[el.dataset.k] = el.value === "__altro" ? (x.value || "___") : el.value; if (el.value === "Alle…") val[el.dataset.k + "X"] = x.value; componi();
+    }));
+    box.querySelectorAll("input[data-x]").forEach((x) => x.addEventListener("input", () => {
+      const sel = box.querySelector(`select[data-k="${x.dataset.x}"]`);
+      if (sel.value === "__altro") val[x.dataset.x] = x.value.trim() || "___"; else val[x.dataset.x + "X"] = x.value;
+      componi();
+    }));
+    box.querySelectorAll("input[data-k]").forEach((el) => el.addEventListener("input", () => { val[el.dataset.k] = el.value.trim(); componi(); }));
+    box.querySelectorAll(".chips[data-m]").forEach((ch) => ch.querySelectorAll("button").forEach((b) => (b.onclick = () => {
+      b.classList.toggle("on"); val[ch.dataset.m] = [...ch.querySelectorAll("button.on")].map((x) => x.textContent); componi();
+    })));
+  }
   $$("#s-mod button").forEach((b) => (b.onclick = () => {
     const m = MODELLI[+b.dataset.i];
-    if (($("#s-ti").value || $("#s-te").value) && !confirm("Sostituire il testo già scritto con il modello?")) return;
-    $$("#s-mod button").forEach((x) => x.classList.toggle("on", x === b));
-    $("#s-ti").value = m[1]; $("#s-te").value = m[2]; $("#s-cf").checked = !/Fine/.test(m[0]); aggBlank();
-    const t = $("#s-ti").value.includes("___") ? $("#s-ti") : $("#s-te"); t.focus(); const i = t.value.indexOf("___"); if (i >= 0) t.setSelectionRange(i, i + 3);
+    if (!mod && ($("#s-ti").value || $("#s-te").value) && !confirm("Sostituire il testo già scritto con il modello?")) return;
+    mod = m; $$("#s-mod button").forEach((x) => x.classList.toggle("on", x === b));
+    campi(m); $("#s-cf").checked = m.conf; $("#s-auto").hidden = false; componi();
   }));
   ["#s-ti", "#s-te"].forEach((id) => $(id).addEventListener("input", aggBlank));
-  $("#s-svu").onclick = () => { $("#fs").reset(); $("#s-cf").checked = true; $$("#s-mod button").forEach((x) => x.classList.remove("on")); aggBlank(); msg($("#smsg"), ""); };
+  $("#s-svu").onclick = () => { $("#fs").reset(); $("#s-cf").checked = true; mod = null; $("#s-campi").hidden = true; $("#s-campi").innerHTML = ""; $("#s-auto").hidden = true; $$("#s-mod button").forEach((x) => x.classList.remove("on")); aggBlank(); msg($("#smsg"), ""); };
   let sociInfo = null;
   $("#fs").addEventListener("submit", async (e) => {
     e.preventDefault();
