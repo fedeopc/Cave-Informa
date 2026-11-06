@@ -454,7 +454,7 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
 .sov-ok{font-weight:700;color:#2E9E5B;font-size:.98rem;margin:0}
 #sov-invia{width:100%;font-size:1.12rem;font-weight:800;padding:17px 14px;min-height:58px;border-radius:16px;justify-content:center;text-align:center}
 .sov-ann{margin:0;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,#C62A31 16%,transparent);border:1px solid color-mix(in srgb,#C62A31 45%,transparent);font-weight:700;font-size:1rem}
-.sm .rb.ann{color:#D23B40}.sm.ann b{text-decoration:line-through;opacity:.7}
+.sm .rb.ann{color:#D23B40}.sm .rb.fin{color:#2E9E5B}.sov-ann.fin{background:color-mix(in srgb,#2E9E5B 16%,transparent);border-color:color-mix(in srgb,#2E9E5B 45%,transparent)}.sm.ann b{text-decoration:line-through;opacity:.7}
 .acc{background:var(--glass);border:1px solid var(--glass-line);border-radius:18px;box-shadow:var(--hl);overflow:hidden;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
 .acc>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;font-weight:700;cursor:pointer}
 .acc>summary::-webkit-details-marker{display:none}
@@ -752,7 +752,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.18 · 6 novembre 2026</span>
+    <span id="app-version">Versione 3.19 · 6 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -2110,7 +2110,7 @@ const SOCI=(()=>{
     $("#soci-nome").textContent=me.nome; $("#soci-ok").hidden=!!me.attesa; $("#soci-wait").hidden=!me.attesa; $("#soci-stato").textContent=me.attesa?"in attesa":"attiva"; $("#soci-stato").style.color=me.attesa?"#C88F00":"";
     if(me.attesa){ $("#soci-msgs").innerHTML=""; $("#soci-esci").textContent="Annulla la richiesta"; return; } $("#soci-esci").textContent="Disattiva su questo telefono";
     $("#soci-msgs").innerHTML=msgs.length?msgs.slice(0,5).map(m=>{
-      const r=m.risposta, rb=m.annullata?`<span class="rb ann">❌ Annullata</span>`:m.conferma?(r?`<span class="rb ${r.r}">${r.r==="si"?"✅ Hai risposto: ci sono":"❌ Hai risposto: non posso"}</span>`:`<span class="rb att">⏳ Rispondi</span>`):"";
+      const r=m.risposta, rb=m.annullata?`<span class="rb ann">❌ Annullata</span>`:m.conclusa?`<span class="rb fin">🏁 Concluso</span>`:m.conferma?(r?`<span class="rb ${r.r}">${r.r==="si"?"✅ Hai risposto: ci sono":"❌ Hai risposto: non posso"}</span>`:`<span class="rb att">⏳ Rispondi</span>`):"";
       return `<div class="sm${m.annullata?" ann":""}" data-id="${esc(m.id)}"><b>${esc(m.titolo)}</b><small>${esc(quando(m.data))} · ${esc(m.autore||"")}</small>${rb}</div>`;
     }).join(""):'<p class="muted">Nessuna comunicazione per ora.</p>';
     $("#soci-msgs").querySelectorAll(".sm").forEach(el=>el.onclick=()=>apriMsg(el.dataset.id));
@@ -2144,10 +2144,12 @@ const SOCI=(()=>{
     const m=msgs.find(x=>x.id===id); if(!m){ toast("Comunicazione non trovata"); return; }
     cur=m; $("#sov-t").textContent=m.titolo; $("#sov-tx").textContent=m.testo||""; $("#sov-m").textContent=quando(m.data)+(m.autore?" · da "+m.autore:"");
     const hh=(iso)=>new Date(iso).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
-    $("#sov-ann").hidden=!m.annullata; if(m.annullata) $("#sov-ann").textContent="❌ Attivazione annullata alle "+hh(m.annullata.at)+": non serve presentarsi.";
+    $("#sov-ann").hidden=!m.annullata&&!m.conclusa; $("#sov-ann").classList.toggle("fin",!!m.conclusa&&!m.annullata);
+    if(m.annullata) $("#sov-ann").textContent="❌ Attivazione annullata alle "+hh(m.annullata.at)+": non serve presentarsi.";
+    else if(m.conclusa) $("#sov-ann").textContent="🏁 Intervento concluso alle "+hh(m.conclusa.at)+". Grazie!";
     if(m.modificato&&!m.annullata) $("#sov-m").textContent+=" · corretta alle "+hh(m.modificato);
-    $("#sov-risp").hidden=!m.conferma||!!m.annullata; $("#sov-nota").value=m.risposta?m.risposta.nota||"":""; scegli(m.risposta?m.risposta.r:null);
-    $("#sov-esito").textContent=m.annullata?"":m.risposta?`Hai risposto “${m.risposta.r==="si"?"Ci sono":"Non posso"}” alle ${new Date(m.risposta.at).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})}. Puoi cambiare risposta.`:"";
+    $("#sov-risp").hidden=!m.conferma||!!m.annullata||!!m.conclusa; $("#sov-nota").value=m.risposta?m.risposta.nota||"":""; scegli(m.risposta?m.risposta.r:null);
+    $("#sov-esito").textContent=m.annullata||m.conclusa?(m.conclusa&&m.risposta?`Avevi risposto “${m.risposta.r==="si"?"Ci sono":"Non posso"}”.`:""):m.risposta?`Hai risposto “${m.risposta.r==="si"?"Ci sono":"Non posso"}” alle ${new Date(m.risposta.at).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})}. Puoi cambiare risposta.`:"";
     $("#sov-invia").textContent=m.risposta?"Aggiorna risposta":"Invia risposta";
     ov.hidden=false;
   }

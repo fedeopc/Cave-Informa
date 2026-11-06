@@ -660,6 +660,8 @@ section[data-p]{display:grid;gap:12px}
 .att.annullata b.t{text-decoration:line-through;opacity:.7}
 .att .ann{display:inline-block;margin-top:6px;font-size:.8rem;font-weight:700;color:#D23B40;background:color-mix(in srgb,#D23B40 12%,transparent);border-radius:8px;padding:3px 8px}
 .sa .ann{color:#D23B40;font-weight:700}
+.att .azioni .fin{background:#2E9E5B;border-color:#2E9E5B;color:#fff}
+.att .ann.fin,.sa .ann.fin{color:#2E9E5B;background:color-mix(in srgb,#2E9E5B 14%,transparent)}.sa .ann.fin{background:none}
 </style>
 </head>
 <body>
@@ -1214,10 +1216,13 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
         const ora = (iso) => new Date(iso).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
         const quandoL = (iso) => new Date(iso).toLocaleString("it-IT", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
         const riga = (r, ic) => `<div><span>${ic}</span><span class="n">${esc(r.nome)}</span>${r.nota ? `<span class="nota">${esc(r.nota)}</span>` : ""}<span class="o">${ora(r.at)}</span></div>`;
-        const az = m.annullata ? (principale ? `<div class="azioni"><button type="button" class="ko" data-az="elimina">🗑 Elimina dallo storico</button></div>` : "")
-          : can("attivazioni") ? `<div class="azioni"><button type="button" data-az="correggi">✏️ Correggi</button><button type="button" class="ko" data-az="annulla">❌ Annulla attivazione</button>${principale ? '<button type="button" class="ko" data-az="elimina">🗑 Elimina</button>' : ""}</div>` : "";
-        return `<div class="att${m.annullata ? " annullata" : ""}" data-id="${esc(m.id)}"><b class="t">${esc(m.titolo)}</b><small>${esc(quandoL(m.data))} · da ${esc(m.autore)} · a ${m.inviati ?? "?"} telefoni${m.modificato ? " · corretta alle " + ora(m.modificato) : ""}</small>` +
+        const durata = (a, b) => { const h = Math.max(0.5, Math.round((new Date(b) - new Date(a)) / 18e5) / 2); return String(h).replace(".", ",") + " h"; };
+        const chiusa = m.annullata || m.conclusa;
+        const az = chiusa ? (principale ? `<div class="azioni"><button type="button" class="ko" data-az="elimina">🗑 Elimina dallo storico</button></div>` : "")
+          : can("attivazioni") ? `<div class="azioni"><button type="button" class="fin" data-az="concludi">🏁 Concludi</button><button type="button" data-az="correggi">✏️ Correggi</button><button type="button" class="ko" data-az="annulla">❌ Annulla attivazione</button>${principale ? '<button type="button" class="ko" data-az="elimina">🗑 Elimina</button>' : ""}</div>` : "";
+        return `<div class="att${m.annullata ? " annullata" : ""}${m.conclusa ? " conclusa" : ""}" data-id="${esc(m.id)}"><b class="t">${esc(m.titolo)}</b><small>${esc(quandoL(m.data))} · da ${esc(m.autore)} · a ${m.inviati ?? "?"} telefoni${m.modificato ? " · corretta alle " + ora(m.modificato) : ""}</small>` +
           (m.annullata ? `<span class="ann">❌ Annullata da ${esc(m.annullata.da)} · ${esc(quandoL(m.annullata.at))}</span>` : "") +
+          (m.conclusa ? `<span class="ann fin">🏁 Conclusa alle ${ora(m.conclusa.at)} da ${esc(m.conclusa.da)} · durata ${durata(m.data, m.conclusa.at)}</span>` : "") +
           (m.conferma ? `<div class="bar"><i class="si" style="width:${pct(si.length)}"></i><i class="no" style="width:${pct(no.length)}"></i></div>
           <div class="cnt"><span class="si">✅ ${si.length} ci sono</span><span class="no">❌ ${no.length} non possono</span><span class="att0">⏳ ${senza.length} senza risposta</span></div>` +
           (j.nomi ? `<details data-id="${esc(m.id)}"${aperte.has(m.id) ? " open" : ""}><summary>Vedi i nomi</summary><div class="rl">${si.map((r) => riga(r, "✅")).join("")}${no.map((r) => riga(r, "❌")).join("")}${senza.map((x) => `<div><span>⏳</span><span class="n">${esc(x.nome)}</span></div>`).join("")}</div></details>` : "")
@@ -1239,7 +1244,14 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     }
     modifica = m.id;
     const ed = document.createElement("div"); ed.className = "edit";
-    ed.innerHTML = az === "correggi"
+    const oreOra = () => String(Math.max(0.5, Math.round((Date.now() - new Date(m.data)) / 18e5) / 2)).replace(".", ",");
+    ed.innerHTML = az === "concludi"
+      ? `<p style="margin:0">Intervento iniziato ${esc(new Date(m.data).toLocaleString("it-IT", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}: conclusione adesso, durata <b>${oreOra()} ore</b>.</p>
+        <label>Nota per i volontari <span class="opt">(facoltativa)</span></label><input class="e-mo" maxlength="120" placeholder="Es. materiale da riportare in sede domani">
+        <label class="chk"><input class="e-nt" type="checkbox" checked> <span>Avvisa i volontari: <b>🏁 Intervento concluso, grazie a tutti</b></span></label>
+        <p class="hint">A <b>ciascun</b> volontario che ha risposto <b>Ci sono</b> vengono segnate ${oreOra()} ore. Poi in <b>Storico e presenze</b> puoi correggere le ore o togliere chi non è venuto.</p>
+        <div class="row2"><button type="button" class="pri e-ok" style="background:#2E9E5B;border-color:#2E9E5B">🏁 Concludi l'intervento</button><button type="button" class="sec e-no">Lascia stare</button></div>`
+      : az === "correggi"
       ? `<label>Titolo</label><input class="e-ti" maxlength="90" value="${esc(m.titolo)}"><label>Messaggio</label><textarea class="e-te" maxlength="600" rows="4">${esc(m.testo || "")}</textarea>
         <label class="chk"><input class="e-nt" type="checkbox" checked> <span>Avvisa i volontari con una notifica <b>🔁 Aggiornamento</b></span></label>
         <p class="hint">Le risposte già date restano valide.</p>
@@ -1253,10 +1265,11 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     ed.querySelector(".e-ok").onclick = async (e) => {
       const nt = ed.querySelector(".e-nt").checked; e.target.disabled = true;
       try {
-        const j = az === "correggi"
+        const j = az === "concludi" ? await call("/soci/concludi", { id: m.id, nota: ed.querySelector(".e-mo").value.trim(), notifica: nt })
+          : az === "correggi"
           ? await call("/soci/modifica", { id: m.id, titolo: ed.querySelector(".e-ti").value.trim(), testo: ed.querySelector(".e-te").value.trim(), notifica: nt })
           : await call("/soci/annulla", { id: m.id, motivo: ed.querySelector(".e-mo").value.trim(), notifica: nt });
-        toast((az === "correggi" ? "Correzione salvata" : "Attivazione annullata") + (j.esito ? " · avvisati " + j.esito.sent + " telefoni" : ""));
+        toast(az === "concludi" ? `Intervento concluso: ${String(j.ore).replace(".", ",")} ore a testa per ${j.presenti} ${j.presenti === 1 ? "volontario" : "volontari"}` : (az === "correggi" ? "Correzione salvata" : "Attivazione annullata") + (j.esito ? " · avvisati " + j.esito.sent + " telefoni" : ""));
         modifica = null; loadSoci(); if (can("storico")) loadStorico();
       } catch (err) { e.target.disabled = false; if (err.message !== "401") toast(err.message); }
     };
@@ -1296,7 +1309,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     const A = sto.attivazioni, rs = riepilogo();
     const conf = A.filter((a) => a.conferma), risposteSi = conf.reduce((n, a) => n + a.risposte.filter((r) => r.r === "si").length, 0), attese = conf.reduce((n, a) => n + destinatari(a).length, 0);
     const pres = A.reduce((n, a) => n + Object.values(a.presenze).filter((p) => p.p).length, 0), ore = A.reduce((n, a) => n + Object.values(a.presenze).reduce((m, p) => m + (p.ore || 0), 0), 0);
-    $("#st-tot").innerHTML = `<div><b>${A.length}</b><small>attivazioni nel ${sto.anno}</small></div><div><b>${attese ? Math.round(100 * risposteSi / attese) : 0}%</b><small>disponibilità media</small></div><div><b>${oreTxt(ore)}</b><small>ore di servizio (${pres} presenze)</small></div>`;
+    $("#st-tot").innerHTML = `<div><b>${A.length}</b><small>attivazioni nel ${sto.anno}</small></div><div><b>${attese ? Math.round(100 * risposteSi / attese) : 0}%</b><small>disponibilità media</small></div><div><b>${oreTxt(ore)}</b><small>ore-volontario in totale (${pres} presenze)</small></div>`;
     const box = $("#st-list");
     if (!A.length) { box.innerHTML = '<p class="hint">Nessuna attivazione in questo anno.</p>'; return; }
     if (vista === "soc") {
@@ -1307,8 +1320,8 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     box.innerHTML = A.map((a) => {
       const d = destinatari(a), si = d.filter((x) => x.r && x.r.r === "si").length, no = d.filter((x) => x.r && x.r.r === "no").length, nr = a.conferma ? d.length - si - no : 0;
       const pr = Object.values(a.presenze).filter((p) => p.p).length, or = Object.values(a.presenze).reduce((m, p) => m + (p.ore || 0), 0);
-      return `<details class="sa" data-id="${esc(a.id)}"><summary><b>${esc(a.titolo)}</b>${a.annullata ? ' <span class="ann">· annullata</span>' : ""}<small>${gg2(a.data)} ${hh2(a.data)} · da ${esc(a.autore || "")}</small>
-        <div class="cnt">${a.conferma ? `<span class="si">✅ ${si}</span><span class="no">❌ ${no}</span><span class="att0">⏳ ${nr}</span>` : '<span class="att0">solo informativo</span>'}<span>👥 ${pr} presenti</span><span>⏱ ${oreTxt(or)} h</span></div></summary>
+      return `<details class="sa" data-id="${esc(a.id)}"><summary><b>${esc(a.titolo)}</b>${a.annullata ? ' <span class="ann">· annullata</span>' : ""}${a.conclusa ? ' <span class="ann fin">· conclusa</span>' : ""}<small>${gg2(a.data)} ${hh2(a.data)} · da ${esc(a.autore || "")}</small>
+        <div class="cnt">${a.conferma ? `<span class="si">✅ ${si}</span><span class="no">❌ ${no}</span><span class="att0">⏳ ${nr}</span>` : '<span class="att0">solo informativo</span>'}<span>👥 ${pr} presenti</span>${a.conclusa ? `<span>🏁 durata ${oreTxt(Math.max(0.5, Math.round((new Date(a.conclusa.at) - new Date(a.data)) / 18e5) / 2))} h a testa</span>` : ""}<span>⏱ ${oreTxt(or)} h in totale</span></div></summary>
         <table class="pt"><tr><th>Volontario</th><th>Risposta</th><th>Presente</th><th>Ore</th></tr>${d.map((x) => `<tr data-s="${esc(x.id)}" data-n="${esc(x.nome)}"><td>${esc(x.nome)}</td><td class="r">${x.r ? (x.r.r === "si" ? "✅ ci sono" : "❌ non posso") + (x.r.nota ? " · " + esc(x.r.nota) : "") : a.conferma ? "⏳" : "—"}</td><td><input type="checkbox"${x.p && x.p.p ? " checked" : ""} aria-label="Presente"></td><td><input type="number" min="0" max="48" step="0.5" value="${x.p && x.p.ore ? x.p.ore : ""}" placeholder="0" aria-label="Ore"></td></tr>`).join("")}</table>
         <div class="row2"><button type="button" class="pri" data-salva="${esc(a.id)}">Salva presenze</button></div></details>`;
     }).join("");
@@ -1329,8 +1342,8 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   }
   const num = (n) => String(Math.round(n * 100) / 100).replace(".", ",");
   $("#st-csv1").onclick = () => {
-    if (!sto) return; const r = [["Data", "Ora", "Attivazione", "Inviata da", "Annullata", "Volontario", "Risposta", "Nota", "Ora risposta", "Presente", "Ore"]];
-    for (const a of [...sto.attivazioni].reverse()) for (const d of destinatari(a)) r.push([gg2(a.data), hh2(a.data), a.titolo, a.autore || "", a.annullata ? "Sì" : "", d.nome, d.r ? (d.r.r === "si" ? "Ci sono" : "Non posso") : a.conferma ? "Senza risposta" : "", d.r ? d.r.nota || "" : "", d.r ? hh2(d.r.at) : "", d.p && d.p.p ? "Sì" : "", d.p && d.p.ore ? num(d.p.ore) : ""]);
+    if (!sto) return; const r = [["Data", "Ora", "Attivazione", "Inviata da", "Stato", "Volontario", "Risposta", "Nota", "Ora risposta", "Presente", "Ore"]];
+    for (const a of [...sto.attivazioni].reverse()) for (const d of destinatari(a)) r.push([gg2(a.data), hh2(a.data), a.titolo, a.autore || "", a.annullata ? "Annullata" : a.conclusa ? "Conclusa alle " + hh2(a.conclusa.at) : "", d.nome, d.r ? (d.r.r === "si" ? "Ci sono" : "Non posso") : a.conferma ? "Senza risposta" : "", d.r ? d.r.nota || "" : "", d.r ? hh2(d.r.at) : "", d.p && d.p.p ? "Sì" : "", d.p && d.p.ore ? num(d.p.ore) : ""]);
     scarica(`storico-attivazioni-${sto.anno}.csv`, r);
   };
   $("#st-csv2").onclick = () => {

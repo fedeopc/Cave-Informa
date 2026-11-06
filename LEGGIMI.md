@@ -87,6 +87,7 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 - Un solo telefono per codice. Si sceglie cosa succede se il codice viene usato su un altro telefono: approvazione manuale (predefinita), sostituzione automatica del vecchio, oppure blocco (cambio telefono con "Scollega").
 - Invio di attivazioni con modelli pronti e menu a tendina: titolo e messaggio si compongono da soli e restano modificabili; il messaggio non parte se restano "___" da completare.
 - Il volontario risponde "Ci sono / Non posso" con una nota; le risposte compaiono nella pagina admin, aggiornate ogni 15 secondi.
+- "🏁 Concludi" (versione 3.19): chiude l'intervento, nessuno può più rispondere, notifica facoltativa "Intervento concluso". A ciascun volontario che ha risposto "Ci sono" vengono segnate presenza e ore pari alla durata intera dell'intervento (dall'invio dell'attivazione alla conclusione, arrotondata alla mezz'ora); le ore restano modificabili in Storico e presenze.
 - Attivazioni già inviate: "Correggi" (con notifica facoltativa "🔁 Aggiornamento"), "Annulla" (notifica facoltativa "❌ Annullata", resta nello storico come annullata e non si può più rispondere), "Elimina" (solo amministratore principale: sparisce anche dallo storico, per prove ed errori).
 - Storico e presenze: tutte le attivazioni per anno, vista per attivazione o per volontario, presenze e ore di servizio, file per Excel. Conservazione 5 anni, poi cancellazione automatica.
 
