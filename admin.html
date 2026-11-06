@@ -561,6 +561,13 @@ section[data-p]{display:grid;gap:12px}
 .campi .chips{display:flex;flex-wrap:wrap;gap:6px}.campi .chips button{font:inherit;font-size:.85rem;font-weight:650;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
 .campi .chips button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .campi .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.regole{display:grid;gap:6px;margin-bottom:6px}.regole label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:400}
+.regole label:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}
+.regole input{margin-top:3px;accent-color:var(--accent);width:auto!important;flex:none;padding:0}.regole label>span{flex:1}.regole b{display:block;font-size:.92rem}.regole small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px;line-height:1.35}
+.li2.att2{border:1px solid #E0A100;border-radius:12px;padding:10px;background:color-mix(in srgb,#E0A100 12%,transparent)}
+.li2.att2{flex-wrap:wrap}.li2.att2>div{flex:1;min-width:60%}.li2.att2 .btns{width:100%;justify-content:flex-end;margin-top:6px}
+.li2 .btns{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;flex:none}.li2 .btns button{font:inherit;font-size:.8rem;font-weight:650;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.li2 .btns .ok{background:#2E9E5B;border-color:#2E9E5B;color:#fff}.li2 .btns .ko{color:#D23B40}
 .modelli{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .modelli button{font:inherit;font-size:.85rem;font-weight:650;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;line-height:1.25}
 .modelli button.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 40%,transparent)}
@@ -723,13 +730,19 @@ section[data-p]{display:grid;gap:12px}
         <p class="msg" id="pmsg" role="status"></p>
         <p class="hint">Le persone abilitate possono pubblicare avvisi e vedere lo stato, ma non gestire le persone. Puoi revocare un codice in qualsiasi momento.</p></div>
       <div class="card"><div class="eyebrow">Soci <span class="tag">area soci</span></div>
+        <label>Se un codice viene usato su un altro telefono</label>
+        <div class="regole" id="s-reg">
+          <label><input type="radio" name="reg" value="approva"> <span><b>Chiedi la mia approvazione</b><small>Il nuovo telefono resta in attesa finché non lo approvi qui; approvando, il vecchio viene scollegato.</small></span></label>
+          <label><input type="radio" name="reg" value="sostituisci"> <span><b>Il nuovo sostituisce il vecchio</b><small>Si attiva subito e scollega il telefono precedente; ricevi un avviso.</small></span></label>
+          <label><input type="radio" name="reg" value="blocca"> <span><b>Un solo telefono: blocca i nuovi</b><small>Per un cambio di telefono devi prima toccare "Scollega" sul socio.</small></span></label>
+        </div>
         <div id="slist2"><p class="hint">Caricamento…</p></div>
         <label for="sn" style="margin-top:6px">Aggiungi un socio</label>
         <input id="sn" maxlength="60" placeholder="Nome e cognome">
         <button class="pri" type="button" id="sc">Crea codice socio</button>
         <div class="newcode" id="newcode2" hidden><p>Codice socio per <b id="nc2-n"></b>:</p><code id="nc2-c"></code>
           <div class="row2"><button type="button" id="nc2-copy">Copia</button><button type="button" id="nc2-share">Condividi</button></div>
-          <p class="hint">Il codice viene mostrato <b>una volta sola</b>. Con <b>Condividi</b> il socio riceve anche il link che apre l'area soci nell'app (la voce non è visibile ai cittadini).</p></div>
+          <p class="hint">Il codice viene mostrato <b>una volta sola</b>. Con <b>Condividi</b> il socio riceve il codice con le istruzioni: nell'app, <b>Info → in fondo → Area riservata ai soci</b>.</p></div>
         <p class="msg" id="smsg2" role="status"></p>
         <p class="hint">I soci ricevono le attivazioni e possono rispondere, ma <b>non</b> entrano nella pagina admin e non pubblicano avvisi.</p></div>
     </section>
@@ -1133,14 +1146,33 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   async function loadSoci2() {
     const box = $("#slist2");
     try {
-      const l = await call("/soci/codici");
-      box.innerHTML = l.length ? l.map((c) => `<div class="li2"><span class="ic">${c.telefoni ? "📱" : "👤"}</span><div>${esc(c.nome)}<small>${c.telefoni ? "area soci attiva su " + c.telefoni + (c.telefoni === 1 ? " telefono" : " telefoni") : "non ancora attivata sull'app"} · creato il ${esc(new Date(c.creato).toLocaleDateString("it-IT", { day: "numeric", month: "long" }))}</small></div><button type="button" data-id="${esc(c.id)}" data-n="${esc(c.nome)}">Revoca</button></div>`).join("") : '<p class="hint">Nessun socio ancora.</p>';
-      box.querySelectorAll("button").forEach((b) => (b.onclick = async () => {
+      const [l, rg] = await Promise.all([call("/soci/codici"), call("/soci/regola")]);
+      $$("#s-reg input").forEach((r) => (r.checked = r.value === rg.regola));
+      const dt = (iso) => new Date(iso).toLocaleString("it-IT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+      l.sort((a, b) => (b.attesaDal ? 1 : 0) - (a.attesaDal ? 1 : 0));
+      box.innerHTML = l.length ? l.map((c) => {
+        const stato = c.attesaDal ? `⏳ chiede un nuovo telefono (${dt(c.attesaDal)})` : c.attivoDal ? "📱 attiva su un telefono dal " + dt(c.attivoDal) : "non ancora attivata sull'app";
+        const btn = c.attesaDal ? `<button type="button" class="ok" data-a="si" data-id="${esc(c.id)}">Approva</button><button type="button" data-a="no" data-id="${esc(c.id)}">Rifiuta</button>`
+          : (c.attivoDal ? `<button type="button" data-s="${esc(c.id)}" data-n="${esc(c.nome)}">Scollega</button>` : "");
+        return `<div class="li2${c.attesaDal ? " att2" : ""}"><span class="ic">${c.attesaDal ? "⏳" : c.attivoDal ? "📱" : "👤"}</span><div>${esc(c.nome)}<small>${stato}</small></div><span class="btns">${btn}<button type="button" class="ko" data-r="${esc(c.id)}" data-n="${esc(c.nome)}">Revoca</button></span></div>`;
+      }).join("") : '<p class="hint">Nessun socio ancora.</p>';
+      box.querySelectorAll("button[data-a]").forEach((b) => (b.onclick = async () => {
+        if (b.dataset.a === "si" && !confirm("Approvare il nuovo telefono? Quello precedente verrà scollegato.")) return;
+        try { await call("/soci/approva", { id: b.dataset.id, ok: b.dataset.a === "si" }); toast(b.dataset.a === "si" ? "Nuovo telefono approvato" : "Richiesta rifiutata"); loadSoci2(); } catch (err) { if (err.message !== "401") toast(err.message); }
+      }));
+      box.querySelectorAll("button[data-s]").forEach((b) => (b.onclick = async () => {
+        if (!confirm("Scollegare il telefono di " + b.dataset.n + "? Smetterà di ricevere le attivazioni finché non reinserisce il codice (per esempio sul telefono nuovo).")) return;
+        try { await call("/soci/scollega", { id: b.dataset.s }); toast("Telefono scollegato"); loadSoci2(); } catch (err) { if (err.message !== "401") toast(err.message); }
+      }));
+      box.querySelectorAll("button[data-r]").forEach((b) => (b.onclick = async () => {
         if (!confirm("Revocare il codice socio di " + b.dataset.n + "? Non riceverà più le attivazioni.")) return;
-        try { await call("/soci/codice-revoca", { id: b.dataset.id }); toast("Codice socio revocato"); loadSoci2(); } catch (err) { if (err.message !== "401") toast(err.message); }
+        try { await call("/soci/codice-revoca", { id: b.dataset.r }); toast("Codice socio revocato"); loadSoci2(); } catch (err) { if (err.message !== "401") toast(err.message); }
       }));
     } catch (err) { if (err.message !== "401") box.innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
   }
+  $$("#s-reg input").forEach((r) => r.addEventListener("change", async () => {
+    try { await call("/soci/regola", { regola: r.value }); toast("Regola salvata"); } catch (err) { if (err.message !== "401") toast(err.message); loadSoci2(); }
+  }));
   $("#sc").onclick = async () => {
     const nome = $("#sn").value.trim(); if (!nome) { msg($("#smsg2"), "Scrivi il nome del socio.", false); return; }
     try {
@@ -1149,7 +1181,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       loadSoci2();
     } catch (err) { if (err.message !== "401") msg($("#smsg2"), err.message, false); }
   };
-  const testoSocio = () => "Ciao " + $("#nc2-n").textContent + ", questo è il tuo codice socio per l'app Cave Informa: " + $("#nc2-c").textContent + "\n\n1. Installa l'app (se non l'hai già) e attiva le notifiche.\n2. Tocca questo link per aprire l'area soci e inserisci il codice:\n" + location.href.split("/admin.html")[0] + "/#soci";
+  const testoSocio = () => "Ciao " + $("#nc2-n").textContent + ", questo è il tuo codice socio per l'app Cave Informa: " + $("#nc2-c").textContent + "\n\n1. Se non l'hai ancora, installa l'app: apri " + location.href.split("/admin.html")[0] + "/ e aggiungila alla schermata Home.\n2. Apri l'app DALL'ICONA sulla schermata Home → Info → in fondo tocca \"Area riservata ai soci\".\n3. Attiva le notifiche se te lo chiede e inserisci il codice.";
   $("#nc2-copy").onclick = () => { navigator.clipboard && navigator.clipboard.writeText($("#nc2-c").textContent).then(() => toast("Codice copiato")); };
   $("#nc2-share").onclick = () => { if (navigator.share) navigator.share({ text: testoSocio() }).catch(() => {}); else { navigator.clipboard && navigator.clipboard.writeText(testoSocio()); toast("Messaggio copiato"); } };
 
