@@ -635,6 +635,31 @@ section[data-p]{display:grid;gap:12px}
 .newcode p{margin:0}
 .newcode code{font-size:1.5rem;font-weight:800;letter-spacing:.08em;text-align:center;padding:8px;background:var(--surface);border-radius:10px}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);z-index:50}
+/* schede comprimibili */
+.card[data-c]>.eyebrow{cursor:pointer;user-select:none;-webkit-user-select:none;display:flex;align-items:center;gap:8px;min-height:28px}
+.card[data-c]>.eyebrow::after{content:"";width:9px;height:9px;margin-left:auto;flex:none;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:rotate(45deg) translate(-2px,-2px);transition:transform .2s}
+.card[data-c].chiusa>.eyebrow::after{transform:rotate(-45deg)}
+.card[data-c].chiusa>:not(.eyebrow){display:none!important}
+.card[data-c].chiusa{gap:0}
+.eyebrow .conta{background:#E0A100;color:#fff;border-radius:999px;padding:1px 8px;font-size:.72rem;letter-spacing:0}
+.card[data-c]>.eyebrow #s-agg{margin-left:auto}
+/* permessi del direttivo */
+.perm{display:flex;flex-wrap:wrap;gap:6px}
+.perm label{display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;margin:0;color:var(--muted)}
+.perm label:has(input:checked){background:color-mix(in srgb,var(--accent) 14%,var(--surface));border-color:var(--accent);color:var(--fg)}
+.perm input{width:auto;margin:0;accent-color:var(--accent)}
+.mem{padding:12px 0;border-top:1px solid var(--line);display:grid;gap:8px}.mem:first-child{border-top:0}
+.mem .top{display:flex;align-items:center;gap:10px}.mem .top>div{flex:1;min-width:0}.mem small{display:block;color:var(--muted);font-size:.78rem}
+.mem .top button{font:inherit;font-size:.82rem;font-weight:700;color:#C0262D;background:none;border:0;cursor:pointer;padding:8px}
+.newcode .fatto{background:#2E8B57;border-color:#2E8B57;color:#fff}
+/* attivazioni: correggi / annulla / elimina */
+.att .azioni{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.att .azioni button{font:inherit;font-size:.8rem;font-weight:650;padding:7px 11px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.att .azioni .ko{color:#D23B40}
+.att .edit{display:grid;gap:8px;margin-top:10px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.att.annullata b.t{text-decoration:line-through;opacity:.7}
+.att .ann{display:inline-block;margin-top:6px;font-size:.8rem;font-weight:700;color:#D23B40;background:color-mix(in srgb,#D23B40 12%,transparent);border-radius:8px;padding:3px 8px}
+.sa .ann{color:#D23B40;font-weight:700}
 </style>
 </head>
 <body>
@@ -661,13 +686,13 @@ section[data-p]{display:grid;gap:12px}
     </div>
     <div class="tabs2" role="tablist">
       <button type="button" data-t="avvisi" class="on">Avvisi</button>
-      <button type="button" data-t="soci">Soci</button>
+      <button type="button" data-t="soci">Volontari</button>
       <button type="button" data-t="stato">Stato</button>
-      <button type="button" data-t="persone" id="tab-persone" hidden>Persone</button>
+      <button type="button" data-t="persone" hidden>Direttivo</button>
     </div>
 
     <section data-p="avvisi">
-      <form class="card" id="fa">
+      <form class="card" id="fa" data-c="pubblica">
         <div class="eyebrow" id="fa-t">Pubblica nella bacheca</div>
         <div class="seg" id="tipo">
           <button type="button" data-v="avviso" class="on">📢 Avviso</button>
@@ -693,18 +718,18 @@ section[data-p]{display:grid;gap:12px}
         <div class="row2"><button class="pri" type="submit" id="pub">Pubblica</button><button type="button" class="sec" id="ann" hidden>Annulla modifica</button><button type="button" class="sec svuota" id="svu" hidden>🗑 Svuota campi</button></div>
         <p class="msg" id="amsg" role="status"></p>
       </form>
-      <div class="card"><div class="eyebrow">Pubblicati dalla pagina amministratori</div><div id="alist"><p class="hint">Caricamento…</p></div>
+      <div class="card" data-c="pubblicati"><div class="eyebrow">Pubblicati dalla pagina amministratori</div><div id="alist"><p class="hint">Caricamento…</p></div>
         <p class="hint">Gli avvisi e gli eventi inseriti nel foglio Google compaiono anch'essi nella bacheca dell'app, ma si modificano dal foglio.</p></div>
     </section>
 
     <section data-p="stato" hidden>
-      <div class="card"><div class="eyebrow">Stato dei servizi</div>
+      <div class="card" data-c="servizi" id="c-servizi"><div class="eyebrow">Stato dei servizi</div>
         <div class="sem" id="sem"><span class="sem-dot"></span><div><b>Caricamento…</b><small></small></div></div>
         <div id="sem-pb"></div>
         <div id="ctl"></div>
         <button class="sec" type="button" id="st-r">↻ Aggiorna</button></div>
-      <div class="card"><div class="eyebrow">Telefoni iscritti</div><div id="trend"><p class="hint">Caricamento…</p></div></div>
-      <div class="card"><div class="eyebrow">Strumenti</div>
+      <div class="card" data-c="iscritti" data-chiusa><div class="eyebrow">Telefoni iscritti</div><div id="trend"><p class="hint">Caricamento…</p></div></div>
+      <div class="card" data-c="strumenti" data-chiusa><div class="eyebrow">Strumenti</div>
         <div class="row2"><button type="button" id="t-me">🔔 Notifica di prova a questo telefono</button><button type="button" id="t-dae">🔄 Aggiorna DAE ora</button></div>
         <div class="row2"><button type="button" id="t-lazio">📄 Leggi ora la Regione Lazio</button></div>
         <label class="chk sorv"><input type="checkbox" id="t-sorv"> <span><b>🛠️ Avvisami su questo telefono se qualcosa non funziona</b><small>Il semaforo segnala subito anche il primo errore; la notifica arriva solo se il problema non si risolve da solo e dura più di mezz'ora, al massimo una volta al giorno per lo stesso problema. Arriva solo agli amministratori, non ai cittadini.</small></span></label>
@@ -714,7 +739,7 @@ section[data-p]{display:grid;gap:12px}
     </section>
 
     <section data-p="soci" hidden>
-      <form class="card" id="fs" autocomplete="off"><div class="eyebrow">Invia ai soci <span class="tag">riservato</span></div>
+      <form class="card" id="fs" autocomplete="off" data-c="invia" data-perm="attivazioni"><div class="eyebrow">Invia ai volontari <span class="tag">riservato</span></div>
         <p class="hint" id="s-dest">…</p>
         <label>Modelli pronti</label>
         <div class="modelli" id="s-mod"></div>
@@ -724,45 +749,49 @@ section[data-p]{display:grid;gap:12px}
         <p class="hint" id="s-blank" hidden>⚠️ Completa le parti con ___ prima di inviare.</p>
         <p class="hint" id="s-auto" hidden>Titolo e messaggio si compongono da soli dalle scelte qui sopra; puoi comunque correggerli a mano.</p>
         <label class="chk"><input id="s-cf" type="checkbox" checked> <span>Chiedi conferma: <b>Ci sono</b> / <b>Non posso</b>, con nota</span></label>
-        <div class="row2"><button class="pri urg" type="submit" id="s-go">🚨 Invia ai soci</button><button type="button" class="sec svuota" id="s-svu">🗑 Svuota</button></div>
+        <div class="row2"><button class="pri urg" type="submit" id="s-go">🚨 Invia ai volontari</button><button type="button" class="sec svuota" id="s-svu">🗑 Svuota</button></div>
         <p class="msg" id="smsg" role="status"></p></form>
-      <div class="card"><div class="eyebrow">Ultime attivazioni <span class="hint" id="s-agg" style="margin-left:auto;font-weight:400;letter-spacing:0;text-transform:none"></span></div>
+      <div class="card" data-c="ultime" data-perm="attivazioni risposte"><div class="eyebrow">Ultime attivazioni <span class="hint" id="s-agg" style="margin-left:auto;font-weight:400;letter-spacing:0;text-transform:none"></span></div>
         <div id="s-list"><p class="hint">Caricamento…</p></div></div>
-      <div class="card" id="s-storico" hidden><div class="eyebrow">Storico <span class="tag">solo amministratore</span></div>
+      <div class="card" id="s-storico" data-c="storico" data-chiusa data-perm="storico"><div class="eyebrow">Storico e presenze</div>
         <div class="sto-bar"><select id="st-anno" aria-label="Anno"></select>
-          <div class="seg" id="st-vista"><button type="button" data-v="att" class="on">Per attivazione</button><button type="button" data-v="soc">Per socio</button></div></div>
+          <div class="seg" id="st-vista"><button type="button" data-v="att" class="on">Per attivazione</button><button type="button" data-v="soc">Per volontario</button></div></div>
         <div class="sto-tot" id="st-tot"></div>
         <div id="st-list"><p class="hint">Caricamento…</p></div>
-        <div class="row2"><button type="button" id="st-csv1">⬇ Scarica dettaglio</button><button type="button" id="st-csv2">⬇ Scarica riepilogo soci</button></div>
+        <div class="row2"><button type="button" id="st-csv1">⬇ Scarica dettaglio</button><button type="button" id="st-csv2">⬇ Scarica riepilogo volontari</button></div>
         <p class="hint" id="st-note"></p></div>
-    </section>
-    <section data-p="persone" hidden>
-      <div class="card"><div class="eyebrow">Persone abilitate <span class="tag">solo tu</span></div>
-        <div id="plist"><p class="hint">Caricamento…</p></div>
-        <label for="pn" style="margin-top:6px">Abilita una nuova persona</label>
-        <input id="pn" maxlength="60" placeholder="Nome, es. Anna (segreteria)">
-        <button class="pri" type="button" id="pc">Crea codice</button>
-        <div class="newcode" id="newcode" hidden><p>Codice per <b id="nc-n"></b>:</p><code id="nc-c"></code>
-          <div class="row2"><button type="button" id="nc-copy">Copia</button><button type="button" id="nc-share">Condividi</button></div>
-          <p class="hint">Il codice viene mostrato <b>una volta sola</b>: comunicalo ora alla persona.</p></div>
-        <p class="msg" id="pmsg" role="status"></p>
-        <p class="hint">Le persone abilitate possono pubblicare avvisi e vedere lo stato, ma non gestire le persone. Puoi revocare un codice in qualsiasi momento.</p></div>
-      <div class="card"><div class="eyebrow">Soci <span class="tag">area soci</span></div>
+      <div class="card" id="c-codvol" data-c="codvol" data-chiusa data-perm="volontari"><div class="eyebrow">Codici dei volontari</div>
         <label>Se un codice viene usato su un altro telefono</label>
         <div class="regole" id="s-reg">
           <label><input type="radio" name="reg" value="approva"> <span><b>Chiedi la mia approvazione</b><small>Il nuovo telefono resta in attesa finché non lo approvi qui; approvando, il vecchio viene scollegato.</small></span></label>
           <label><input type="radio" name="reg" value="sostituisci"> <span><b>Il nuovo sostituisce il vecchio</b><small>Si attiva subito e scollega il telefono precedente; ricevi un avviso.</small></span></label>
-          <label><input type="radio" name="reg" value="blocca"> <span><b>Un solo telefono: blocca i nuovi</b><small>Per un cambio di telefono devi prima toccare "Scollega" sul socio.</small></span></label>
+          <label><input type="radio" name="reg" value="blocca"> <span><b>Un solo telefono: blocca i nuovi</b><small>Per un cambio di telefono devi prima toccare "Scollega" sul volontario.</small></span></label>
         </div>
         <div id="slist2"><p class="hint">Caricamento…</p></div>
-        <label for="sn" style="margin-top:6px">Aggiungi un socio</label>
+        <label for="sn" style="margin-top:6px">Aggiungi un volontario</label>
         <input id="sn" maxlength="60" placeholder="Nome e cognome">
-        <button class="pri" type="button" id="sc">Crea codice socio</button>
-        <div class="newcode" id="newcode2" hidden><p>Codice socio per <b id="nc2-n"></b>:</p><code id="nc2-c"></code>
-          <div class="row2"><button type="button" id="nc2-copy">Copia</button><button type="button" id="nc2-share">Condividi</button></div>
-          <p class="hint">Il codice viene mostrato <b>una volta sola</b>. Con <b>Condividi</b> il socio riceve il codice con le istruzioni: nell'app, <b>Info → in fondo → Area riservata ai soci</b>.</p></div>
+        <button class="pri" type="button" id="sc">Crea codice volontario</button>
+        <div class="newcode" id="newcode2" hidden><p>Codice volontario per <b id="nc2-n"></b>:</p><code id="nc2-c"></code>
+          <div class="row2"><button type="button" id="nc2-copy">Copia</button><button type="button" id="nc2-share">Condividi</button><button type="button" class="fatto" data-chiudi="newcode2">✓ Fatto</button></div>
+          <p class="hint">Il codice viene mostrato <b>una volta sola</b>. Con <b>Condividi</b> il volontario riceve il codice con le istruzioni: nell'app, <b>Info → in fondo → Area riservata ai volontari</b>. Poi tocca <b>Fatto</b> per chiudere.</p></div>
         <p class="msg" id="smsg2" role="status"></p>
-        <p class="hint">I soci ricevono le attivazioni e possono rispondere, ma <b>non</b> entrano nella pagina admin e non pubblicano avvisi.</p></div>
+        <p class="hint">I volontari ricevono le attivazioni e possono rispondere, ma <b>non</b> entrano nella pagina admin e non pubblicano avvisi.</p></div>
+    </section>
+    <section data-p="persone" hidden>
+      <div class="card" data-c="direttivo"><div class="eyebrow">Membri del direttivo <span class="tag">solo tu</span></div>
+        <p class="hint">Scegli cosa può fare ciascuno. Le modifiche valgono da subito, anche se la persona è già dentro (al massimo dopo che ricarica la pagina).</p>
+        <div id="plist"><p class="hint">Caricamento…</p></div></div>
+      <div class="card" data-c="nuovo"><div class="eyebrow">Abilita una nuova persona</div>
+        <label for="pn">Nome</label>
+        <input id="pn" maxlength="60" placeholder="Nome, es. Anna (segreteria)">
+        <label>Cosa può fare</label>
+        <div class="perm" id="pn-perm"></div>
+        <button class="pri" type="button" id="pc">Crea codice</button>
+        <div class="newcode" id="newcode" hidden><p>Codice per <b id="nc-n"></b>:</p><code id="nc-c"></code>
+          <div class="row2"><button type="button" id="nc-copy">Copia</button><button type="button" id="nc-share">Condividi</button><button type="button" class="fatto" data-chiudi="newcode">✓ Fatto</button></div>
+          <p class="hint">Il codice viene mostrato <b>una volta sola</b>: comunicalo ora alla persona, poi tocca <b>Fatto</b>.</p></div>
+        <p class="msg" id="pmsg" role="status"></p>
+        <p class="hint">Solo tu (amministratore principale) vedi questa scheda e puoi creare o revocare i codici del direttivo.</p></div>
     </section>
   </div>
 </div>
@@ -805,9 +834,13 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       if (!r.ok) { msg($("#lmsg"), j.error === "codice non valido" ? "Codice non valido." : (j.error || "Accesso non riuscito"), false); return; }
       token = pw; me = j;
       $("#who").textContent = (j.ruolo === "principale" ? "amministratore principale · " : "") + j.nome;
-      $("#tab-persone").hidden = j.ruolo !== "principale"; $("#s-storico").hidden = j.ruolo !== "principale"; principale = j.ruolo === "principale";
+      principale = j.ruolo === "principale"; perm = new Set(j.perm || ["avvisi", "attivazioni", "risposte", "stato"]);
+      const vede = { avvisi: can("avvisi"), soci: ["attivazioni", "risposte", "volontari", "storico"].some(can), stato: can("stato"), persone: principale };
+      $$(".tabs2 button").forEach((b) => (b.hidden = !vede[b.dataset.t]));
+      $$("[data-perm]").forEach((c) => (c.hidden = !c.dataset.perm.split(" ").some(can)));
       $("#login").hidden = true; $("#panel").hidden = false; $("#pw").value = "";
-      show("avvisi");
+      const primo = ["avvisi", "soci", "stato", "persone"].find((t) => vede[t]);
+      if (primo) show(primo); else { $$("section[data-p]").forEach((x) => (x.hidden = true)); toast("Il tuo codice non ha ancora autorizzazioni: chiedi all'amministratore."); }
     } catch (err) { msg($("#lmsg"), "Nessuna connessione: riprova.", false); }
     finally { $("#go").disabled = false; }
   });
@@ -818,12 +851,30 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   });
   window.addEventListener("pageshow", (e) => { if (e.persisted) lock(); });   // riaperta dalla cronologia: chiedo di nuovo il codice
 
-  let sociTimer = null, principale = false;
+  let sociTimer = null, principale = false, perm = new Set();
+  const can = (p) => principale || perm.has(p);
+  /* ---------- schede comprimibili (lo stato aperto/chiuso resta su questo telefono) ---------- */
+  const CHIUSE = "admin-chiuse";
+  let chiuse; try { chiuse = JSON.parse(localStorage.getItem(CHIUSE)); } catch (e) {}
+  if (!chiuse || typeof chiuse !== "object") chiuse = {};
+  $$(".card[data-c]").forEach((c) => {
+    const k = c.dataset.c; c.classList.toggle("chiusa", k in chiuse ? chiuse[k] : c.hasAttribute("data-chiusa"));
+    c.querySelector(".eyebrow").addEventListener("click", (e) => {
+      if (e.target.closest("button,a,select,input")) return;
+      c.classList.toggle("chiusa"); chiuse[k] = c.classList.contains("chiusa");
+      try { localStorage.setItem(CHIUSE, JSON.stringify(chiuse)); } catch (e) {}
+    });
+  });
+  const apri = (sel) => { const c = $(sel); if (c) c.classList.remove("chiusa"); };   // apre senza ricordarlo: serve attenzione adesso
+  /* box del codice appena creato: si chiude con Fatto o cambiando scheda */
+  $$("[data-chiudi]").forEach((b) => (b.onclick = () => { $("#" + b.dataset.chiudi).hidden = true; }));
   /* ---------- schede ---------- */
   function show(t) {
     $$(".tabs2 button").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
     $$("section[data-p]").forEach((s) => (s.hidden = s.dataset.p !== t));
-    if (t === "avvisi") loadAvvisi(); if (t === "stato") { loadStato(); loadSorv(); } if (t === "persone") { loadPersone(); loadSoci2(); } if (t === "soci") { loadSoci(); if (principale) loadStorico(); } clearInterval(sociTimer); if (t === "soci") sociTimer = setInterval(() => { if (!document.hidden) loadSoci(true); }, 15000);
+    $("#newcode").hidden = $("#newcode2").hidden = true; modifica = null;
+    if (t === "avvisi") loadAvvisi(); if (t === "stato") { loadStato(); loadSorv(); } if (t === "persone") loadPersone();
+    if (t === "soci") { if (can("attivazioni") || can("risposte")) loadSoci(); if (can("storico")) loadStorico(); if (can("volontari")) loadSoci2(); } clearInterval(sociTimer); if (t === "soci" && (can("attivazioni") || can("risposte"))) sociTimer = setInterval(() => { if (!document.hidden && !modifica) loadSoci(true); }, 15000);
   }
   $$(".tabs2 button").forEach((b) => (b.onclick = () => show(b.dataset.t)));
 
@@ -949,7 +1000,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       const j = await call("/stato"), sa = j.salute || { controlli: [] };
       const pr = sa.controlli.filter((c) => c.stato !== "ok");
       const lv = pr.some((c) => c.stato === "ko") ? "ko" : pr.length ? "warn" : "ok";
-      sem.className = "sem " + lv;
+      sem.className = "sem " + lv; if (lv !== "ok") apri("#c-servizi");
       sem.innerHTML = `<span class="sem-dot"></span><div><b>${lv === "ok" ? "Tutto funziona" : pr.length === 1 ? "1 problema" : pr.length + " problemi"}</b><small>Ultimo controllo automatico: ${esc(fa(sa.giro))} · ${j.iscritti} telefoni con notifiche</small></div>`;
       pb.innerHTML = pr.map((c) => `<div class="pb ${c.stato}"><b>${esc(c.nome)}:</b> ${esc(c.testo)}</div>`).join("");
       trend(j.storico || [], j.iscritti);
@@ -1024,24 +1075,34 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     finally { cb.disabled = false; }
   };
 
-  /* ---------- persone (solo amministratore principale) ---------- */
+  /* ---------- direttivo e autorizzazioni (solo amministratore principale) ---------- */
+  const PERM_NOMI = [["avvisi", "📢 Avvisi in bacheca"], ["attivazioni", "🚨 Inviare attivazioni"], ["risposte", "👥 Vedere chi risponde"], ["volontari", "🔑 Codici dei volontari"], ["storico", "📊 Storico e presenze"], ["stato", "🛠️ Stato dei servizi"]];
+  const PERM_BASE = ["avvisi", "attivazioni", "risposte", "stato"];
+  const chips = (sel) => PERM_NOMI.map(([k, n]) => `<label><input type="checkbox" value="${k}"${sel.includes(k) ? " checked" : ""}> ${n}</label>`).join("");
+  $("#pn-perm").innerHTML = chips(PERM_BASE);
   async function loadPersone() {
     const box = $("#plist");
     try {
       const l = await call("/codici");
-      box.innerHTML = `<div class="li2"><span class="ic">⭐</span><div>${esc(me.nome)}<small>amministratore principale</small></div></div>` + l.map((c) =>
-        `<div class="li2"><span class="ic">👤</span><div>${esc(c.nome)}<small>codice creato il ${esc(new Date(c.creato).toLocaleDateString("it-IT", { day: "numeric", month: "long" }))} · ${c.ultimoUso ? "ultimo uso " + esc(t(c.ultimoUso)) : "mai usato"}</small></div><button type="button" data-id="${esc(c.id)}" data-n="${esc(c.nome)}">Revoca</button></div>`).join("");
-      box.querySelectorAll("button").forEach((b) => (b.onclick = async () => {
+      box.innerHTML = `<div class="mem"><div class="top"><span class="ic">⭐</span><div>${esc(me.nome)}<small>amministratore principale · può fare tutto</small></div></div></div>` + l.map((c) =>
+        `<div class="mem" data-id="${esc(c.id)}"><div class="top"><span class="ic">👤</span><div>${esc(c.nome)}<small>codice creato il ${esc(new Date(c.creato).toLocaleDateString("it-IT", { day: "numeric", month: "long" }))} · ${c.ultimoUso ? "ultimo uso " + esc(t(c.ultimoUso)) : "mai usato"}</small></div><button type="button" data-id="${esc(c.id)}" data-n="${esc(c.nome)}">Revoca</button></div><div class="perm">${chips(c.perm)}</div></div>`).join("") +
+        (l.length ? "" : '<p class="hint">Nessun altro membro abilitato: crealo qui sotto.</p>');
+      box.querySelectorAll(".top button").forEach((b) => (b.onclick = async () => {
         if (!confirm("Revocare il codice di " + b.dataset.n + "? Non potrà più entrare.")) return;
         try { await call("/codice-revoca", { id: b.dataset.id }); toast("Codice revocato"); loadPersone(); } catch (err) { if (err.message !== "401") toast(err.message); }
+      }));
+      box.querySelectorAll(".mem[data-id] .perm input").forEach((x) => x.addEventListener("change", async () => {
+        const m = x.closest(".mem"), sel = [...m.querySelectorAll(".perm input:checked")].map((y) => y.value);
+        try { await call("/codice-permessi", { id: m.dataset.id, perm: sel }); toast("Autorizzazioni di " + m.querySelector(".top div").firstChild.textContent + " salvate"); }
+        catch (err) { x.checked = !x.checked; if (err.message !== "401") toast(err.message); }
       }));
     } catch (err) { if (err.message !== "401") box.innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
   }
   $("#pc").onclick = async () => {
     const nome = $("#pn").value.trim(); if (!nome) { msg($("#pmsg"), "Scrivi il nome della persona.", false); return; }
     try {
-      const j = await call("/codice-crea", { nome });
-      $("#nc-n").textContent = j.nome; $("#nc-c").textContent = j.codice; $("#newcode").hidden = false; $("#pn").value = ""; msg($("#pmsg"), "");
+      const j = await call("/codice-crea", { nome, perm: [...$$("#pn-perm input:checked")].map((x) => x.value) });
+      $("#nc-n").textContent = j.nome; $("#nc-c").textContent = j.codice; $("#newcode").hidden = false; $("#pn").value = ""; $("#pn-perm").innerHTML = chips(PERM_BASE); msg($("#pmsg"), "");
       loadPersone();
     } catch (err) { if (err.message !== "401") msg($("#pmsg"), err.message, false); }
   };
@@ -1127,8 +1188,8 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   $("#fs").addEventListener("submit", async (e) => {
     e.preventDefault();
     if (blanks()) { msg($("#smsg"), "Completa le parti con ___ prima di inviare.", false); return; }
-    const n = sociInfo ? sociInfo.dispositivi.soci : "i";
-    if (!confirm(`Inviare questo messaggio ai ${n} soci con l'area soci attiva?`)) return;
+    const n = sociInfo ? sociInfo.dispositivi.soci : "";
+    if (!confirm(`Inviare questo messaggio ai ${n} volontari con l'area volontari attiva?`)) return;
     $("#s-go").disabled = true; msg($("#smsg"), "Invio…", true);
     try {
       const j = await call("/soci/invia", { titolo: $("#s-ti").value.trim(), testo: $("#s-te").value.trim(), conferma: $("#s-cf").checked });
@@ -1142,26 +1203,66 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     try {
       const j = sociInfo = await call("/soci/attivazioni");
       const d = j.dispositivi;
-      $("#s-dest").innerHTML = d.totale ? `Arriva a <b>${d.soci}</b> ${d.soci === 1 ? "socio" : "soci"} con l'area soci attiva sull'app${d.soci < d.totale ? ` (su ${d.totale}: ${d.totale - d.soci} non l'hanno ancora attivata)` : ""}.` : "Non ci sono ancora soci: crea i loro codici nella scheda <b>Persone</b>.";
+      $("#s-dest").innerHTML = d.totale ? `Arriva a <b>${d.soci}</b> ${d.soci === 1 ? "volontario" : "volontari"} con l'area volontari attiva sull'app${d.soci < d.totale ? ` (su ${d.totale}: ${d.totale - d.soci} non l'hanno ancora attivata)` : ""}.` : "Non ci sono ancora volontari: crea i loro codici più sotto, in <b>Codici dei volontari</b>.";
       $("#s-agg").textContent = "aggiornato " + new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
       const box = $("#s-list");
       if (!j.messaggi.length) { box.innerHTML = '<p class="hint">Nessuna attivazione inviata.</p>'; return; }
       box.innerHTML = j.messaggi.map((m) => {
         const si = m.risposte.filter((r) => r.r === "si"), no = m.risposte.filter((r) => r.r === "no");
-        const senza = j.soci.filter((x) => !m.risposte.some((r) => r.socio === x.id));
+        const senza = j.nomi ? j.soci.filter((x) => !m.risposte.some((r) => r.socio === x.id)) : Array(Math.max(0, j.soci.length - m.risposte.length)).fill(0);
         const tot = Math.max(1, j.soci.length), pct = (n) => (100 * n / tot).toFixed(1) + "%";
         const ora = (iso) => new Date(iso).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+        const quandoL = (iso) => new Date(iso).toLocaleString("it-IT", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
         const riga = (r, ic) => `<div><span>${ic}</span><span class="n">${esc(r.nome)}</span>${r.nota ? `<span class="nota">${esc(r.nota)}</span>` : ""}<span class="o">${ora(r.at)}</span></div>`;
-        return `<div class="att"><b class="t">${esc(m.titolo)}</b><small>${esc(new Date(m.data).toLocaleString("it-IT", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))} · da ${esc(m.autore)} · a ${m.inviati ?? "?"} telefoni</small>` +
+        const az = m.annullata ? (principale ? `<div class="azioni"><button type="button" class="ko" data-az="elimina">🗑 Elimina dallo storico</button></div>` : "")
+          : can("attivazioni") ? `<div class="azioni"><button type="button" data-az="correggi">✏️ Correggi</button><button type="button" class="ko" data-az="annulla">❌ Annulla attivazione</button>${principale ? '<button type="button" class="ko" data-az="elimina">🗑 Elimina</button>' : ""}</div>` : "";
+        return `<div class="att${m.annullata ? " annullata" : ""}" data-id="${esc(m.id)}"><b class="t">${esc(m.titolo)}</b><small>${esc(quandoL(m.data))} · da ${esc(m.autore)} · a ${m.inviati ?? "?"} telefoni${m.modificato ? " · corretta alle " + ora(m.modificato) : ""}</small>` +
+          (m.annullata ? `<span class="ann">❌ Annullata da ${esc(m.annullata.da)} · ${esc(quandoL(m.annullata.at))}</span>` : "") +
           (m.conferma ? `<div class="bar"><i class="si" style="width:${pct(si.length)}"></i><i class="no" style="width:${pct(no.length)}"></i></div>
-          <div class="cnt"><span class="si">✅ ${si.length} ci sono</span><span class="no">❌ ${no.length} non possono</span><span class="att0">⏳ ${senza.length} senza risposta</span></div>
-          <details data-id="${esc(m.id)}"${aperte.has(m.id) ? " open" : ""}><summary>Vedi i nomi</summary><div class="rl">${si.map((r) => riga(r, "✅")).join("")}${no.map((r) => riga(r, "❌")).join("")}${senza.map((x) => `<div><span>⏳</span><span class="n">${esc(x.nome)}</span></div>`).join("")}</div></details>` : `<small>Solo informativo, senza risposta.</small>`) + "</div>";
+          <div class="cnt"><span class="si">✅ ${si.length} ci sono</span><span class="no">❌ ${no.length} non possono</span><span class="att0">⏳ ${senza.length} senza risposta</span></div>` +
+          (j.nomi ? `<details data-id="${esc(m.id)}"${aperte.has(m.id) ? " open" : ""}><summary>Vedi i nomi</summary><div class="rl">${si.map((r) => riga(r, "✅")).join("")}${no.map((r) => riga(r, "❌")).join("")}${senza.map((x) => `<div><span>⏳</span><span class="n">${esc(x.nome)}</span></div>`).join("")}</div></details>` : "")
+          : `<small>Solo informativo, senza risposta.</small>`) + az + "</div>";
       }).join("");
       box.querySelectorAll("details").forEach((dt) => dt.addEventListener("toggle", () => dt.open ? aperte.add(dt.dataset.id) : aperte.delete(dt.dataset.id)));
+      box.querySelectorAll("button[data-az]").forEach((b) => (b.onclick = () => azione(b.closest(".att"), b.dataset.az, j.messaggi.find((x) => x.id === b.closest(".att").dataset.id))));
     } catch (err) { if (err.message !== "401" && !silenzioso) $("#s-list").innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
   }
 
-  /* ---------- soci: storico (solo amministratore principale) ---------- */
+  /* correggi / annulla / elimina un'attivazione già inviata */
+  let modifica = null;   // mentre si corregge, la lista non si ricarica da sola
+  function azione(box, az, m) {
+    box.querySelector(".edit")?.remove();
+    if (az === "elimina") {
+      if (!confirm("Eliminare definitivamente \"" + m.titolo + "\"?\n\nSparisce anche dallo storico, con risposte e presenze. Usalo solo per prove o errori: per un'attivazione vera è meglio Annulla.")) return;
+      call("/soci/elimina", { id: m.id }).then(() => { toast("Attivazione eliminata"); loadSoci(); if (can("storico")) loadStorico(); }).catch((err) => { if (err.message !== "401") toast(err.message); });
+      return;
+    }
+    modifica = m.id;
+    const ed = document.createElement("div"); ed.className = "edit";
+    ed.innerHTML = az === "correggi"
+      ? `<label>Titolo</label><input class="e-ti" maxlength="90" value="${esc(m.titolo)}"><label>Messaggio</label><textarea class="e-te" maxlength="600" rows="4">${esc(m.testo || "")}</textarea>
+        <label class="chk"><input class="e-nt" type="checkbox" checked> <span>Avvisa i volontari con una notifica <b>🔁 Aggiornamento</b></span></label>
+        <p class="hint">Le risposte già date restano valide.</p>
+        <div class="row2"><button type="button" class="pri e-ok">Salva correzione</button><button type="button" class="sec e-no">Lascia stare</button></div>`
+      : `<label>Motivo <span class="opt">(facoltativo)</span></label><input class="e-mo" maxlength="120" placeholder="Es. acqua defluita, intervento non più necessario">
+        <label class="chk"><input class="e-nt" type="checkbox" checked> <span>Avvisa i volontari: <b>❌ Annullata, non serve presentarsi</b></span></label>
+        <p class="hint">L'attivazione resta nello storico, segnata come annullata. Nessuno potrà più rispondere.</p>
+        <div class="row2"><button type="button" class="pri urg e-ok">Annulla l'attivazione</button><button type="button" class="sec e-no">Lascia stare</button></div>`;
+    box.appendChild(ed); (ed.querySelector("input,textarea")).focus();
+    ed.querySelector(".e-no").onclick = () => { ed.remove(); modifica = null; };
+    ed.querySelector(".e-ok").onclick = async (e) => {
+      const nt = ed.querySelector(".e-nt").checked; e.target.disabled = true;
+      try {
+        const j = az === "correggi"
+          ? await call("/soci/modifica", { id: m.id, titolo: ed.querySelector(".e-ti").value.trim(), testo: ed.querySelector(".e-te").value.trim(), notifica: nt })
+          : await call("/soci/annulla", { id: m.id, motivo: ed.querySelector(".e-mo").value.trim(), notifica: nt });
+        toast((az === "correggi" ? "Correzione salvata" : "Attivazione annullata") + (j.esito ? " · avvisati " + j.esito.sent + " telefoni" : ""));
+        modifica = null; loadSoci(); if (can("storico")) loadStorico();
+      } catch (err) { e.target.disabled = false; if (err.message !== "401") toast(err.message); }
+    };
+  }
+
+  /* ---------- volontari: storico ---------- */
   let sto = null, vista = "att";
   const gg2 = (iso) => new Date(iso).toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric" });
   const hh2 = (iso) => new Date(iso).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
@@ -1170,7 +1271,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     const map = new Map();
     for (const x of sto.soci) if (!x.creato || x.creato <= a.data) map.set(x.id, x.nome);
     for (const r of a.risposte) if (!map.has(r.socio)) map.set(r.socio, r.nome);
-    for (const [id, p] of Object.entries(a.presenze)) if (!map.has(id)) map.set(id, p.nome || "(socio revocato)");
+    for (const [id, p] of Object.entries(a.presenze)) if (!map.has(id)) map.set(id, p.nome || "(volontario revocato)");
     return [...map].map(([id, nome]) => ({ id, nome, r: a.risposte.find((x) => x.socio === id) || null, p: a.presenze[id] || null })).sort((x, y) => x.nome.localeCompare(y.nome));
   }
   function riepilogo() {
@@ -1199,16 +1300,16 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     const box = $("#st-list");
     if (!A.length) { box.innerHTML = '<p class="hint">Nessuna attivazione in questo anno.</p>'; return; }
     if (vista === "soc") {
-      box.innerHTML = `<table class="pt ps"><tr><th>Socio</th><th>Ric.</th><th>Ci sono</th><th>Non posso</th><th>No risp.</th><th>Pres.</th><th>Ore</th><th>Disp.</th></tr>` +
+      box.innerHTML = `<table class="pt ps"><tr><th>Volontario</th><th>Ric.</th><th>Ci sono</th><th>Non posso</th><th>No risp.</th><th>Pres.</th><th>Ore</th><th>Disp.</th></tr>` +
         rs.map((x) => { const den = x.si + x.no + x.nr; return `<tr><td>${esc(x.nome)}</td><td>${x.att}</td><td>${x.si}</td><td>${x.no}</td><td>${x.nr}</td><td>${x.pres}</td><td>${oreTxt(x.ore)}</td><td>${den ? Math.round(100 * x.si / den) + "%" : "—"}</td></tr>`; }).join("") + "</table>";
       return;
     }
     box.innerHTML = A.map((a) => {
       const d = destinatari(a), si = d.filter((x) => x.r && x.r.r === "si").length, no = d.filter((x) => x.r && x.r.r === "no").length, nr = a.conferma ? d.length - si - no : 0;
       const pr = Object.values(a.presenze).filter((p) => p.p).length, or = Object.values(a.presenze).reduce((m, p) => m + (p.ore || 0), 0);
-      return `<details class="sa" data-id="${esc(a.id)}"><summary><b>${esc(a.titolo)}</b><small>${gg2(a.data)} ${hh2(a.data)} · da ${esc(a.autore || "")}</small>
+      return `<details class="sa" data-id="${esc(a.id)}"><summary><b>${esc(a.titolo)}</b>${a.annullata ? ' <span class="ann">· annullata</span>' : ""}<small>${gg2(a.data)} ${hh2(a.data)} · da ${esc(a.autore || "")}</small>
         <div class="cnt">${a.conferma ? `<span class="si">✅ ${si}</span><span class="no">❌ ${no}</span><span class="att0">⏳ ${nr}</span>` : '<span class="att0">solo informativo</span>'}<span>👥 ${pr} presenti</span><span>⏱ ${oreTxt(or)} h</span></div></summary>
-        <table class="pt"><tr><th>Socio</th><th>Risposta</th><th>Presente</th><th>Ore</th></tr>${d.map((x) => `<tr data-s="${esc(x.id)}" data-n="${esc(x.nome)}"><td>${esc(x.nome)}</td><td class="r">${x.r ? (x.r.r === "si" ? "✅ ci sono" : "❌ non posso") + (x.r.nota ? " · " + esc(x.r.nota) : "") : a.conferma ? "⏳" : "—"}</td><td><input type="checkbox"${x.p && x.p.p ? " checked" : ""} aria-label="Presente"></td><td><input type="number" min="0" max="48" step="0.5" value="${x.p && x.p.ore ? x.p.ore : ""}" placeholder="0" aria-label="Ore"></td></tr>`).join("")}</table>
+        <table class="pt"><tr><th>Volontario</th><th>Risposta</th><th>Presente</th><th>Ore</th></tr>${d.map((x) => `<tr data-s="${esc(x.id)}" data-n="${esc(x.nome)}"><td>${esc(x.nome)}</td><td class="r">${x.r ? (x.r.r === "si" ? "✅ ci sono" : "❌ non posso") + (x.r.nota ? " · " + esc(x.r.nota) : "") : a.conferma ? "⏳" : "—"}</td><td><input type="checkbox"${x.p && x.p.p ? " checked" : ""} aria-label="Presente"></td><td><input type="number" min="0" max="48" step="0.5" value="${x.p && x.p.ore ? x.p.ore : ""}" placeholder="0" aria-label="Ore"></td></tr>`).join("")}</table>
         <div class="row2"><button type="button" class="pri" data-salva="${esc(a.id)}">Salva presenze</button></div></details>`;
     }).join("");
     box.querySelectorAll("input[type=number]").forEach((n) => n.addEventListener("input", () => { if (+n.value > 0) n.closest("tr").querySelector("input[type=checkbox]").checked = true; }));
@@ -1228,16 +1329,16 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   }
   const num = (n) => String(Math.round(n * 100) / 100).replace(".", ",");
   $("#st-csv1").onclick = () => {
-    if (!sto) return; const r = [["Data", "Ora", "Attivazione", "Inviata da", "Socio", "Risposta", "Nota", "Ora risposta", "Presente", "Ore"]];
-    for (const a of [...sto.attivazioni].reverse()) for (const d of destinatari(a)) r.push([gg2(a.data), hh2(a.data), a.titolo, a.autore || "", d.nome, d.r ? (d.r.r === "si" ? "Ci sono" : "Non posso") : a.conferma ? "Senza risposta" : "", d.r ? d.r.nota || "" : "", d.r ? hh2(d.r.at) : "", d.p && d.p.p ? "Sì" : "", d.p && d.p.ore ? num(d.p.ore) : ""]);
+    if (!sto) return; const r = [["Data", "Ora", "Attivazione", "Inviata da", "Annullata", "Volontario", "Risposta", "Nota", "Ora risposta", "Presente", "Ore"]];
+    for (const a of [...sto.attivazioni].reverse()) for (const d of destinatari(a)) r.push([gg2(a.data), hh2(a.data), a.titolo, a.autore || "", a.annullata ? "Sì" : "", d.nome, d.r ? (d.r.r === "si" ? "Ci sono" : "Non posso") : a.conferma ? "Senza risposta" : "", d.r ? d.r.nota || "" : "", d.r ? hh2(d.r.at) : "", d.p && d.p.p ? "Sì" : "", d.p && d.p.ore ? num(d.p.ore) : ""]);
     scarica(`storico-attivazioni-${sto.anno}.csv`, r);
   };
   $("#st-csv2").onclick = () => {
-    if (!sto) return; const r = [["Socio", "Attivazioni ricevute", "Ci sono", "Non posso", "Senza risposta", "Presenze", "Ore di servizio", "Disponibilità %"]];
+    if (!sto) return; const r = [["Volontario", "Attivazioni ricevute", "Ci sono", "Non posso", "Senza risposta", "Presenze", "Ore di servizio", "Disponibilità %"]];
     for (const x of riepilogo()) { const den = x.si + x.no + x.nr; r.push([x.nome, x.att, x.si, x.no, x.nr, x.pres, num(x.ore), den ? Math.round(100 * x.si / den) : ""]); }
-    scarica(`riepilogo-soci-${sto.anno}.csv`, r);
+    scarica(`riepilogo-volontari-${sto.anno}.csv`, r);
   };
-  /* ---------- soci: codici (scheda Persone) ---------- */
+  /* ---------- volontari: codici ---------- */
   async function loadSoci2() {
     const box = $("#slist2");
     try {
@@ -1245,12 +1346,14 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       $$("#s-reg input").forEach((r) => (r.checked = r.value === rg.regola));
       const dt = (iso) => new Date(iso).toLocaleString("it-IT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
       l.sort((a, b) => (b.attesaDal ? 1 : 0) - (a.attesaDal ? 1 : 0));
+      const att = l.filter((c) => c.attesaDal).length, eb = $("#c-codvol .eyebrow");
+      eb.querySelector(".conta")?.remove(); if (att) { eb.insertAdjacentHTML("beforeend", `<span class="conta">${att} da approvare</span>`); apri("#c-codvol"); }
       box.innerHTML = l.length ? l.map((c) => {
         const stato = c.attesaDal ? `⏳ chiede un nuovo telefono (${dt(c.attesaDal)})` : c.attivoDal ? "📱 attiva su un telefono dal " + dt(c.attivoDal) : "non ancora attivata sull'app";
         const btn = c.attesaDal ? `<button type="button" class="ok" data-a="si" data-id="${esc(c.id)}">Approva</button><button type="button" data-a="no" data-id="${esc(c.id)}">Rifiuta</button>`
           : (c.attivoDal ? `<button type="button" data-s="${esc(c.id)}" data-n="${esc(c.nome)}">Scollega</button>` : "");
         return `<div class="li2${c.attesaDal ? " att2" : ""}"><span class="ic">${c.attesaDal ? "⏳" : c.attivoDal ? "📱" : "👤"}</span><div>${esc(c.nome)}<small>${stato}</small></div><span class="btns">${btn}<button type="button" class="ko" data-r="${esc(c.id)}" data-n="${esc(c.nome)}">Revoca</button></span></div>`;
-      }).join("") : '<p class="hint">Nessun socio ancora.</p>';
+      }).join("") : '<p class="hint">Nessun volontario ancora.</p>';
       box.querySelectorAll("button[data-a]").forEach((b) => (b.onclick = async () => {
         if (b.dataset.a === "si" && !confirm("Approvare il nuovo telefono? Quello precedente verrà scollegato.")) return;
         try { await call("/soci/approva", { id: b.dataset.id, ok: b.dataset.a === "si" }); toast(b.dataset.a === "si" ? "Nuovo telefono approvato" : "Richiesta rifiutata"); loadSoci2(); } catch (err) { if (err.message !== "401") toast(err.message); }
@@ -1260,8 +1363,8 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
         try { await call("/soci/scollega", { id: b.dataset.s }); toast("Telefono scollegato"); loadSoci2(); } catch (err) { if (err.message !== "401") toast(err.message); }
       }));
       box.querySelectorAll("button[data-r]").forEach((b) => (b.onclick = async () => {
-        if (!confirm("Revocare il codice socio di " + b.dataset.n + "? Non riceverà più le attivazioni.")) return;
-        try { await call("/soci/codice-revoca", { id: b.dataset.r }); toast("Codice socio revocato"); loadSoci2(); } catch (err) { if (err.message !== "401") toast(err.message); }
+        if (!confirm("Revocare il codice volontario di " + b.dataset.n + "? Non riceverà più le attivazioni.")) return;
+        try { await call("/soci/codice-revoca", { id: b.dataset.r }); toast("Codice volontario revocato"); loadSoci2(); } catch (err) { if (err.message !== "401") toast(err.message); }
       }));
     } catch (err) { if (err.message !== "401") box.innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
   }
@@ -1269,14 +1372,14 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     try { await call("/soci/regola", { regola: r.value }); toast("Regola salvata"); } catch (err) { if (err.message !== "401") toast(err.message); loadSoci2(); }
   }));
   $("#sc").onclick = async () => {
-    const nome = $("#sn").value.trim(); if (!nome) { msg($("#smsg2"), "Scrivi il nome del socio.", false); return; }
+    const nome = $("#sn").value.trim(); if (!nome) { msg($("#smsg2"), "Scrivi il nome del volontario.", false); return; }
     try {
       const j = await call("/soci/codice-crea", { nome });
       $("#nc2-n").textContent = j.nome; $("#nc2-c").textContent = j.codice; $("#newcode2").hidden = false; $("#sn").value = ""; msg($("#smsg2"), "");
       loadSoci2();
     } catch (err) { if (err.message !== "401") msg($("#smsg2"), err.message, false); }
   };
-  const testoSocio = () => "Ciao " + $("#nc2-n").textContent + ", questo è il tuo codice socio per l'app Cave Informa: " + $("#nc2-c").textContent + "\n\n1. Se non l'hai ancora, installa l'app: apri " + location.href.split("/admin.html")[0] + "/ e aggiungila alla schermata Home.\n2. Apri l'app DALL'ICONA sulla schermata Home → Info → in fondo tocca \"Area riservata ai soci\".\n3. Attiva le notifiche se te lo chiede e inserisci il codice.";
+  const testoSocio = () => "Ciao " + $("#nc2-n").textContent + ", questo è il tuo codice volontario per l'app Cave Informa: " + $("#nc2-c").textContent + "\n\n1. Se non l'hai ancora, installa l'app: apri " + location.href.split("/admin.html")[0] + "/ e aggiungila alla schermata Home.\n2. Apri l'app DALL'ICONA sulla schermata Home → Info → in fondo tocca \"Area riservata ai volontari\".\n3. Attiva le notifiche se te lo chiede e inserisci il codice.";
   $("#nc2-copy").onclick = () => { navigator.clipboard && navigator.clipboard.writeText($("#nc2-c").textContent).then(() => toast("Codice copiato")); };
   $("#nc2-share").onclick = () => { if (navigator.share) navigator.share({ text: testoSocio() }).catch(() => {}); else { navigator.clipboard && navigator.clipboard.writeText(testoSocio()); toast("Messaggio copiato"); } };
 

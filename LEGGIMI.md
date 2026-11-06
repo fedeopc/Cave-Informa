@@ -52,7 +52,7 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 
 - Pagina separata, non collegata dall'app: `https://fedeopc.github.io/Cave-Informa/admin.html`. Su iPhone: Condividi → Aggiungi alla schermata Home (icona "Cave Admin").
 - Chiede il codice a ogni apertura e si blocca dopo 5 minuti in sospeso; il codice non viene salvato sul telefono (si può salvare nel Portachiavi e inserire con Face ID).
-- Amministratore principale: la password `ADMIN_TOKEN` del servizio Cloudflare. Dalla scheda "Persone" crea e revoca i codici personali degli altri volontari.
+- Amministratore principale: la password `ADMIN_TOKEN` del servizio Cloudflare. Dalla scheda "Direttivo" crea e revoca i codici personali dei membri del direttivo e ne sceglie le autorizzazioni.
 - Avvisi, urgenti ed eventi pubblicati da qui compaiono nella stessa bacheca dell'app insieme a quelli del foglio Google.
 - Dopo 10 codici sbagliati dallo stesso collegamento, l'accesso è bloccato per 15 minuti.
 
@@ -81,10 +81,16 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 - Senza SELF le notifiche arrivano solo ai primi 12 telefoni; la pagina admin (Stato → "Invio a molti telefoni") lo segnala.
 - Provato con 1.000 e 3.000 iscrizioni simulate: tutte raggiunte in 1–3 secondi.
 
-## Area soci (versione 3.15)
-- Pagina admin → Persone → Soci: l'amministratore principale crea un codice personale per ogni socio (e lo revoca quando serve). I codici soci non entrano nella pagina admin.
-- App → Info → in fondo "🔑 Area riservata ai soci" (discreta: la sezione completa compare solo ai soci). Il socio apre l'app DALL'ICONA, tocca la scritta, attiva le notifiche se richiesto e inserisce il codice. Sul telefono resta solo un gettone di accesso.
-- Un solo telefono per codice. In Persone → Soci scegli cosa succede se il codice viene usato su un altro telefono: approvazione manuale (predefinita), sostituzione automatica del vecchio, oppure blocco (cambio telefono con "Scollega").
-- Pagina admin → Soci (amministratore e volontari abilitati): invio di attivazioni con modelli pronti e menu a tendina (evento, luogo, ritrovo, ora, cosa portare…): titolo e messaggio si compongono da soli e restano modificabili; il messaggio non parte se restano "___" da completare.
-- Il socio risponde "Ci sono / Non posso" con una nota; le risposte compaiono nella pagina admin con i nomi, aggiornate ogni 15 secondi.
-- Storico (pagina admin → Soci, in fondo; solo amministratore principale): tutte le attivazioni per anno, vista per attivazione o per socio, presenze effettive e ore di servizio, file da scaricare per Excel (dettaglio e riepilogo). Conservazione 5 anni, poi cancellazione automatica.
+## Area volontari (versione 3.15, riorganizzata nella 3.18)
+- Pagina admin → Volontari → "Codici dei volontari": si crea un codice personale per ogni volontario (e lo si revoca quando serve). I codici dei volontari non entrano nella pagina admin.
+- App → Info → in fondo "🔑 Area riservata ai volontari" (discreta: la sezione completa compare solo ai volontari). Il volontario apre l'app DALL'ICONA, tocca la scritta, attiva le notifiche se richiesto e inserisce il codice. Sul telefono resta solo un gettone di accesso.
+- Un solo telefono per codice. Si sceglie cosa succede se il codice viene usato su un altro telefono: approvazione manuale (predefinita), sostituzione automatica del vecchio, oppure blocco (cambio telefono con "Scollega").
+- Invio di attivazioni con modelli pronti e menu a tendina: titolo e messaggio si compongono da soli e restano modificabili; il messaggio non parte se restano "___" da completare.
+- Il volontario risponde "Ci sono / Non posso" con una nota; le risposte compaiono nella pagina admin, aggiornate ogni 15 secondi.
+- Attivazioni già inviate: "Correggi" (con notifica facoltativa "🔁 Aggiornamento"), "Annulla" (notifica facoltativa "❌ Annullata", resta nello storico come annullata e non si può più rispondere), "Elimina" (solo amministratore principale: sparisce anche dallo storico, per prove ed errori).
+- Storico e presenze: tutte le attivazioni per anno, vista per attivazione o per volontario, presenze e ore di servizio, file per Excel. Conservazione 5 anni, poi cancellazione automatica.
+
+## Direttivo e autorizzazioni (versione 3.18)
+- Scheda "Direttivo" (solo amministratore principale): codici personali dei membri del direttivo, con autorizzazioni a scelta: avvisi in bacheca, inviare attivazioni, vedere chi risponde, codici dei volontari, storico e presenze, stato dei servizi.
+- Ognuno vede solo le schede e i pulsanti autorizzati; i permessi sono controllati anche dal servizio Cloudflare. I codici creati prima della 3.18 hanno avvisi, attivazioni, chi risponde e stato.
+- Le sezioni della pagina admin si aprono e chiudono toccando il titolo; si riaprono da sole quando serve attenzione (telefono da approvare, problema nei servizi).
