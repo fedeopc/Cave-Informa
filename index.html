@@ -432,8 +432,10 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
 .tile .more::after{content:" ›"}
 .tile[aria-expanded="true"]{border-color:color-mix(in srgb,var(--accent) 50%,var(--glass-line))}
 .soci-stato{font-size:.75rem;font-weight:700;color:#2E9E5B;margin-left:6px}
+.soci-link{text-align:center;margin:4px 0 12px}.soci-link button{font:inherit;font-size:.85rem;color:var(--muted);background:none;border:0;text-decoration:underline;cursor:pointer;padding:8px}
 .soci-l{font-weight:600;font-size:.9rem}
 .soci-in{font:inherit;font-size:1.05rem;letter-spacing:.06em;width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-transform:uppercase}
+.soci-warn{font-weight:600}
 .soci-h{font-size:.85rem}
 .sm{padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;gap:4px;cursor:pointer}
 .sm b{font-size:.95rem}.sm small{color:var(--muted)}.sm .rb{font-size:.8rem;font-weight:700}.sm .rb.si{color:#2E9E5B}.sm .rb.no{color:#D23B40}.sm .rb.att{color:#C88F00}
@@ -691,13 +693,15 @@ header.top .brand{gap:12px}
   <details class="acc info-acc" id="soci-box" hidden><summary>Area soci <span class="soci-stato" id="soci-stato"></span></summary><div class="acc-body info-body">
     <div id="soci-off">
       <p>Sei socio dell'Associazione? Con il tuo <strong>codice socio</strong> ricevi anche le attivazioni e le comunicazioni riservate, e puoi rispondere <strong>Ci sono / Non posso</strong>.</p>
+      <div id="soci-notif" hidden><p class="soci-warn">Per ricevere le attivazioni servono le notifiche su questo telefono.</p><button class="btn" type="button" id="soci-notif-on">🔔 Attiva le notifiche</button></div>
       <label class="soci-l" for="soci-cod">Codice socio</label>
       <input class="soci-in" id="soci-cod" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD-EFGH-JKLM">
       <button class="btn" type="button" id="soci-att">Attiva su questo telefono</button>
-      <p class="muted soci-h">Il codice te lo dà il direttivo. Servono le notifiche attive (riquadro Notifiche nella pagina Allerte). Sul telefono resta salvato solo un gettone di accesso, non il codice.</p>
+      <p class="muted soci-h">Il codice te lo dà il direttivo. Sul telefono resta salvato solo un gettone di accesso, non il codice.</p>
     </div>
     <div id="soci-on" hidden>
-      <p>✅ Area soci attiva per <strong id="soci-nome"></strong>.</p>
+      <p id="soci-ok">✅ Area soci attiva per <strong id="soci-nome"></strong>.</p>
+      <p id="soci-wait" hidden>⏳ <strong>In attesa di approvazione.</strong> Il tuo codice è già attivo su un altro telefono: l'amministratore deve approvare questo. Appena lo fa, qui compariranno le comunicazioni.</p>
       <div id="soci-msgs"></div>
       <button class="btn" type="button" id="soci-esci">Disattiva su questo telefono</button>
     </div>
@@ -743,8 +747,9 @@ header.top .brand{gap:12px}
     <p><strong>Previsioni:</strong> per le previsioni l'app invia al servizio gratuito Open-Meteo le coordinate del comune scelto, oppure la tua posizione arrotondata a circa 1 km se usi "Usa la mia posizione".</p>
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
+  <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai soci</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.16 · 6 novembre 2026</span>
+    <span id="app-version">Versione 3.17 · 6 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -2094,12 +2099,13 @@ const SOCI=(()=>{
   const nota=(t,ok)=>{ const el=$("#soci-msg"); el.textContent=t||""; el.style.color=ok===false?"#D23B40":""; };
   const quando=iso=>new Date(iso).toLocaleString("it-IT",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
   // la voce "Area soci" compare solo sui telefoni dei soci (area attiva) o aprendo il link personale …/#soci
-  let mostra=!!me;
+  let mostra=!!me||!!store.get("soci-mostra",false);
   function view(){
-    box.hidden=!(me||mostra);
+    box.hidden=!(me||mostra); const sl=$("#soci-apri"); if(sl) sl.parentNode.hidden=!box.hidden;
     $("#soci-off").hidden=!!me; $("#soci-on").hidden=!me; $("#soci-stato").textContent=me?"attiva":"";
     if(!me) return;
-    $("#soci-nome").textContent=me.nome;
+    $("#soci-nome").textContent=me.nome; $("#soci-ok").hidden=!!me.attesa; $("#soci-wait").hidden=!me.attesa; $("#soci-stato").textContent=me.attesa?"in attesa":"attiva"; $("#soci-stato").style.color=me.attesa?"#C88F00":"";
+    if(me.attesa){ $("#soci-msgs").innerHTML=""; $("#soci-esci").textContent="Annulla la richiesta"; return; } $("#soci-esci").textContent="Disattiva su questo telefono";
     $("#soci-msgs").innerHTML=msgs.length?msgs.slice(0,5).map(m=>{
       const r=m.risposta, rb=m.conferma?(r?`<span class="rb ${r.r}">${r.r==="si"?"✅ Hai risposto: ci sono":"❌ Hai risposto: non posso"}</span>`:`<span class="rb att">⏳ Rispondi</span>`):"";
       return `<div class="sm" data-id="${esc(m.id)}"><b>${esc(m.titolo)}</b><small>${esc(quando(m.data))} · ${esc(m.autore||"")}</small>${rb}</div>`;
@@ -2108,20 +2114,20 @@ const SOCI=(()=>{
   }
   async function carica(){
     if(!me) return;
-    try{ const j=await post("/soci/messaggi",{token:me.token}); msgs=j.messaggi; if(j.nome&&j.nome!==me.nome){ me.nome=j.nome; store.set("socio",me); } view(); }
-    catch(e){ if(/non attiva|revocato/.test(e.message)){ me=null; mostra=false; store.set("socio",null); view(); toast("Area soci non più attiva su questo telefono");} }
+    try{ const j=await post("/soci/messaggi",{token:me.token}); msgs=j.messaggi; if(me.attesa||(j.nome&&j.nome!==me.nome)){ if(me.attesa) toast("Area soci approvata"); me.nome=j.nome||me.nome; me.attesa=false; store.set("socio",me); } view(); }
+    catch(e){ if(/attesa/.test(e.message)){ if(!me.attesa){ me.attesa=true; store.set("socio",me); view(); } return; } if(/non attiva|revocato/.test(e.message)){ me=null; mostra=true; store.set("socio",null); view(); nota("L'area soci non è più attiva su questo telefono (telefono scollegato o codice revocato). Se hai cambiato telefono, reinserisci il codice.",false);} }
   }
   $("#soci-att").onclick=async()=>{
     const cod=$("#soci-cod").value.trim(); if(!cod){ nota("Scrivi il codice socio.",false); return; }
-    const ep=await endpoint(); if(!ep){ nota("Prima attiva le notifiche (riquadro Notifiche nella pagina Allerte), poi torna qui.",false); return; }
+    const ep=await endpoint(); if(!ep){ controllaNotifiche(); nota("Prima attiva le notifiche con il tasto qui sopra.",false); return; }
     $("#soci-att").disabled=true; nota("Attivo…");
-    try{ const j=await post("/soci/attiva",{codice:cod,endpoint:ep}); me={token:j.token,nome:j.nome}; store.set("socio",me); $("#soci-cod").value=""; nota(""); toast("Area soci attiva"); await carica(); view(); }
+    try{ const j=await post("/soci/attiva",{codice:cod,endpoint:ep}); me={token:j.token,nome:j.nome,attesa:!!j.attesa}; store.set("socio",me); $("#soci-cod").value=""; nota(""); toast(j.attesa?"Richiesta inviata all'amministratore":"Area soci attiva"); if(!j.attesa) await carica(); view(); }
     catch(e){ nota(e.message,false); } finally{ $("#soci-att").disabled=false; }
   };
   $("#soci-esci").onclick=async()=>{
-    if(!confirm("Disattivare l'area soci su questo telefono? Non riceverai più le attivazioni.")) return;
+    if(!confirm(me&&me.attesa?"Annullare la richiesta di attivazione su questo telefono?":"Disattivare l'area soci su questo telefono? Non riceverai più le attivazioni.")) return;
     try{ await post("/soci/esci",{token:me.token,endpoint:await endpoint()}); }catch(e){}
-    me=null; msgs=[]; mostra=false; store.set("socio",null); view(); toast("Area soci disattivata");
+    me=null; msgs=[]; mostra=false; store.set("socio",null); store.set("soci-mostra",false); view(); toast("Area soci disattivata");
   };
   // schermata del messaggio con la risposta
   const ov=$("#soci-ov");
@@ -2148,7 +2154,10 @@ const SOCI=(()=>{
   view(); carica();
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden) carica(); });
   // link personale del socio: apre direttamente l'area soci con il campo del codice
-  function apriArea(){ mostra=true; view(); showTab("info"); box.open=true; setTimeout(()=>{ box.scrollIntoView({behavior:"smooth",block:"start"}); if(!me) $("#soci-cod").focus(); },150); }
+  async function controllaNotifiche(){ const ep=await endpoint(); $("#soci-notif").hidden=!!ep||!!me; return ep; }
+  $("#soci-notif-on").onclick=()=>{ const b=$("#notif-on"); if(b&&!b.hidden){ b.click(); nota("Conferma il permesso delle notifiche, poi inserisci il codice qui sotto."); let n=0; const t=setInterval(async()=>{ if(await controllaNotifiche()||++n>40){ clearInterval(t); if(!$("#soci-notif").hidden) return; nota("Notifiche attive: ora inserisci il codice.",true); $("#soci-cod").focus(); } },500); } else { showTab("allerte"); toast("Attiva le notifiche dal riquadro Notifiche"); } };
+  $("#soci-apri").onclick=()=>apriArea();
+  function apriArea(){ mostra=true; store.set("soci-mostra",true); view(); controllaNotifiche(); showTab("info"); box.open=true; setTimeout(()=>{ box.scrollIntoView({behavior:"smooth",block:"start"}); if(!me) $("#soci-cod").focus(); },150); }
   return { apri: apriMsg, area: apriArea };
 })();
 window.SOCI_APRI=SOCI.apri; window.SOCI_AREA=SOCI.area;
