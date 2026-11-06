@@ -561,6 +561,17 @@ section[data-p]{display:grid;gap:12px}
 .campi .chips{display:flex;flex-wrap:wrap;gap:6px}.campi .chips button{font:inherit;font-size:.85rem;font-weight:650;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
 .campi .chips button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .campi .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sto-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sto-bar select{font:inherit;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.sto-bar .seg{flex:1}
+.sto-tot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.sto-tot div{padding:10px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-align:center}.sto-tot b{display:block;font-size:1.3rem}.sto-tot small{color:var(--muted);font-size:.74rem}
+.sa{border-top:1px solid var(--line);padding:10px 0}.sa:first-child{border-top:0}
+.sa summary{cursor:pointer;list-style:none}.sa summary::-webkit-details-marker{display:none}
+.sa summary b{display:block;font-size:.95rem}.sa summary small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+.sa .cnt{margin-top:4px;font-size:.8rem}
+.pt{width:100%;border-collapse:collapse;margin-top:8px;font-size:.86rem}.pt th{text-align:left;color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;padding:4px}.pt td{padding:6px 4px;border-top:1px solid var(--line);vertical-align:middle}
+.pt .r{font-size:.78rem;color:var(--muted)}.pt input[type=checkbox]{width:20px;height:20px;accent-color:#2E9E5B}.pt input[type=number]{width:64px;font:inherit;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.ps td{font-variant-numeric:tabular-nums}.ps td:not(:first-child),.ps th:not(:first-child){text-align:right}
 .regole{display:grid;gap:6px;margin-bottom:6px}.regole label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:400}
 .regole label:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}
 .regole input{margin-top:3px;accent-color:var(--accent);width:auto!important;flex:none;padding:0}.regole label>span{flex:1}.regole b{display:block;font-size:.92rem}.regole small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px;line-height:1.35}
@@ -717,6 +728,13 @@ section[data-p]{display:grid;gap:12px}
         <p class="msg" id="smsg" role="status"></p></form>
       <div class="card"><div class="eyebrow">Ultime attivazioni <span class="hint" id="s-agg" style="margin-left:auto;font-weight:400;letter-spacing:0;text-transform:none"></span></div>
         <div id="s-list"><p class="hint">Caricamento…</p></div></div>
+      <div class="card" id="s-storico" hidden><div class="eyebrow">Storico <span class="tag">solo amministratore</span></div>
+        <div class="sto-bar"><select id="st-anno" aria-label="Anno"></select>
+          <div class="seg" id="st-vista"><button type="button" data-v="att" class="on">Per attivazione</button><button type="button" data-v="soc">Per socio</button></div></div>
+        <div class="sto-tot" id="st-tot"></div>
+        <div id="st-list"><p class="hint">Caricamento…</p></div>
+        <div class="row2"><button type="button" id="st-csv1">⬇ Scarica dettaglio</button><button type="button" id="st-csv2">⬇ Scarica riepilogo soci</button></div>
+        <p class="hint" id="st-note"></p></div>
     </section>
     <section data-p="persone" hidden>
       <div class="card"><div class="eyebrow">Persone abilitate <span class="tag">solo tu</span></div>
@@ -787,7 +805,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       if (!r.ok) { msg($("#lmsg"), j.error === "codice non valido" ? "Codice non valido." : (j.error || "Accesso non riuscito"), false); return; }
       token = pw; me = j;
       $("#who").textContent = (j.ruolo === "principale" ? "amministratore principale · " : "") + j.nome;
-      $("#tab-persone").hidden = j.ruolo !== "principale";
+      $("#tab-persone").hidden = j.ruolo !== "principale"; $("#s-storico").hidden = j.ruolo !== "principale"; principale = j.ruolo === "principale";
       $("#login").hidden = true; $("#panel").hidden = false; $("#pw").value = "";
       show("avvisi");
     } catch (err) { msg($("#lmsg"), "Nessuna connessione: riprova.", false); }
@@ -800,12 +818,12 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   });
   window.addEventListener("pageshow", (e) => { if (e.persisted) lock(); });   // riaperta dalla cronologia: chiedo di nuovo il codice
 
-  let sociTimer = null;
+  let sociTimer = null, principale = false;
   /* ---------- schede ---------- */
   function show(t) {
     $$(".tabs2 button").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
     $$("section[data-p]").forEach((s) => (s.hidden = s.dataset.p !== t));
-    if (t === "avvisi") loadAvvisi(); if (t === "stato") { loadStato(); loadSorv(); } if (t === "persone") { loadPersone(); loadSoci2(); } if (t === "soci") { loadSoci(); } clearInterval(sociTimer); if (t === "soci") sociTimer = setInterval(() => { if (!document.hidden) loadSoci(true); }, 15000);
+    if (t === "avvisi") loadAvvisi(); if (t === "stato") { loadStato(); loadSorv(); } if (t === "persone") { loadPersone(); loadSoci2(); } if (t === "soci") { loadSoci(); if (principale) loadStorico(); } clearInterval(sociTimer); if (t === "soci") sociTimer = setInterval(() => { if (!document.hidden) loadSoci(true); }, 15000);
   }
   $$(".tabs2 button").forEach((b) => (b.onclick = () => show(b.dataset.t)));
 
@@ -1142,6 +1160,83 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       box.querySelectorAll("details").forEach((dt) => dt.addEventListener("toggle", () => dt.open ? aperte.add(dt.dataset.id) : aperte.delete(dt.dataset.id)));
     } catch (err) { if (err.message !== "401" && !silenzioso) $("#s-list").innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
   }
+
+  /* ---------- soci: storico (solo amministratore principale) ---------- */
+  let sto = null, vista = "att";
+  const gg2 = (iso) => new Date(iso).toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const hh2 = (iso) => new Date(iso).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  const oreTxt = (n) => (Math.round(n * 100) / 100).toLocaleString("it-IT");
+  function destinatari(a) { // soci che esistevano all'invio + chi ha risposto o è stato segnato presente (anche se poi revocato)
+    const map = new Map();
+    for (const x of sto.soci) if (!x.creato || x.creato <= a.data) map.set(x.id, x.nome);
+    for (const r of a.risposte) if (!map.has(r.socio)) map.set(r.socio, r.nome);
+    for (const [id, p] of Object.entries(a.presenze)) if (!map.has(id)) map.set(id, p.nome || "(socio revocato)");
+    return [...map].map(([id, nome]) => ({ id, nome, r: a.risposte.find((x) => x.socio === id) || null, p: a.presenze[id] || null })).sort((x, y) => x.nome.localeCompare(y.nome));
+  }
+  function riepilogo() {
+    const per = new Map();
+    for (const a of sto.attivazioni) for (const d of destinatari(a)) {
+      const x = per.get(d.id) || { nome: d.nome, att: 0, si: 0, no: 0, nr: 0, pres: 0, ore: 0 };
+      x.att++; if (a.conferma) { if (!d.r) x.nr++; else if (d.r.r === "si") x.si++; else x.no++; }
+      if (d.p && d.p.p) x.pres++; x.ore += d.p ? d.p.ore || 0 : 0; per.set(d.id, x);
+    }
+    return [...per.values()].sort((a, b) => b.pres - a.pres || b.si - a.si || a.nome.localeCompare(b.nome));
+  }
+  async function loadStorico(anno) {
+    const box = $("#st-list");
+    try {
+      sto = await call("/soci/storico" + (anno ? "?anno=" + anno : ""));
+      $("#st-anno").innerHTML = sto.anni.map((y) => `<option${y === sto.anno ? " selected" : ""}>${y}</option>`).join("");
+      $("#st-note").textContent = `Lo storico si conserva per ${sto.conserva} anni, poi le attivazioni più vecchie si cancellano da sole. I file scaricati si aprono con Excel o Fogli Google.`;
+      disegna();
+    } catch (err) { if (err.message !== "401") box.innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
+  }
+  function disegna() {
+    const A = sto.attivazioni, rs = riepilogo();
+    const conf = A.filter((a) => a.conferma), risposteSi = conf.reduce((n, a) => n + a.risposte.filter((r) => r.r === "si").length, 0), attese = conf.reduce((n, a) => n + destinatari(a).length, 0);
+    const pres = A.reduce((n, a) => n + Object.values(a.presenze).filter((p) => p.p).length, 0), ore = A.reduce((n, a) => n + Object.values(a.presenze).reduce((m, p) => m + (p.ore || 0), 0), 0);
+    $("#st-tot").innerHTML = `<div><b>${A.length}</b><small>attivazioni nel ${sto.anno}</small></div><div><b>${attese ? Math.round(100 * risposteSi / attese) : 0}%</b><small>disponibilità media</small></div><div><b>${oreTxt(ore)}</b><small>ore di servizio (${pres} presenze)</small></div>`;
+    const box = $("#st-list");
+    if (!A.length) { box.innerHTML = '<p class="hint">Nessuna attivazione in questo anno.</p>'; return; }
+    if (vista === "soc") {
+      box.innerHTML = `<table class="pt ps"><tr><th>Socio</th><th>Ric.</th><th>Ci sono</th><th>Non posso</th><th>No risp.</th><th>Pres.</th><th>Ore</th><th>Disp.</th></tr>` +
+        rs.map((x) => { const den = x.si + x.no + x.nr; return `<tr><td>${esc(x.nome)}</td><td>${x.att}</td><td>${x.si}</td><td>${x.no}</td><td>${x.nr}</td><td>${x.pres}</td><td>${oreTxt(x.ore)}</td><td>${den ? Math.round(100 * x.si / den) + "%" : "—"}</td></tr>`; }).join("") + "</table>";
+      return;
+    }
+    box.innerHTML = A.map((a) => {
+      const d = destinatari(a), si = d.filter((x) => x.r && x.r.r === "si").length, no = d.filter((x) => x.r && x.r.r === "no").length, nr = a.conferma ? d.length - si - no : 0;
+      const pr = Object.values(a.presenze).filter((p) => p.p).length, or = Object.values(a.presenze).reduce((m, p) => m + (p.ore || 0), 0);
+      return `<details class="sa" data-id="${esc(a.id)}"><summary><b>${esc(a.titolo)}</b><small>${gg2(a.data)} ${hh2(a.data)} · da ${esc(a.autore || "")}</small>
+        <div class="cnt">${a.conferma ? `<span class="si">✅ ${si}</span><span class="no">❌ ${no}</span><span class="att0">⏳ ${nr}</span>` : '<span class="att0">solo informativo</span>'}<span>👥 ${pr} presenti</span><span>⏱ ${oreTxt(or)} h</span></div></summary>
+        <table class="pt"><tr><th>Socio</th><th>Risposta</th><th>Presente</th><th>Ore</th></tr>${d.map((x) => `<tr data-s="${esc(x.id)}" data-n="${esc(x.nome)}"><td>${esc(x.nome)}</td><td class="r">${x.r ? (x.r.r === "si" ? "✅ ci sono" : "❌ non posso") + (x.r.nota ? " · " + esc(x.r.nota) : "") : a.conferma ? "⏳" : "—"}</td><td><input type="checkbox"${x.p && x.p.p ? " checked" : ""} aria-label="Presente"></td><td><input type="number" min="0" max="48" step="0.5" value="${x.p && x.p.ore ? x.p.ore : ""}" placeholder="0" aria-label="Ore"></td></tr>`).join("")}</table>
+        <div class="row2"><button type="button" class="pri" data-salva="${esc(a.id)}">Salva presenze</button></div></details>`;
+    }).join("");
+    box.querySelectorAll("input[type=number]").forEach((n) => n.addEventListener("input", () => { if (+n.value > 0) n.closest("tr").querySelector("input[type=checkbox]").checked = true; }));
+    box.querySelectorAll("button[data-salva]").forEach((b) => (b.onclick = async () => {
+      const det = b.closest("details"), presenze = {};
+      det.querySelectorAll("tr[data-s]").forEach((tr) => { const p = tr.querySelector("input[type=checkbox]").checked, ore = +tr.querySelector("input[type=number]").value || 0; if (p || ore) presenze[tr.dataset.s] = { p, ore, nome: tr.dataset.n }; });
+      b.disabled = true;
+      try { const j = await call("/soci/presenze", { id: b.dataset.salva, presenze }); sto.attivazioni.find((a) => a.id === b.dataset.salva).presenze = j.presenze; toast("Presenze salvate"); const aperto = b.dataset.salva; disegna(); const d2 = $("#st-list").querySelector(`details[data-id="${aperto}"]`); if (d2) d2.open = true; }
+      catch (err) { if (err.message !== "401") toast(err.message); } finally { b.disabled = false; }
+    }));
+  }
+  $("#st-anno").onchange = () => loadStorico($("#st-anno").value);
+  $$("#st-vista button").forEach((b) => (b.onclick = () => { vista = b.dataset.v; $$("#st-vista button").forEach((x) => x.classList.toggle("on", x === b)); if (sto) disegna(); }));
+  function scarica(nome, righe) {
+    const csv = "﻿" + righe.map((r) => r.map((c) => { const t = String(c ?? ""); return /[;"\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; }).join(";")).join("\r\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); a.download = nome; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  const num = (n) => String(Math.round(n * 100) / 100).replace(".", ",");
+  $("#st-csv1").onclick = () => {
+    if (!sto) return; const r = [["Data", "Ora", "Attivazione", "Inviata da", "Socio", "Risposta", "Nota", "Ora risposta", "Presente", "Ore"]];
+    for (const a of [...sto.attivazioni].reverse()) for (const d of destinatari(a)) r.push([gg2(a.data), hh2(a.data), a.titolo, a.autore || "", d.nome, d.r ? (d.r.r === "si" ? "Ci sono" : "Non posso") : a.conferma ? "Senza risposta" : "", d.r ? d.r.nota || "" : "", d.r ? hh2(d.r.at) : "", d.p && d.p.p ? "Sì" : "", d.p && d.p.ore ? num(d.p.ore) : ""]);
+    scarica(`storico-attivazioni-${sto.anno}.csv`, r);
+  };
+  $("#st-csv2").onclick = () => {
+    if (!sto) return; const r = [["Socio", "Attivazioni ricevute", "Ci sono", "Non posso", "Senza risposta", "Presenze", "Ore di servizio", "Disponibilità %"]];
+    for (const x of riepilogo()) { const den = x.si + x.no + x.nr; r.push([x.nome, x.att, x.si, x.no, x.nr, x.pres, num(x.ore), den ? Math.round(100 * x.si / den) : ""]); }
+    scarica(`riepilogo-soci-${sto.anno}.csv`, r);
+  };
   /* ---------- soci: codici (scheda Persone) ---------- */
   async function loadSoci2() {
     const box = $("#slist2");
