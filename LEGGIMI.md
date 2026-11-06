@@ -74,3 +74,15 @@ La prima pagina mostra il livello di allerta di oggi e di domani per Cave, per l
 - Anteprima dal vivo di bacheca e notifica mentre si scrive.
 - Scheda Stato: andamento dei telefoni iscritti (un conteggio al giorno).
 - App: nell'elenco DAE scelta "A piedi / In auto" per le indicazioni, ricordata sul telefono.
+
+## Notifiche a molti telefoni (piano gratuito di Cloudflare)
+- Il piano gratuito permette circa 50 collegamenti esterni e 10 ms di calcolo per esecuzione: oltre 8 telefoni il servizio divide le notifiche in gruppi da 8, ognuno inviato da un'esecuzione separata di se stesso.
+- Serve il collegamento interno SELF: Cloudflare → Workers & Pages → allerta-cave-push → Settings → Bindings → Add binding → Service binding, nome variabile `SELF`, servizio `allerta-cave-push`.
+- Senza SELF le notifiche arrivano solo ai primi 12 telefoni; la pagina admin (Stato → "Invio a molti telefoni") lo segnala.
+- Provato con 1.000 e 3.000 iscrizioni simulate: tutte raggiunte in 1–3 secondi.
+
+## Area soci (versione 3.15)
+- Pagina admin → Persone → Soci: l'amministratore principale crea un codice personale per ogni socio (e lo revoca quando serve). I codici soci non entrano nella pagina admin.
+- App → Area soci: la voce NON è visibile ai cittadini. Il socio la apre con il link personale …/Cave-Informa/#soci (inviato con "Condividi" insieme al codice), inserisce il codice una volta (servono le notifiche attive); da quel momento la voce resta visibile solo sul suo telefono. Sul telefono resta solo un gettone di accesso.
+- Pagina admin → Soci (amministratore e volontari abilitati): invio di attivazioni con modelli pronti; il messaggio non parte se restano "___" da completare.
+- Il socio risponde "Ci sono / Non posso" con una nota; le risposte compaiono nella pagina admin con i nomi, aggiornate ogni 15 secondi.

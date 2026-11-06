@@ -431,6 +431,25 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
 .tile .more{color:var(--accent);font-size:.82rem;font-weight:700;margin-top:2px}
 .tile .more::after{content:" ›"}
 .tile[aria-expanded="true"]{border-color:color-mix(in srgb,var(--accent) 50%,var(--glass-line))}
+.soci-stato{font-size:.75rem;font-weight:700;color:#2E9E5B;margin-left:6px}
+.soci-l{font-weight:600;font-size:.9rem}
+.soci-in{font:inherit;font-size:1.05rem;letter-spacing:.06em;width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-transform:uppercase}
+.soci-h{font-size:.85rem}
+.sm{padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;gap:4px;cursor:pointer}
+.sm b{font-size:.95rem}.sm small{color:var(--muted)}.sm .rb{font-size:.8rem;font-weight:700}.sm .rb.si{color:#2E9E5B}.sm .rb.no{color:#D23B40}.sm .rb.att{color:#C88F00}
+#soci-msgs{display:grid;gap:8px}
+.sov{position:fixed;inset:0;z-index:200;background:rgba(5,10,20,.55);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.sov[hidden]{display:none}
+.sov-c{width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--bg,#0E1626);color:var(--fg);border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));display:grid;gap:12px;box-shadow:0 -10px 40px rgba(0,0,0,.4);border:1px solid var(--line)}
+.sov-h{display:flex;align-items:center;gap:10px}.sov-h .k{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:#C62A31;padding:4px 9px;border-radius:999px}
+.sov-h button{margin-left:auto;font:inherit;font-size:1.3rem;background:none;border:0;color:var(--muted);cursor:pointer;padding:4px 8px}
+.sov-c h3{margin:0;font-size:1.3rem;line-height:1.25}.sov-c .tx{white-space:pre-line;font-size:1.02rem;line-height:1.45}.sov-c .meta{color:var(--muted);font-size:.85rem}
+.sov-r{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sov-r button{font:inherit;font-size:1.08rem;font-weight:800;padding:16px 10px;border-radius:16px;border:2px solid transparent;cursor:pointer;color:#fff}
+.sov-r .si{background:#2E9E5B}.sov-r .no{background:#C62A31}
+.sov-r button.sel{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.35)}.sov-r button.dim{opacity:.45}
+.sov-c textarea{font:inherit;width:100%;min-height:64px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);resize:vertical}
+.sov-ok{font-weight:700;color:#2E9E5B}
 .acc{background:var(--glass);border:1px solid var(--glass-line);border-radius:18px;box-shadow:var(--hl);overflow:hidden;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
 .acc>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;font-weight:700;cursor:pointer}
 .acc>summary::-webkit-details-marker{display:none}
@@ -669,6 +688,22 @@ header.top .brand{gap:12px}
 <section class="tab" id="tab-info" role="tabpanel" aria-label="Informazioni" hidden>
   <div class="town"><div class="eyebrow">Informazioni</div><h2>L'app</h2></div>
 
+  <details class="acc info-acc" id="soci-box" hidden><summary>Area soci <span class="soci-stato" id="soci-stato"></span></summary><div class="acc-body info-body">
+    <div id="soci-off">
+      <p>Sei socio dell'Associazione? Con il tuo <strong>codice socio</strong> ricevi anche le attivazioni e le comunicazioni riservate, e puoi rispondere <strong>Ci sono / Non posso</strong>.</p>
+      <label class="soci-l" for="soci-cod">Codice socio</label>
+      <input class="soci-in" id="soci-cod" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD-EFGH-JKLM">
+      <button class="btn" type="button" id="soci-att">Attiva su questo telefono</button>
+      <p class="muted soci-h">Il codice te lo dà il direttivo. Servono le notifiche attive (riquadro Notifiche nella pagina Allerte). Sul telefono resta salvato solo un gettone di accesso, non il codice.</p>
+    </div>
+    <div id="soci-on" hidden>
+      <p>✅ Area soci attiva per <strong id="soci-nome"></strong>.</p>
+      <div id="soci-msgs"></div>
+      <button class="btn" type="button" id="soci-esci">Disattiva su questo telefono</button>
+    </div>
+    <p class="muted" id="soci-msg" role="status"></p>
+  </div></details>
+
   <details class="acc info-acc" open><summary>Cos'è</summary><div class="acc-body info-body">
     <p>Un'app informativa realizzata da volontari di protezione civile per i cittadini di Cave. Raccoglie in un posto solo le allerte del giorno, i comportamenti da seguire e i contatti utili.</p>
     <p><strong>Non è un servizio ufficiale.</strong> Non sostituisce le allerte ufficiali della Regione Lazio e del sistema nazionale IT-alert. In caso di emergenza chiama sempre il <strong>112</strong>.</p>
@@ -709,7 +744,7 @@ header.top .brand{gap:12px}
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <div class="card update-row">
-    <span id="app-version">Versione 3.14 · 4 novembre 2026</span>
+    <span id="app-version">Versione 3.16 · 6 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -788,6 +823,16 @@ header.top .brand{gap:12px}
 </nav>
 <div class="toast" id="toast" hidden></div>
 
+<div class="sov" id="soci-ov" hidden role="dialog" aria-modal="true" aria-labelledby="sov-t"><div class="sov-c">
+  <div class="sov-h"><span class="k">Area soci</span><button type="button" id="sov-x" aria-label="Chiudi">✕</button></div>
+  <h3 id="sov-t"></h3><div class="meta" id="sov-m"></div><div class="tx" id="sov-tx"></div>
+  <div id="sov-risp">
+    <div class="sov-r"><button type="button" class="si" data-r="si">✅ Ci sono</button><button type="button" class="no" data-r="no">❌ Non posso</button></div>
+    <textarea id="sov-nota" maxlength="120" placeholder="Nota facoltativa (es. arrivo tra 20 minuti, solo dalle 18…)"></textarea>
+    <button class="btn" type="button" id="sov-invia" style="justify-self:stretch;align-self:stretch;text-align:center;font-weight:700">Invia risposta</button>
+  </div>
+  <p class="sov-ok" id="sov-esito" role="status"></p>
+</div></div>
 <script>
 const RISKS = {
   terremoto:{name:"Terremoto",phases:[
@@ -889,6 +934,8 @@ const hashTab=(location.hash||"").slice(1);
 // apre il punto giusto dell'app (da una notifica o da un link con #): scheda, bacheca o elenco delle scosse
 function apri(dest){
   dest=String(dest||"").replace(/^.*#/,""); if(dest==="numeri") dest="comune";
+  if(dest==="soci"){ setTimeout(()=>{ if(window.SOCI_AREA) window.SOCI_AREA(); },300); return true; }
+  if(dest.startsWith("soci-")){ setTimeout(()=>{ if(window.SOCI_APRI) window.SOCI_APRI(dest.slice(5)); },300); return true; }
   if(dest==="bacheca"){ showTab("comune"); setTimeout(()=>{const w=document.getElementById("bacheca-wrap"); if(w&&!w.hidden) w.scrollIntoView({behavior:"smooth",block:"start"});},120); return true; }
   if(dest==="terremoti"){ showTab("allerte"); setTimeout(()=>{const b=document.getElementById("tile-eq"); if(b){ if(b.getAttribute("aria-expanded")!=="true") b.click(); b.scrollIntoView({behavior:"smooth",block:"center"}); }},150); return true; }
   if(document.getElementById("tab-"+dest)){ showTab(dest); return true; }
@@ -917,7 +964,8 @@ $("#check-update").addEventListener("click",async()=>{
 });
 {const fix=t=>t==="numeri"?"comune":t;const start=fix(hashTab)||"";const saved=fix(store.get("tab","allerte"));
 showTab(["allerte","guida","zaino","comune","info","dae"].includes(start)?start:(["allerte","guida","zaino","comune","info","dae"].includes(saved)?saved:"allerte"));
-if(start==="bacheca"||start==="terremoti") setTimeout(()=>apri(start),600);}
+if(start==="bacheca"||start==="terremoti") setTimeout(()=>apri(start),600);
+if(/^soci(-|$)/.test(location.hash.slice(1))) setTimeout(()=>apri(location.hash),900);}
 
 /* rischi */
 const RISK_ICON={terremoto:"🏚️",alluvione:"🌊",incendio:"🔥",caldo:"🌡️",neve:"❄️"};
@@ -2035,6 +2083,75 @@ if (typeof document !== "undefined") (function bachecaInit() {
 </script>
 <script>
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{}));}
+
+/* ---------- area soci: attivazioni riservate ai soci dell'associazione ---------- */
+const SOCI=(()=>{
+  const box=$("#soci-box"); if(!box) return {};
+  if(!PUSH_API){ box.hidden=true; return {}; }
+  let me=store.get("socio",null), msgs=[], cur=null, scelta=null;
+  const post=async(path,body)=>{ const r=await fetch(PUSH_API+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); const j=await r.json().catch(()=>({})); if(!r.ok) throw new Error(j.error||("errore "+r.status)); return j; };
+  const endpoint=async()=>{ try{ const reg=await navigator.serviceWorker.ready; const sub=await reg.pushManager.getSubscription(); return sub&&sub.endpoint; }catch(e){ return null; } };
+  const nota=(t,ok)=>{ const el=$("#soci-msg"); el.textContent=t||""; el.style.color=ok===false?"#D23B40":""; };
+  const quando=iso=>new Date(iso).toLocaleString("it-IT",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+  // la voce "Area soci" compare solo sui telefoni dei soci (area attiva) o aprendo il link personale …/#soci
+  let mostra=!!me;
+  function view(){
+    box.hidden=!(me||mostra);
+    $("#soci-off").hidden=!!me; $("#soci-on").hidden=!me; $("#soci-stato").textContent=me?"attiva":"";
+    if(!me) return;
+    $("#soci-nome").textContent=me.nome;
+    $("#soci-msgs").innerHTML=msgs.length?msgs.slice(0,5).map(m=>{
+      const r=m.risposta, rb=m.conferma?(r?`<span class="rb ${r.r}">${r.r==="si"?"✅ Hai risposto: ci sono":"❌ Hai risposto: non posso"}</span>`:`<span class="rb att">⏳ Rispondi</span>`):"";
+      return `<div class="sm" data-id="${esc(m.id)}"><b>${esc(m.titolo)}</b><small>${esc(quando(m.data))} · ${esc(m.autore||"")}</small>${rb}</div>`;
+    }).join(""):'<p class="muted">Nessuna comunicazione per ora.</p>';
+    $("#soci-msgs").querySelectorAll(".sm").forEach(el=>el.onclick=()=>apriMsg(el.dataset.id));
+  }
+  async function carica(){
+    if(!me) return;
+    try{ const j=await post("/soci/messaggi",{token:me.token}); msgs=j.messaggi; if(j.nome&&j.nome!==me.nome){ me.nome=j.nome; store.set("socio",me); } view(); }
+    catch(e){ if(/non attiva|revocato/.test(e.message)){ me=null; mostra=false; store.set("socio",null); view(); toast("Area soci non più attiva su questo telefono");} }
+  }
+  $("#soci-att").onclick=async()=>{
+    const cod=$("#soci-cod").value.trim(); if(!cod){ nota("Scrivi il codice socio.",false); return; }
+    const ep=await endpoint(); if(!ep){ nota("Prima attiva le notifiche (riquadro Notifiche nella pagina Allerte), poi torna qui.",false); return; }
+    $("#soci-att").disabled=true; nota("Attivo…");
+    try{ const j=await post("/soci/attiva",{codice:cod,endpoint:ep}); me={token:j.token,nome:j.nome}; store.set("socio",me); $("#soci-cod").value=""; nota(""); toast("Area soci attiva"); await carica(); view(); }
+    catch(e){ nota(e.message,false); } finally{ $("#soci-att").disabled=false; }
+  };
+  $("#soci-esci").onclick=async()=>{
+    if(!confirm("Disattivare l'area soci su questo telefono? Non riceverai più le attivazioni.")) return;
+    try{ await post("/soci/esci",{token:me.token,endpoint:await endpoint()}); }catch(e){}
+    me=null; msgs=[]; mostra=false; store.set("socio",null); view(); toast("Area soci disattivata");
+  };
+  // schermata del messaggio con la risposta
+  const ov=$("#soci-ov");
+  function chiudi(){ ov.hidden=true; cur=null; if(/^#soci-/.test(location.hash)) history.replaceState(null,"",location.pathname+location.search); }
+  $("#sov-x").onclick=chiudi; ov.addEventListener("click",e=>{ if(e.target===ov) chiudi(); });
+  function scegli(r){ scelta=r; ov.querySelectorAll(".sov-r button").forEach(b=>{ b.classList.toggle("sel",b.dataset.r===r); b.classList.toggle("dim",!!r&&b.dataset.r!==r); }); }
+  ov.querySelectorAll(".sov-r button").forEach(b=>b.onclick=()=>scegli(b.dataset.r));
+  async function apriMsg(id){
+    if(!me){ showTab("info"); box.open=true; box.scrollIntoView({behavior:"smooth"}); nota("Per vedere le comunicazioni ai soci attiva l'area soci con il tuo codice.",false); return; }
+    if(!msgs.some(m=>m.id===id)) await carica();
+    const m=msgs.find(x=>x.id===id); if(!m){ toast("Comunicazione non trovata"); return; }
+    cur=m; $("#sov-t").textContent=m.titolo; $("#sov-tx").textContent=m.testo||""; $("#sov-m").textContent=quando(m.data)+(m.autore?" · da "+m.autore:"");
+    $("#sov-risp").hidden=!m.conferma; $("#sov-nota").value=m.risposta?m.risposta.nota||"":""; scegli(m.risposta?m.risposta.r:null);
+    $("#sov-esito").textContent=m.risposta?`Hai risposto “${m.risposta.r==="si"?"Ci sono":"Non posso"}” alle ${new Date(m.risposta.at).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})}. Puoi cambiare risposta.`:"";
+    $("#sov-invia").textContent=m.risposta?"Aggiorna risposta":"Invia risposta";
+    ov.hidden=false;
+  }
+  $("#sov-invia").onclick=async()=>{
+    if(!cur) return; if(!scelta){ $("#sov-esito").textContent="Scegli “Ci sono” o “Non posso”."; return; }
+    $("#sov-invia").disabled=true;
+    try{ const j=await post("/soci/rispondi",{token:me.token,id:cur.id,r:scelta,nota:$("#sov-nota").value.trim()}); cur.risposta=j.risposta; $("#sov-esito").textContent="✓ Risposta inviata. Grazie!"; $("#sov-invia").textContent="Aggiorna risposta"; view(); }
+    catch(e){ $("#sov-esito").textContent="Non riuscito: "+e.message; } finally{ $("#sov-invia").disabled=false; }
+  };
+  view(); carica();
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden) carica(); });
+  // link personale del socio: apre direttamente l'area soci con il campo del codice
+  function apriArea(){ mostra=true; view(); showTab("info"); box.open=true; setTimeout(()=>{ box.scrollIntoView({behavior:"smooth",block:"start"}); if(!me) $("#soci-cod").focus(); },150); }
+  return { apri: apriMsg, area: apriArea };
+})();
+window.SOCI_APRI=SOCI.apri; window.SOCI_AREA=SOCI.area;
 </script>
 </body>
 </html>

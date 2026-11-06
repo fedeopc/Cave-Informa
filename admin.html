@@ -555,6 +555,18 @@ section[data-p]{display:grid;gap:12px}
 .ok{color:#2E8B57}.ko{color:#C0262D}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ok{color:#5CC08A}:root:not([data-theme="light"]) .ko{color:#F06A6F}}
 .seg[hidden]{display:none}
+.modelli{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.modelli button{font:inherit;font-size:.85rem;font-weight:650;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;line-height:1.25}
+.modelli button.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 40%,transparent)}
+.row2 .pri.urg{background:#C62A31}
+.att{padding:12px 0;border-top:1px solid var(--line)}.att:first-child{border-top:0}
+.att b.t{display:block}.att small{color:var(--muted);display:block;margin-top:2px}
+.bar{display:flex;height:10px;border-radius:999px;overflow:hidden;background:var(--surface);margin:10px 0 6px;border:1px solid var(--line)}
+.bar i{display:block;height:100%}.bar .si{background:#2E9E5B}.bar .no{background:#D23B40}
+.cnt{display:flex;gap:12px;flex-wrap:wrap;font-size:.86rem;font-weight:650}
+.cnt .si{color:#2E9E5B}.cnt .no{color:#D23B40}.cnt .att0{color:var(--muted)}
+.att details{margin-top:8px}.att summary{cursor:pointer;font-size:.86rem;color:var(--accent);font-weight:650}
+.rl{display:grid;gap:4px;margin-top:6px;font-size:.88rem}.rl div{display:flex;gap:8px;align-items:baseline}.rl .n{font-weight:650}.rl .o{margin-left:auto;color:var(--muted);font-size:.78rem;flex:none}.rl .nota{color:var(--muted);font-style:italic}
 .row2 .svuota{color:var(--muted)}
 .row2 .pri{background:var(--accent);color:#fff;border:0;padding:12px 22px;font-weight:700}
 .opt{font-weight:400;color:var(--muted)}
@@ -625,6 +637,7 @@ section[data-p]{display:grid;gap:12px}
     </div>
     <div class="tabs2" role="tablist">
       <button type="button" data-t="avvisi" class="on">Avvisi</button>
+      <button type="button" data-t="soci">Soci</button>
       <button type="button" data-t="stato">Stato</button>
       <button type="button" data-t="persone" id="tab-persone" hidden>Persone</button>
     </div>
@@ -676,6 +689,20 @@ section[data-p]{display:grid;gap:12px}
         <p class="hint">La notifica di prova e gli avvisi di malfunzionamento arrivano solo a questo telefono. Se non è ancora iscritto, ti viene chiesto il permesso: da quel momento riceve anche le notifiche dei cittadini (allerte, terremoti, avvisi).</p></div>
     </section>
 
+    <section data-p="soci" hidden>
+      <form class="card" id="fs" autocomplete="off"><div class="eyebrow">Invia ai soci <span class="tag">riservato</span></div>
+        <p class="hint" id="s-dest">…</p>
+        <label>Modelli pronti</label>
+        <div class="modelli" id="s-mod"></div>
+        <label for="s-ti">Titolo</label><input id="s-ti" maxlength="90" required placeholder="Es. 🚨 Attivazione: allagamento via Roma">
+        <label for="s-te">Messaggio</label><textarea id="s-te" maxlength="600" rows="4" placeholder="Dove, quando, cosa portare"></textarea>
+        <p class="hint" id="s-blank" hidden>⚠️ Completa le parti con ___ prima di inviare.</p>
+        <label class="chk"><input id="s-cf" type="checkbox" checked> <span>Chiedi conferma: <b>Ci sono</b> / <b>Non posso</b>, con nota</span></label>
+        <div class="row2"><button class="pri urg" type="submit" id="s-go">🚨 Invia ai soci</button><button type="button" class="sec svuota" id="s-svu">🗑 Svuota</button></div>
+        <p class="msg" id="smsg" role="status"></p></form>
+      <div class="card"><div class="eyebrow">Ultime attivazioni <span class="hint" id="s-agg" style="margin-left:auto;font-weight:400;letter-spacing:0;text-transform:none"></span></div>
+        <div id="s-list"><p class="hint">Caricamento…</p></div></div>
+    </section>
     <section data-p="persone" hidden>
       <div class="card"><div class="eyebrow">Persone abilitate <span class="tag">solo tu</span></div>
         <div id="plist"><p class="hint">Caricamento…</p></div>
@@ -687,6 +714,16 @@ section[data-p]{display:grid;gap:12px}
           <p class="hint">Il codice viene mostrato <b>una volta sola</b>: comunicalo ora alla persona.</p></div>
         <p class="msg" id="pmsg" role="status"></p>
         <p class="hint">Le persone abilitate possono pubblicare avvisi e vedere lo stato, ma non gestire le persone. Puoi revocare un codice in qualsiasi momento.</p></div>
+      <div class="card"><div class="eyebrow">Soci <span class="tag">area soci</span></div>
+        <div id="slist2"><p class="hint">Caricamento…</p></div>
+        <label for="sn" style="margin-top:6px">Aggiungi un socio</label>
+        <input id="sn" maxlength="60" placeholder="Nome e cognome">
+        <button class="pri" type="button" id="sc">Crea codice socio</button>
+        <div class="newcode" id="newcode2" hidden><p>Codice socio per <b id="nc2-n"></b>:</p><code id="nc2-c"></code>
+          <div class="row2"><button type="button" id="nc2-copy">Copia</button><button type="button" id="nc2-share">Condividi</button></div>
+          <p class="hint">Il codice viene mostrato <b>una volta sola</b>. Con <b>Condividi</b> il socio riceve anche il link che apre l'area soci nell'app (la voce non è visibile ai cittadini).</p></div>
+        <p class="msg" id="smsg2" role="status"></p>
+        <p class="hint">I soci ricevono le attivazioni e possono rispondere, ma <b>non</b> entrano nella pagina admin e non pubblicano avvisi.</p></div>
     </section>
   </div>
 </div>
@@ -742,11 +779,12 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   });
   window.addEventListener("pageshow", (e) => { if (e.persisted) lock(); });   // riaperta dalla cronologia: chiedo di nuovo il codice
 
+  let sociTimer = null;
   /* ---------- schede ---------- */
   function show(t) {
     $$(".tabs2 button").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
     $$("section[data-p]").forEach((s) => (s.hidden = s.dataset.p !== t));
-    if (t === "avvisi") loadAvvisi(); if (t === "stato") { loadStato(); loadSorv(); } if (t === "persone") loadPersone();
+    if (t === "avvisi") loadAvvisi(); if (t === "stato") { loadStato(); loadSorv(); } if (t === "persone") { loadPersone(); loadSoci2(); } if (t === "soci") { loadSoci(); } clearInterval(sociTimer); if (t === "soci") sociTimer = setInterval(() => { if (!document.hidden) loadSoci(true); }, 15000);
   }
   $$(".tabs2 button").forEach((b) => (b.onclick = () => show(b.dataset.t)));
 
@@ -971,6 +1009,89 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   const testoCodice = () => "Codice amministratore di Cave Informa per " + $("#nc-n").textContent + ": " + $("#nc-c").textContent + "\nPagina: " + location.href.split("#")[0];
   $("#nc-copy").onclick = () => { navigator.clipboard && navigator.clipboard.writeText($("#nc-c").textContent).then(() => toast("Codice copiato")); };
   $("#nc-share").onclick = () => { if (navigator.share) navigator.share({ text: testoCodice() }).catch(() => {}); else { navigator.clipboard && navigator.clipboard.writeText(testoCodice()); toast("Messaggio copiato"); } };
+
+
+  /* ---------- soci: attivazioni ---------- */
+  const MODELLI = [
+    ["🚨 Attivazione immediata", "🚨 Attivazione: ___", "Ritrovo in sede alle ___. Portare divisa e DPI. Rispondete se ci siete."],
+    ["⚠️ Preallerta", "⚠️ Preallerta soci", "Possibile attivazione nelle prossime ore per ___. Restate reperibili e tenete il telefono acceso."],
+    ["🌧️ Reperibilità allerta meteo", "🌧️ Allerta ___: reperibilità", "Per l'allerta meteo di ___ chiediamo reperibilità. Indicate se siete disponibili e da che ora."],
+    ["🗣️ Riunione urgente", "🗣️ Riunione urgente", "Riunione in sede oggi alle ___. Argomento: ___."],
+    ["🧪 Esercitazione", "🧪 Esercitazione", "Esercitazione ___ alle ___, ritrovo in sede. Confermate la partecipazione."],
+    ["✅ Fine emergenza", "✅ Fine attivazione", "L'emergenza è rientrata: grazie a tutti. Chi è ancora in servizio rientri in sede per il riordino."],
+  ];
+  $("#s-mod").innerHTML = MODELLI.map((m, i) => `<button type="button" data-i="${i}">${esc(m[0])}</button>`).join("");
+  const blanks = () => /___/.test($("#s-ti").value + $("#s-te").value);
+  const aggBlank = () => { $("#s-blank").hidden = !blanks(); };
+  $$("#s-mod button").forEach((b) => (b.onclick = () => {
+    const m = MODELLI[+b.dataset.i];
+    if (($("#s-ti").value || $("#s-te").value) && !confirm("Sostituire il testo già scritto con il modello?")) return;
+    $$("#s-mod button").forEach((x) => x.classList.toggle("on", x === b));
+    $("#s-ti").value = m[1]; $("#s-te").value = m[2]; $("#s-cf").checked = !/Fine/.test(m[0]); aggBlank();
+    const t = $("#s-ti").value.includes("___") ? $("#s-ti") : $("#s-te"); t.focus(); const i = t.value.indexOf("___"); if (i >= 0) t.setSelectionRange(i, i + 3);
+  }));
+  ["#s-ti", "#s-te"].forEach((id) => $(id).addEventListener("input", aggBlank));
+  $("#s-svu").onclick = () => { $("#fs").reset(); $("#s-cf").checked = true; $$("#s-mod button").forEach((x) => x.classList.remove("on")); aggBlank(); msg($("#smsg"), ""); };
+  let sociInfo = null;
+  $("#fs").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (blanks()) { msg($("#smsg"), "Completa le parti con ___ prima di inviare.", false); return; }
+    const n = sociInfo ? sociInfo.dispositivi.soci : "i";
+    if (!confirm(`Inviare questo messaggio ai ${n} soci con l'area soci attiva?`)) return;
+    $("#s-go").disabled = true; msg($("#smsg"), "Invio…", true);
+    try {
+      const j = await call("/soci/invia", { titolo: $("#s-ti").value.trim(), testo: $("#s-te").value.trim(), conferma: $("#s-cf").checked });
+      msg($("#smsg"), `Inviato a ${j.esito.sent} ${j.esito.sent === 1 ? "telefono" : "telefoni"}${j.esito.failed ? " (" + j.esito.failed + " non riusciti)" : ""}.`, true);
+      $("#s-svu").onclick(); msg($("#smsg"), `Inviato a ${j.esito.sent} ${j.esito.sent === 1 ? "telefono" : "telefoni"}.`, true); loadSoci();
+    } catch (err) { if (err.message !== "401") msg($("#smsg"), err.message, false); }
+    finally { $("#s-go").disabled = false; }
+  });
+  const aperte = new Set();
+  async function loadSoci(silenzioso) {
+    try {
+      const j = sociInfo = await call("/soci/attivazioni");
+      const d = j.dispositivi;
+      $("#s-dest").innerHTML = d.totale ? `Arriva a <b>${d.soci}</b> ${d.soci === 1 ? "socio" : "soci"} con l'area soci attiva sull'app${d.soci < d.totale ? ` (su ${d.totale}: ${d.totale - d.soci} non l'hanno ancora attivata)` : ""}.` : "Non ci sono ancora soci: crea i loro codici nella scheda <b>Persone</b>.";
+      $("#s-agg").textContent = "aggiornato " + new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      const box = $("#s-list");
+      if (!j.messaggi.length) { box.innerHTML = '<p class="hint">Nessuna attivazione inviata.</p>'; return; }
+      box.innerHTML = j.messaggi.map((m) => {
+        const si = m.risposte.filter((r) => r.r === "si"), no = m.risposte.filter((r) => r.r === "no");
+        const senza = j.soci.filter((x) => !m.risposte.some((r) => r.socio === x.id));
+        const tot = Math.max(1, j.soci.length), pct = (n) => (100 * n / tot).toFixed(1) + "%";
+        const ora = (iso) => new Date(iso).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+        const riga = (r, ic) => `<div><span>${ic}</span><span class="n">${esc(r.nome)}</span>${r.nota ? `<span class="nota">${esc(r.nota)}</span>` : ""}<span class="o">${ora(r.at)}</span></div>`;
+        return `<div class="att"><b class="t">${esc(m.titolo)}</b><small>${esc(new Date(m.data).toLocaleString("it-IT", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))} · da ${esc(m.autore)} · a ${m.inviati ?? "?"} telefoni</small>` +
+          (m.conferma ? `<div class="bar"><i class="si" style="width:${pct(si.length)}"></i><i class="no" style="width:${pct(no.length)}"></i></div>
+          <div class="cnt"><span class="si">✅ ${si.length} ci sono</span><span class="no">❌ ${no.length} non possono</span><span class="att0">⏳ ${senza.length} senza risposta</span></div>
+          <details data-id="${esc(m.id)}"${aperte.has(m.id) ? " open" : ""}><summary>Vedi i nomi</summary><div class="rl">${si.map((r) => riga(r, "✅")).join("")}${no.map((r) => riga(r, "❌")).join("")}${senza.map((x) => `<div><span>⏳</span><span class="n">${esc(x.nome)}</span></div>`).join("")}</div></details>` : `<small>Solo informativo, senza risposta.</small>`) + "</div>";
+      }).join("");
+      box.querySelectorAll("details").forEach((dt) => dt.addEventListener("toggle", () => dt.open ? aperte.add(dt.dataset.id) : aperte.delete(dt.dataset.id)));
+    } catch (err) { if (err.message !== "401" && !silenzioso) $("#s-list").innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
+  }
+  /* ---------- soci: codici (scheda Persone) ---------- */
+  async function loadSoci2() {
+    const box = $("#slist2");
+    try {
+      const l = await call("/soci/codici");
+      box.innerHTML = l.length ? l.map((c) => `<div class="li2"><span class="ic">${c.telefoni ? "📱" : "👤"}</span><div>${esc(c.nome)}<small>${c.telefoni ? "area soci attiva su " + c.telefoni + (c.telefoni === 1 ? " telefono" : " telefoni") : "non ancora attivata sull'app"} · creato il ${esc(new Date(c.creato).toLocaleDateString("it-IT", { day: "numeric", month: "long" }))}</small></div><button type="button" data-id="${esc(c.id)}" data-n="${esc(c.nome)}">Revoca</button></div>`).join("") : '<p class="hint">Nessun socio ancora.</p>';
+      box.querySelectorAll("button").forEach((b) => (b.onclick = async () => {
+        if (!confirm("Revocare il codice socio di " + b.dataset.n + "? Non riceverà più le attivazioni.")) return;
+        try { await call("/soci/codice-revoca", { id: b.dataset.id }); toast("Codice socio revocato"); loadSoci2(); } catch (err) { if (err.message !== "401") toast(err.message); }
+      }));
+    } catch (err) { if (err.message !== "401") box.innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
+  }
+  $("#sc").onclick = async () => {
+    const nome = $("#sn").value.trim(); if (!nome) { msg($("#smsg2"), "Scrivi il nome del socio.", false); return; }
+    try {
+      const j = await call("/soci/codice-crea", { nome });
+      $("#nc2-n").textContent = j.nome; $("#nc2-c").textContent = j.codice; $("#newcode2").hidden = false; $("#sn").value = ""; msg($("#smsg2"), "");
+      loadSoci2();
+    } catch (err) { if (err.message !== "401") msg($("#smsg2"), err.message, false); }
+  };
+  const testoSocio = () => "Ciao " + $("#nc2-n").textContent + ", questo è il tuo codice socio per l'app Cave Informa: " + $("#nc2-c").textContent + "\n\n1. Installa l'app (se non l'hai già) e attiva le notifiche.\n2. Tocca questo link per aprire l'area soci e inserisci il codice:\n" + location.href.split("/admin.html")[0] + "/#soci";
+  $("#nc2-copy").onclick = () => { navigator.clipboard && navigator.clipboard.writeText($("#nc2-c").textContent).then(() => toast("Codice copiato")); };
+  $("#nc2-share").onclick = () => { if (navigator.share) navigator.share({ text: testoSocio() }).catch(() => {}); else { navigator.clipboard && navigator.clipboard.writeText(testoSocio()); toast("Messaggio copiato"); } };
 
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).catch(() => {});
 })();
