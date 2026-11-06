@@ -876,9 +876,11 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     $$("section[data-p]").forEach((s) => (s.hidden = s.dataset.p !== t));
     $("#newcode").hidden = $("#newcode2").hidden = true; modifica = null;
     if (t === "avvisi") loadAvvisi(); if (t === "stato") { loadStato(); loadSorv(); } if (t === "persone") loadPersone();
-    if (t === "soci") { if (can("attivazioni") || can("risposte")) loadSoci(); if (can("storico")) loadStorico(); if (can("volontari")) loadSoci2(); } clearInterval(sociTimer); if (t === "soci" && (can("attivazioni") || can("risposte"))) sociTimer = setInterval(() => { if (!document.hidden && !modifica) loadSoci(true); }, 15000);
+    if (t === "soci") { if (can("attivazioni") || can("risposte")) loadSoci(); if (can("storico")) loadStorico(); if (can("volontari")) loadSoci2(); } clearInterval(sociTimer); if (t === "soci" && (can("attivazioni") || can("risposte"))) sociTimer = setInterval(() => { if (!document.hidden && !modifica) loadSoci(true); }, 5000);
   }
   $$(".tabs2 button").forEach((b) => (b.onclick = () => show(b.dataset.t)));
+  // tornando sulla pagina, le risposte si aggiornano subito
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && token && !$("section[data-p=soci]").hidden && sociInfo && !modifica) loadSoci(true); });
 
   /* ---------- avvisi ---------- */
   let tipo = "avviso", qm = "ora", editId = null, editProg = false, cache = [];
@@ -1201,9 +1203,19 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     finally { $("#s-go").disabled = false; }
   });
   const aperte = new Set();
+  let inVolo = false, giri = 0, firma = "";
   async function loadSoci(silenzioso) {
+    if (silenzioso && inVolo) return; inVolo = true;
     try {
-      const j = sociInfo = await call("/soci/attivazioni");
+      let j;
+      if (silenzioso && sociInfo && ++giri % 12) { // ogni 5 secondi solo le attivazioni in corso; ogni minuto tutto
+        const v = await call("/soci/attivazioni?veloce=1");
+        j = v.messaggi.some((x) => !sociInfo.messaggi.some((m) => m.id === x.id)) ? await call("/soci/attivazioni")
+          : { ...sociInfo, soci: v.soci, nomi: v.nomi, messaggi: sociInfo.messaggi.map((m) => v.messaggi.find((x) => x.id === m.id) || m) };
+      } else j = await call("/soci/attivazioni");
+      sociInfo = j;
+      $("#s-agg").textContent = "aggiornato " + new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      const f = JSON.stringify([j.messaggi, j.soci, j.dispositivi]); if (silenzioso && f === firma) return; firma = f;   // niente di nuovo: non ridisegno
       const d = j.dispositivi;
       $("#s-dest").innerHTML = d.totale ? `Arriva a <b>${d.soci}</b> ${d.soci === 1 ? "volontario" : "volontari"} con l'area volontari attiva sull'app${d.soci < d.totale ? ` (su ${d.totale}: ${d.totale - d.soci} non l'hanno ancora attivata)` : ""}.` : "Non ci sono ancora volontari: crea i loro codici più sotto, in <b>Codici dei volontari</b>.";
       $("#s-agg").textContent = "aggiornato " + new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -1230,7 +1242,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       }).join("");
       box.querySelectorAll("details").forEach((dt) => dt.addEventListener("toggle", () => dt.open ? aperte.add(dt.dataset.id) : aperte.delete(dt.dataset.id)));
       box.querySelectorAll("button[data-az]").forEach((b) => (b.onclick = () => azione(b.closest(".att"), b.dataset.az, j.messaggi.find((x) => x.id === b.closest(".att").dataset.id))));
-    } catch (err) { if (err.message !== "401" && !silenzioso) $("#s-list").innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
+    } catch (err) { if (err.message !== "401" && !silenzioso) $("#s-list").innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; } finally { inVolo = false; }
   }
 
   /* correggi / annulla / elimina un'attivazione già inviata */
