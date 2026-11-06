@@ -437,6 +437,11 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
 .soci-in{font:inherit;font-size:1.05rem;letter-spacing:.06em;width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-transform:uppercase}
 .soci-warn{font-weight:600}
 .soci-h{font-size:.85rem}
+.sm-fin{margin:4px 0 10px}#soci-msgs>.sm{padding:16px 16px;gap:6px;border-radius:16px}#soci-msgs>.sm b{font-size:1.12rem;line-height:1.3}#soci-msgs>.sm small{font-size:.9rem}
+#soci-msgs>.sm .rb{font-size:1rem;justify-self:start;padding:8px 14px;border-radius:999px;border:1px solid currentColor;margin-top:4px}
+#soci-msgs>.sm .rb.att{background:#C88F00;border-color:#C88F00;color:#fff}.sm-fin>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;font-weight:750;font-size:1.05rem;color:var(--fg);padding:14px 14px;min-height:52px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}.sm-fin[open]>summary{margin-bottom:8px}.sm-fin>summary::-webkit-details-marker{display:none}
+.sm-fin>summary span{font-size:.85rem;padding:2px 10px;border-radius:999px;border:1px solid var(--line)}.sm-fin>summary::after{content:"";width:9px;height:9px;margin-left:auto;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:rotate(-45deg);transition:transform .2s}
+.sm-fin[open]>summary::after{transform:rotate(45deg)}.sm-fin-l{display:grid;gap:8px}.sm-fin .sm{opacity:.85}
 .sm{padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;gap:4px;cursor:pointer}
 .sm b{font-size:.95rem}.sm small{color:var(--muted)}.sm .rb{font-size:.8rem;font-weight:700}.sm .rb.si{color:#2E9E5B}.sm .rb.no{color:#D23B40}.sm .rb.att{color:#C88F00}
 #soci-msgs{display:grid;gap:8px}
@@ -753,7 +758,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.21 · 6 novembre 2026</span>
+    <span id="app-version">Versione 3.22 · 6 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -2098,7 +2103,7 @@ if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.se
 const SOCI=(()=>{
   const box=$("#soci-box"); if(!box) return {};
   if(!PUSH_API){ box.hidden=true; return {}; }
-  let me=store.get("socio",null), msgs=[], cur=null, scelta=null;
+  let me=store.get("socio",null), msgs=[], cur=null, scelta=null, finAperte=false;
   const post=async(path,body)=>{ const r=await fetch(PUSH_API+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); const j=await r.json().catch(()=>({})); if(!r.ok) throw new Error(j.error||("errore "+r.status)); return j; };
   const endpoint=async()=>{ try{ const reg=await navigator.serviceWorker.ready; const sub=await reg.pushManager.getSubscription(); return sub&&sub.endpoint; }catch(e){ return null; } };
   const nota=(t,ok)=>{ const el=$("#soci-msg"); el.textContent=t||""; el.style.color=ok===false?"#D23B40":""; };
@@ -2111,10 +2116,16 @@ const SOCI=(()=>{
     if(!me) return;
     $("#soci-nome").textContent=me.nome; $("#soci-ok").hidden=!!me.attesa; $("#soci-wait").hidden=!me.attesa; $("#soci-stato").textContent=me.attesa?"in attesa":"attiva"; $("#soci-stato").style.color=me.attesa?"#C88F00":"";
     if(me.attesa){ $("#soci-msgs").innerHTML=""; $("#soci-esci").textContent="Annulla la richiesta"; return; } $("#soci-esci").textContent="Disattiva su questo telefono";
-    $("#soci-msgs").innerHTML=msgs.length?msgs.slice(0,5).map(m=>{
+    const voce=m=>{
       const r=m.risposta, rb=m.annullata?`<span class="rb ann">❌ Annullata</span>`:m.conclusa?`<span class="rb fin">🏁 Concluso</span>`:m.conferma?(r?`<span class="rb ${r.r}">${r.r==="si"?"✅ Hai risposto: ci sono":"❌ Hai risposto: non posso"}</span>`:`<span class="rb att">⏳ Rispondi</span>`):"";
       return `<div class="sm${m.annullata?" ann":""}" data-id="${esc(m.id)}"><b>${esc(m.titolo)}</b><small>${esc(quando(m.data))} · ${esc(m.autore||"")}</small>${rb}</div>`;
-    }).join(""):'<p class="muted">Nessuna comunicazione per ora.</p>';
+    };
+    // in vista solo quelle in corso; concluse, annullate e messaggi informativi dopo 24 ore vanno nella cartella "Concluse"
+    const aperta=m=>!m.annullata&&!m.conclusa&&(m.conferma||Date.now()-new Date(m.data)<864e5);
+    const att=msgs.filter(aperta), fin=msgs.filter(m=>!aperta(m)&&Date.now()-new Date(m.data)<30*864e5).slice(0,5);
+    $("#soci-msgs").innerHTML=(att.length?att.map(voce).join(""):'<p class="muted">Nessuna attivazione in corso.</p>')+
+      (fin.length?`<details class="sm-fin"${finAperte?" open":""}><summary>📦 Concluse <span>${fin.length}</span></summary><div class="sm-fin-l">${fin.map(voce).join("")}</div></details>`:"");
+    const fd=$("#soci-msgs").querySelector(".sm-fin"); if(fd) fd.addEventListener("toggle",()=>{ finAperte=fd.open; });
     $("#soci-msgs").querySelectorAll(".sm").forEach(el=>el.onclick=()=>apriMsg(el.dataset.id));
   }
   async function carica(){
