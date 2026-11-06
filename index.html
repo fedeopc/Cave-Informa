@@ -758,7 +758,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.22 · 6 novembre 2026</span>
+    <span id="app-version">Versione 3.23 · 6 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -958,7 +958,14 @@ function apri(dest){
 }
 window.addEventListener("hashchange",()=>apri(location.hash));
 // notifica toccata mentre l'app è già aperta: il servizio offline chiede di spostarsi
-if("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message",e=>{ if(e.data&&e.data.tipo==="apri"){ apri(e.data.url); } });
+let apertoDa=0;
+function apriNotifica(url){ if(Date.now()-apertoDa<3000) return; apertoDa=Date.now(); try{ caches.delete("da-aprire"); }catch(e){} apri(url); }
+if("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message",e=>{ if(e.data&&e.data.tipo==="apri") apriNotifica(e.data.url); if(e.data&&e.data.tipo==="soci-agg"&&window.SOCI_AGG) window.SOCI_AGG(); });
+// riserva (Android): se il messaggio non è arrivato, uso il segno lasciato dalla notifica toccata
+async function daAprire(){ try{ if(!("caches" in window)) return; const c=await caches.open("da-aprire"), r=await c.match("./da-aprire"); if(!r) return; const d=await r.json(); await caches.delete("da-aprire"); if(d&&Date.now()-d.at<120000) apriNotifica(d.url); }catch(e){} }
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) setTimeout(daAprire,400); });
+window.addEventListener("focus",()=>setTimeout(daAprire,400));
+setTimeout(daAprire,1200);
 $("#b-info").addEventListener("click",()=>showTab("info"));
 $("#check-update").addEventListener("click",async()=>{
   const btn=$("#check-update"); btn.disabled=true; btn.textContent="Controllo in corso…";
@@ -980,7 +987,7 @@ $("#check-update").addEventListener("click",async()=>{
 {const fix=t=>t==="numeri"?"comune":t;const start=fix(hashTab)||"";const saved=fix(store.get("tab","allerte"));
 showTab(["allerte","guida","zaino","comune","info","dae"].includes(start)?start:(["allerte","guida","zaino","comune","info","dae"].includes(saved)?saved:"allerte"));
 if(start==="bacheca"||start==="terremoti") setTimeout(()=>apri(start),600);
-if(/^soci(-|$)/.test(location.hash.slice(1))) setTimeout(()=>apri(location.hash),900);}
+if(/^soci(-|$)/.test(location.hash.slice(1))) setTimeout(()=>apriNotifica(location.hash),900);}
 
 /* rischi */
 const RISK_ICON={terremoto:"🏚️",alluvione:"🌊",incendio:"🔥",caldo:"🌡️",neve:"❄️"};
@@ -2153,7 +2160,7 @@ const SOCI=(()=>{
   ov.querySelectorAll(".sov-r button").forEach(b=>b.onclick=()=>scegli(b.dataset.r));
   async function apriMsg(id){
     if(!me){ showTab("info"); box.open=true; box.scrollIntoView({behavior:"smooth"}); nota("Per vedere le comunicazioni ai volontari attiva l'area volontari con il tuo codice.",false); return; }
-    if(!msgs.some(m=>m.id===id)) await carica();
+    for(let i=0;i<4&&!msgs.some(m=>m.id===id);i++){ await carica(); if(!msgs.some(m=>m.id===id)) await new Promise(r=>setTimeout(r,1200)); }   // appena riaperta la rete può tardare
     const m=msgs.find(x=>x.id===id); if(!m){ toast("Comunicazione non trovata"); return; }
     $("#sov-ok").hidden=true; cur=m; $("#sov-t").textContent=m.titolo; $("#sov-tx").textContent=m.testo||""; $("#sov-m").textContent=quando(m.data)+(m.autore?" · da "+m.autore:"");
     const hh=(iso)=>new Date(iso).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
@@ -2178,14 +2185,17 @@ const SOCI=(()=>{
   };
   view(); carica();
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden) carica(); });
+  // con l'area aperta sullo schermo l'elenco si aggiorna da solo (ogni 30 secondi, e subito quando arriva una notifica)
+  setInterval(()=>{ if(me&&!document.hidden&&box.open&&!box.hidden&&$("#tab-info")&&!$("#tab-info").hidden) carica(); },30000);
+  let aggT=0; const agg=()=>{ clearTimeout(aggT); aggT=setTimeout(carica,1500); };
   // link personale del socio: apre direttamente l'area soci con il campo del codice
   async function controllaNotifiche(){ const ep=await endpoint(); $("#soci-notif").hidden=!!ep||!!me; return ep; }
   $("#soci-notif-on").onclick=()=>{ const b=$("#notif-on"); if(b&&!b.hidden){ b.click(); nota("Conferma il permesso delle notifiche, poi inserisci il codice qui sotto."); let n=0; const t=setInterval(async()=>{ if(await controllaNotifiche()||++n>40){ clearInterval(t); if(!$("#soci-notif").hidden) return; nota("Notifiche attive: ora inserisci il codice.",true); $("#soci-cod").focus(); } },500); } else { showTab("allerte"); toast("Attiva le notifiche dal riquadro Notifiche"); } };
   $("#soci-apri").onclick=()=>apriArea();
   function apriArea(){ mostra=true; store.set("soci-mostra",true); view(); controllaNotifiche(); showTab("info"); box.open=true; setTimeout(()=>{ box.scrollIntoView({behavior:"smooth",block:"start"}); if(!me) $("#soci-cod").focus(); },150); }
-  return { apri: apriMsg, area: apriArea };
+  return { apri: apriMsg, area: apriArea, agg };
 })();
-window.SOCI_APRI=SOCI.apri; window.SOCI_AREA=SOCI.area;
+window.SOCI_APRI=SOCI.apri; window.SOCI_AREA=SOCI.area; window.SOCI_AGG=SOCI.agg;
 </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 // Cave Informa: funzionamento offline.
 // Quando cambi i file dell'app, aumenta il numero di versione qui sotto (2.0, 2.1, 2.2…)
 // e scrivi lo stesso numero in index.html, nella riga "Versione …" della pagina Informazioni.
-const VERSION = "allerta-cave-3.22";
+const VERSION = "allerta-cave-3.23";
 const CORE = [
   "./",
   "./index.html",
@@ -77,6 +77,8 @@ self.addEventListener("message", (e) => { if (e.data === "skip") self.skipWaitin
 self.addEventListener("push", (e) => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch (err) { d = { body: e.data && e.data.text() }; }
+  // area volontari: le app aperte aggiornano subito l'elenco (nuova attivazione, conclusa, annullata, corretta)
+  if (/^soci-/.test(d.tag || "")) self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((l) => l.forEach((c) => c.postMessage({ tipo: "soci-agg" }))).catch(() => {});
   e.waitUntil(self.registration.showNotification(d.title || "Cave Informa", {
     body: d.body || "",
     icon: "icons/icon-192.png",
@@ -89,7 +91,9 @@ self.addEventListener("notificationclick", (e) => {
   e.notification.close();
   const url = new URL((e.notification.data && e.notification.data.url) || "./", self.registration.scope).href;
   const admin = /admin\.html/.test(url);
-  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (list) => {
+  // segno "da aprire" (per 2 minuti): se il messaggio alla finestra si perde (Android, app in pausa), la pagina lo trova da sola
+  const segna = caches.open("da-aprire").then((c) => c.put("./da-aprire", new Response(JSON.stringify({ url, at: Date.now() })))).catch(() => {});
+  e.waitUntil(segna.then(() => self.clients.matchAll({ type: "window", includeUncontrolled: true })).then(async (list) => {
     // finestra già aperta della stessa pagina (app o pagina admin): la porto in primo piano e le dico dove andare
     const stessa = list.find((c) => c.url.startsWith(self.registration.scope) && /admin\.html/.test(c.url) === admin);
     if (stessa) {
