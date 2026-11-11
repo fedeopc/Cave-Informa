@@ -155,6 +155,7 @@ nav.tabs svg{width:24px;height:24px}
 .dot.l0{background:var(--verde)} .dot.l1{background:var(--gialla)} .dot.l2{background:var(--arancione)} .dot.l3{background:var(--rossa)}
 .tomorrow{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.93rem;background:var(--surface);border-radius:10px;padding:10px 12px}
 .tomorrow span:last-child{display:flex;align-items:center;gap:8px;font-weight:700;text-align:right}
+.tomorrow span:last-child{flex-wrap:wrap;justify-content:flex-end}.tomorrow small.reg{flex-basis:100%;text-align:right;font-weight:600;font-size:.75rem;color:var(--muted)}
 .now-actions{display:flex;gap:8px;flex-wrap:wrap}
 .now-actions .btn{display:inline-flex;align-items:center;gap:6px}
 #bcr-refresh.spin svg{animation:spin .9s linear infinite}
@@ -758,7 +759,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.23 · 6 novembre 2026</span>
+    <span id="app-version">Versione 3.24 · 11 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1488,11 +1489,12 @@ if (typeof document !== "undefined") (function allertaInit() {
       showError("Questa posizione non rientra nelle zone di allerta italiane. Scegli un comune.");
       return;
     }
-    const s = res.today.sum;
-    setState(s.max);
-    el.level.textContent = BCR.LEVELS[s.max];
-    el.msg.hidden = !res.stale;
-    if (res.stale) el.msg.textContent = "Bollettino non aggiornato: è l'ultimo disponibile. Controlla la connessione.";
+    const s = res.today.sum, rg = res.today.reg;
+    setState(rg ? rg.max : s.max);
+    el.level.textContent = BCR.LEVELS[rg ? rg.max : s.max];
+    el.msg.hidden = !res.stale && !rg;
+    if (rg) el.msg.textContent = "Livello del bollettino della Regione Lazio" + oraReg(rg.emesso) + ", più aggiornato di quello nazionale.";
+    else if (res.stale) el.msg.textContent = "Bollettino non aggiornato: è l'ultimo disponibile. Controlla la connessione.";
     const ch = res.change;
     el.change.hidden = !ch;
     if (ch) el.change.innerHTML = `<b>${ch.dir > 0 ? "▲ Alzata" : "▼ Abbassata"}</b> rispetto alla previsione di ieri, che era <i class="dot l${ch.from}"></i>${BCR.LEVELS[ch.from].toLowerCase()}`;
@@ -1500,7 +1502,9 @@ if (typeof document !== "undefined") (function allertaInit() {
     el.risks.hidden = false;
     const t = res.tomorrow;
     const tl = "Domani, " + fmtDay(t.date);
-    el.tomorrow.innerHTML = t.sum
+    el.tomorrow.innerHTML = t.reg
+      ? `<span>${tl}</span><span><i class="dot l${t.reg.max}"></i>${BCR.LEVELS[t.reg.max]}<small class="reg">Regione Lazio${oraReg(t.reg.emesso)}</small></span>`
+      : t.sum
       ? `<span>${tl}</span><span><i class="dot l${t.sum.max}"></i>${BCR.LEVELS[t.sum.max]}</span>`
       : `<span>${tl}</span><span>Bollettino entro le 16</span>`;
     el.tomorrow.hidden = false;
@@ -1525,6 +1529,19 @@ if (typeof document !== "undefined") (function allertaInit() {
     return null;
   }
 
+  /* --- livelli della Regione Lazio per la zona di Cave (dal servizio Cloudflare, al massimo ogni 10 minuti) --- */
+  async function regione(force) {
+    const c = ls.get("allerta-regione", null);
+    if (!force && c && Date.now() - c.at < 10 * 60 * 1000) return c.v;
+    try {
+      if (typeof PUSH_API === "undefined" || !PUSH_API) return null;
+      const r = await fetch(PUSH_API.replace(/\/$/, "") + "/lazio", { cache: "no-store" });
+      if (!r.ok) throw 0;
+      const v = await r.json(); ls.set("allerta-regione", { v, at: Date.now() }); return v;
+    } catch (e) { return c ? c.v : null; }
+  }
+  const oraReg = (iso) => iso ? " delle " + new Date(iso).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" }) : "";
+
   /* --- calcolo --- */
   let busy = 0;
   async function update(force) {
@@ -1538,6 +1555,16 @@ if (typeof document !== "undefined") (function allertaInit() {
       const label = place.mode === "geo" ? "<strong>La tua posizione</strong>" : "<strong>" + escH(place.name) + "</strong>";
       if (job !== busy) return;
       const res = { placeLabel: label, stem, stale: p.stale, today: { date: p.today.date, sum: find(zToday) }, tomorrow: { date: p.tomorrow.date, sum: find(zTomorrow) } };
+      // zona di Cave: il bollettino della Regione Lazio esce prima di quello nazionale (e fa fede): se è più alto o l'unico, lo mostro
+      if (res.today.sum && /liri/i.test(res.today.sum.zone)) {
+        const lz = await regione(force);
+        const iso = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+        for (const k of ["today", "tomorrow"]) {
+          const g = lz && lz.giorni && lz.giorni[iso(res[k].date)], dpc = res[k].sum ? res[k].sum.max : -1;
+          if (g && g.max > dpc) res[k].reg = { max: g.max, emesso: g.emesso };
+        }
+      }
+      if (job !== busy) return;
       res.change = trackChange(res);
       render(res);
       if (res.today.sum) ls.set("allerta-ctx", { key: placeKey(), region: typeof MS !== "undefined" ? MS.regionOf(res.today.sum.zone) : null });
