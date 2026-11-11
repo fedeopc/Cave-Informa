@@ -759,7 +759,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.24 · 11 novembre 2026</span>
+    <span id="app-version">Versione 3.25 · 11 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1558,7 +1558,7 @@ if (typeof document !== "undefined") (function allertaInit() {
       // zona di Cave: il bollettino della Regione Lazio esce prima di quello nazionale (e fa fede): se è più alto o l'unico, lo mostro
       if (res.today.sum && /liri/i.test(res.today.sum.zone)) {
         const lz = await regione(force);
-        const iso = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+        const iso = (d) => d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0"); // come nel servizio: AAAAMMGG
         for (const k of ["today", "tomorrow"]) {
           const g = lz && lz.giorni && lz.giorni[iso(res[k].date)], dpc = res[k].sum ? res[k].sum.max : -1;
           if (g && g.max > dpc) res[k].reg = { max: g.max, emesso: g.emesso };
