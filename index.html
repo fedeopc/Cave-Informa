@@ -163,6 +163,8 @@ nav.tabs svg{width:24px;height:24px}
 .pick{display:flex;gap:8px}
 .pick input{flex:1;min-width:0;font:inherit;font-size:1rem;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
 .now-src{margin:0;font-size:.8rem;color:var(--muted)}
+.bol{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;padding:12px 14px;border-radius:16px;background:var(--glass-soft,var(--surface));border:1px solid var(--glass-line,var(--line))}
+.bol[hidden]{display:none}.bol .bi{font-size:1.35rem}.bol>span:nth-child(2){flex:1;display:grid;gap:2px}.bol b{font-size:.98rem}.bol small{font-size:.8rem;color:var(--muted)}.bol .go{font-size:1.4rem;color:var(--muted)}
 .now-src a{color:inherit}
 /* Il mio comune */
 .town{display:grid;gap:4px}
@@ -586,6 +588,7 @@ header.top .brand{gap:12px}
     <p class="now-msg" id="now-msg" hidden></p>
     <div class="rchips" id="now-risks" hidden></div>
     <div class="tomorrow" id="now-tomorrow" hidden></div>
+    <a class="bol" id="now-bol" target="_blank" rel="noopener" hidden><span class="bi" aria-hidden="true">📄</span><span><b>Leggi il bollettino ufficiale</b><small id="now-bol-s"></small></span><span class="go" aria-hidden="true">›</span></a>
     <div class="now-actions">
       <button class="btn" id="geo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Usa la mia posizione</button>
       <button class="btn" id="pick-open" type="button">Cambia comune</button>
@@ -759,7 +762,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.25 · 11 novembre 2026</span>
+    <span id="app-version">Versione 3.27 · 12 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1477,6 +1480,7 @@ if (typeof document !== "undefined") (function allertaInit() {
     document.querySelectorAll("#now-colors .code").forEach((c, i) => c.classList.toggle("cur", i === lvl)); // badge "OGGI" sul livello in vigore
   }
   function showError(text) {
+    $("#now-bol").hidden = true;
     setState(-1); el.level.textContent = "Allerta non disponibile"; el.change.hidden = true;
     el.msg.textContent = text; el.msg.hidden = false; el.risks.hidden = true; el.tomorrow.hidden = true; el.retry.hidden = false;
   }
@@ -1492,23 +1496,35 @@ if (typeof document !== "undefined") (function allertaInit() {
     const s = res.today.sum, rg = res.today.reg;
     setState(rg ? rg.max : s.max);
     el.level.textContent = BCR.LEVELS[rg ? rg.max : s.max];
-    el.msg.hidden = !res.stale && !rg;
-    if (rg) el.msg.textContent = "Livello del bollettino della Regione Lazio" + oraReg(rg.emesso) + ", più aggiornato di quello nazionale.";
+    el.msg.hidden = !(rg && rg.dpc != null) && !(res.stale && !rg);
+    if (rg && rg.dpc != null) el.msg.innerHTML = `⚠️ Il bollettino nazionale indica <b>${BCR.LEVELS[rg.dpc].toLowerCase()}</b>: controlla gli aggiornamenti.`;
     else if (res.stale) el.msg.textContent = "Bollettino non aggiornato: è l'ultimo disponibile. Controlla la connessione.";
     const ch = res.change;
     el.change.hidden = !ch;
     if (ch) el.change.innerHTML = `<b>${ch.dir > 0 ? "▲ Alzata" : "▼ Abbassata"}</b> rispetto alla previsione di ieri, che era <i class="dot l${ch.from}"></i>${BCR.LEVELS[ch.from].toLowerCase()}`;
-    el.risks.innerHTML = s.risks.map((r) => `<span class="rchip"><i class="dot l${r.lvl}"></i>${r.label}${r.lvl ? ": <b>" + BCR.SHORT[r.lvl].toLowerCase() + "</b>" : ""}</span>`).join("");
+    // rischi: dal bollettino della Regione (ordine: idrogeologico, temporali, idraulico) se c'è
+    const rischi = rg && rg.livelli.length === 3 ? [["Idrogeologico", rg.livelli[0]], ["Idraulico", rg.livelli[2]], ["Temporali", rg.livelli[1]]].map(([label, lvl]) => ({ label, lvl })) : s.risks;
+    el.risks.innerHTML = rischi.map((r) => `<span class="rchip"><i class="dot l${r.lvl}"></i>${r.label}${r.lvl ? ": <b>" + BCR.SHORT[r.lvl].toLowerCase() + "</b>" : ""}</span>`).join("");
     el.risks.hidden = false;
     const t = res.tomorrow;
     const tl = "Domani, " + fmtDay(t.date);
     el.tomorrow.innerHTML = t.reg
-      ? `<span>${tl}</span><span><i class="dot l${t.reg.max}"></i>${BCR.LEVELS[t.reg.max]}<small class="reg">Regione Lazio${oraReg(t.reg.emesso)}</small></span>`
+      ? `<span>${tl}</span><span><i class="dot l${t.reg.max}"></i>${BCR.LEVELS[t.reg.max]}<small class="reg">${t.reg.dpc != null ? "⚠️ nazionale: " + BCR.SHORT[t.reg.dpc].toLowerCase() : "Regione Lazio" + oraReg(t.reg.emesso)}</small></span>`
       : t.sum
       ? `<span>${tl}</span><span><i class="dot l${t.sum.max}"></i>${BCR.LEVELS[t.sum.max]}</span>`
       : `<span>${tl}</span><span>Bollettino entro le 16</span>`;
     el.tomorrow.hidden = false;
-    el.src.innerHTML = `Zona di allerta <strong>${escH(s.zone)}</strong> · Bollettino DPC del ${stemLabel(res.stem)} · <a href="https://mappe.protezionecivile.gov.it/it/mappe-rischi/bollettino-di-criticita/" target="_blank" rel="noopener">Bollettino ufficiale</a>`;
+    // bollettino ufficiale: il PDF della Regione Lazio (zona di Cave) oppure la pagina nazionale della Protezione Civile
+    const bol = $("#now-bol");
+    if (res.bol) {
+      bol.href = res.bol.url;
+      $("#now-bol-s").textContent = "Regione Lazio · " + new Date(res.bol.emesso).toLocaleString("it-IT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).replace(",", " ore") + " · PDF";
+    } else {
+      bol.href = "https://mappe.protezionecivile.gov.it/it/mappe-rischi/bollettino-di-criticita/";
+      $("#now-bol-s").textContent = "Protezione Civile nazionale · " + stemLabel(res.stem);
+    }
+    bol.hidden = false;
+    el.src.innerHTML = `Zona di allerta <strong>${escH(s.zone)}</strong> · ${rg ? "Bollettino Regione Lazio · nazionale DPC del " : "Bollettino DPC del "}${stemLabel(res.stem)} · <a href="https://mappe.protezionecivile.gov.it/it/mappe-rischi/bollettino-di-criticita/" target="_blank" rel="noopener">Bollettino ufficiale</a>`;
   }
 
   /* --- confronto con la previsione precedente ---
@@ -1555,13 +1571,15 @@ if (typeof document !== "undefined") (function allertaInit() {
       const label = place.mode === "geo" ? "<strong>La tua posizione</strong>" : "<strong>" + escH(place.name) + "</strong>";
       if (job !== busy) return;
       const res = { placeLabel: label, stem, stale: p.stale, today: { date: p.today.date, sum: find(zToday) }, tomorrow: { date: p.tomorrow.date, sum: find(zTomorrow) } };
-      // zona di Cave: il bollettino della Regione Lazio esce prima di quello nazionale (e fa fede): se è più alto o l'unico, lo mostro
+      // zona di Cave: fa fede il bollettino della Regione Lazio (esce anche prima); quello nazionale resta di riserva,
+      // e se è più alto lo segnalo con una riga a parte
       if (res.today.sum && /liri/i.test(res.today.sum.zone)) {
         const lz = await regione(force);
         const iso = (d) => d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0"); // come nel servizio: AAAAMMGG
         for (const k of ["today", "tomorrow"]) {
           const g = lz && lz.giorni && lz.giorni[iso(res[k].date)], dpc = res[k].sum ? res[k].sum.max : -1;
-          if (g && g.max > dpc) res[k].reg = { max: g.max, emesso: g.emesso };
+          if (g) res[k].reg = { max: g.max, emesso: g.emesso, livelli: g.livelli || [], dpc: dpc > g.max ? dpc : null };
+          if (g && g.url && (!res.bol || g.emesso > res.bol.emesso)) res.bol = { url: g.url, emesso: g.emesso };   // PDF più recente della Regione
         }
       }
       if (job !== busy) return;
