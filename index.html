@@ -24,7 +24,7 @@
   --gialla-bg:#FBF1CC; --arancione-bg:#FCE3D1; --rossa-bg:#F8D7D8; --verde-bg:#D8EEDF;
   --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --nav-h:64px;
+  --nav-h:72px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0E151C; --surface:#17212B; --fg:#E6ECF2; --muted:#9AA8B6; --line:#2A3846;
@@ -362,7 +362,11 @@ header.top .wrap{gap:8px}
 .dae-btns{display:flex;gap:8px;flex-wrap:wrap}
 .dae-btns .mini{text-decoration:none}
 .steps{margin:0;padding-left:1.3em;display:grid;gap:8px;font-size:.93rem}
-nav.tabs button{font-size:.7rem;white-space:nowrap}
+nav.tabs button{font-size:.78rem;white-space:nowrap}
+nav.tabs svg{width:26px;height:26px}
+nav.tabs .in{background:color-mix(in srgb,var(--surface) 96%,transparent)}
+/* sotto la barra la pagina non si vede: sfumatura piena fino al bordo dello schermo */
+nav.tabs::before{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(100% + 18px);background:linear-gradient(to top,var(--bg) 0,var(--bg) calc(env(safe-area-inset-bottom,0px) + 46px),color-mix(in srgb,var(--bg) 0%,transparent) 100%);pointer-events:none;z-index:-1}
 /* bacheca: eventi e comunicazioni dal foglio Google */
 .bb-banner{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg);padding:12px 14px;border-radius:20px;background:linear-gradient(150deg,color-mix(in srgb,var(--accent) 18%,var(--glass)),var(--glass));border:1px solid var(--glass-line);box-shadow:var(--glass-shadow),var(--hl)}
 .bb-ic{width:44px;height:46px;border-radius:12px;flex:none;display:grid;place-items:center;align-content:center;background:var(--surface);border:1px solid var(--glass-line);line-height:1;text-align:center}
@@ -784,7 +788,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.31 · 14 novembre 2026</span>
+    <span id="app-version">Versione 3.32 · 14 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
