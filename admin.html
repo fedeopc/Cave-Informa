@@ -660,6 +660,12 @@ section[data-p]{display:grid;gap:12px}
 .att.annullata b.t{text-decoration:line-through;opacity:.7}
 .att .ann{display:inline-block;margin-top:6px;font-size:.8rem;font-weight:700;color:#D23B40;background:color-mix(in srgb,#D23B40 12%,transparent);border-radius:8px;padding:3px 8px}
 .sa .ann{color:#D23B40;font-weight:700}
+.login .bio{width:100%;min-height:54px;font:inherit;font-size:1.05rem;font-weight:800;border-radius:14px;border:0;background:#2E62C9;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer}
+.login .oppure{text-align:center;color:var(--muted);font-size:.85rem;margin:2px 0}
+.bio-inv{display:flex;gap:12px;align-items:flex-start;border-color:color-mix(in srgb,#2E62C9 50%,var(--line))}.bio-inv .bi{font-size:1.6rem}.bio-inv>div{display:grid;gap:6px;flex:1}.bio-inv small{color:var(--muted)}
+.bdev{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:.9rem}.bdev:first-child{border-top:0}.bdev>span{flex:1;min-width:0}.bdev small{display:block;color:var(--muted);font-size:.78rem}
+.bdev button{font:inherit;font-size:.82rem;font-weight:700;color:#C0262D;background:none;border:0;cursor:pointer;padding:6px}
+.mem .bdevs{display:grid;padding-left:34px}.mem .bdevs .bdev{font-size:.85rem}
 .idet{display:grid;gap:0;margin-top:10px}.idet .irow{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:.9rem}.idet .irow b{font-variant-numeric:tabular-nums}.idet .att{font-weight:650}.idet .hint{margin-top:8px}
 #arch-n[hidden]{display:none}
 details.arc{border-top:1px solid var(--line);padding:4px 0}details.arc:first-child{border-top:0}
@@ -687,10 +693,12 @@ details.mese{margin-left:6px}details.mese>summary{font-weight:650;font-size:.9re
     <h1>Area amministratori</h1>
     <p>Pagina riservata ai volontari dell'Associazione Italiana Protezione Civile Cave – OdV.</p>
     <input class="vh" type="text" name="username" autocomplete="username" value="Cave Informa · amministrazione" readonly tabindex="-1" aria-hidden="true">
+    <button type="button" class="bio" id="bio-go" hidden><span aria-hidden="true">🔐</span> Entra con Face ID o impronta</button>
+    <p class="oppure" id="bio-or" hidden>oppure con il codice</p>
     <input id="pw" type="password" name="password" autocomplete="current-password" placeholder="Codice o password" required aria-label="Codice o password">
     <button type="submit" id="go">Entra</button>
     <p class="msg" id="lmsg" role="alert"></p>
-    <small>Il codice viene chiesto a ogni apertura. Su iPhone puoi salvarlo nel Portachiavi e inserirlo con Face ID.</small>
+    <small>Il codice viene chiesto a ogni apertura, oppure entri con Face ID o impronta se l'hai attivato su questo telefono.</small>
   </form>
 
   <!-- pannello -->
@@ -700,6 +708,8 @@ details.mese{margin-left:6px}details.mese>summary{font-weight:650;font-size:.9re
       <div><h1>Cave Informa</h1><small>Amministrazione · <span id="who"></span></small></div>
       <button class="out" id="out" type="button">Esci</button>
     </div>
+    <div class="card bio-inv" id="bio-inv" hidden><span class="bi" aria-hidden="true">🔐</span><div><b>Entra più in fretta con Face ID o impronta</b><small>La prossima volta niente codice: basta il volto o il dito. Il codice resta valido come riserva.</small>
+      <div class="row2"><button type="button" class="pri" id="bio-att">Attiva su questo telefono</button><button type="button" id="bio-no">Non ora</button></div></div></div>
     <div class="tabs2" role="tablist">
       <button type="button" data-t="avvisi" class="on">Avvisi</button>
       <button type="button" data-t="soci">Volontari</button>
@@ -812,6 +822,11 @@ details.mese{margin-left:6px}details.mese>summary{font-weight:650;font-size:.9re
         <p class="msg" id="pmsg" role="status"></p>
         <p class="hint">Solo tu (amministratore principale) vedi questa scheda e puoi creare o revocare i codici del direttivo.</p></div>
     </section>
+    <div class="card" id="c-bio" data-c="biometria" data-chiusa><div class="eyebrow">🔐 Il mio accesso con Face ID</div>
+      <div id="bio-list"><p class="hint">Caricamento…</p></div>
+      <div class="row2"><button type="button" id="bio-att2">Attiva su questo telefono</button></div>
+      <p class="hint">Sul telefono resta una chiave sbloccabile solo con il tuo volto, la tua impronta o il codice di sblocco del telefono; qui viene salvata solo la parte pubblica. Su iPhone si sincronizza con il Portachiavi iCloud, su Android con l'account Google.</p>
+      <p class="msg" id="bio-msg" role="status"></p></div>
   </div>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -851,7 +866,12 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       const r = await fetch(API + "/login", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + pw }, body: "{}" });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) { msg($("#lmsg"), j.error === "codice non valido" ? "Codice non valido." : (j.error || "Accesso non riuscito"), false); return; }
-      token = pw; me = j;
+      entra(j, pw);
+    } catch (err) { msg($("#lmsg"), "Nessuna connessione: riprova.", false); }
+    finally { $("#go").disabled = false; }
+  });
+  function entra(j, tok) {
+      token = tok; me = j;
       $("#who").textContent = (j.ruolo === "principale" ? "amministratore principale · " : "") + j.nome;
       principale = j.ruolo === "principale"; perm = new Set(j.perm || ["avvisi", "attivazioni", "risposte", "stato"]);
       const vede = { avvisi: can("avvisi"), soci: ["attivazioni", "risposte", "volontari", "storico"].some(can), stato: can("stato"), persone: principale };
@@ -860,9 +880,69 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       $("#login").hidden = true; $("#panel").hidden = false; $("#pw").value = "";
       const primo = ["avvisi", "soci", "stato", "persone"].find((t) => vede[t]);
       if (primo) show(primo); else { $$("section[data-p]").forEach((x) => (x.hidden = true)); toast("Il tuo codice non ha ancora autorizzazioni: chiedi all'amministratore."); }
-    } catch (err) { msg($("#lmsg"), "Nessuna connessione: riprova.", false); }
-    finally { $("#go").disabled = false; }
-  });
+      bioDopoAccesso(tok.startsWith("S.")); loadBio();
+  }
+
+  /* ---------- accesso con Face ID / impronta (passkey) ---------- */
+  const b64u = (b) => btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const unb64u = (s) => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((s.length + 3) % 4)), (c) => c.charCodeAt(0));
+  const bioOk = !!(window.PublicKeyCredential && navigator.credentials && window.isSecureContext);
+  const lsg = (k, f) => { try { const v = localStorage.getItem(k); return v == null ? f : JSON.parse(v); } catch (e) { return f; } };
+  const lss = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  const nomeDisp = () => { const u = navigator.userAgent; return /iPhone/.test(u) ? "iPhone" : /iPad/.test(u) || (/Macintosh/.test(u) && navigator.maxTouchPoints > 1) ? "iPad" : /Android/.test(u) ? "Android" : /Macintosh/.test(u) ? "Mac" : /Windows/.test(u) ? "Computer Windows" : "Dispositivo"; };
+  if (bioOk) { $("#bio-go").hidden = false; $("#bio-or").hidden = false; }
+  $("#bio-go").onclick = async () => {
+    const b = $("#bio-go"); b.disabled = true; msg($("#lmsg"), "");
+    try {
+      const o = await (await fetch(API + "/pk/opzioni-accesso", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })).json();
+      if (!o.sfida) throw new Error(o.error || "servizio non raggiungibile");
+      const c = await navigator.credentials.get({ publicKey: { challenge: unb64u(o.sfida), rpId: o.rpId, userVerification: "required", timeout: 60000 } });
+      const r = await fetch(API + "/pk/accedi", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sfida: o.sfida, id: c.id, clientDataJSON: b64u(c.response.clientDataJSON), authenticatorData: b64u(c.response.authenticatorData), signature: b64u(c.response.signature) }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error || "accesso non riuscito");
+      lss("bio-qui", c.id); entra(j, j.token);
+    } catch (e) {
+      msg($("#lmsg"), e && e.name === "NotAllowedError" ? "Accesso annullato. Riprova o usa il codice." : (e.message || "Accesso non riuscito").replace(/^./, (x) => x.toUpperCase()) + ".", false);
+    } finally { b.disabled = false; }
+  };
+  function bioDopoAccesso(conBio) {
+    const inv = $("#bio-inv"); inv.hidden = true;
+    if (!bioOk || conBio || lsg("bio-qui", null) || Date.now() < lsg("bio-nonora", 0)) return;
+    inv.hidden = false;   // invito ad attivarlo (una volta, poi "Non ora" lo zittisce per 30 giorni)
+  }
+  async function bioAttiva() {
+    const o = await call("/pk/opzioni-registra", {});
+    const c = await navigator.credentials.create({ publicKey: { challenge: unb64u(o.sfida), rp: o.rp, user: { id: unb64u(o.utente.id), name: o.utente.name, displayName: o.utente.displayName },
+      pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }], authenticatorSelection: { residentKey: "required", userVerification: "required" },
+      excludeCredentials: o.escludi.map((id) => ({ type: "public-key", id: unb64u(id) })), timeout: 60000, attestation: "none" } });
+    await call("/pk/registra", { sfida: o.sfida, id: c.id, nome: nomeDisp(), clientDataJSON: b64u(c.response.clientDataJSON), attestationObject: b64u(c.response.attestationObject) });
+    lss("bio-qui", c.id);
+  }
+  async function bioPremi(btn) {
+    btn.disabled = true;
+    try { await bioAttiva(); $("#bio-inv").hidden = true; toast("Face ID attivato su questo telefono"); loadBio(); if (principale && !$("section[data-p=persone]").hidden) loadPersone(); }
+    catch (e) { if (e.message !== "401") toast(e && e.name === "InvalidStateError" ? "È già attivo su questo telefono" : e && e.name === "NotAllowedError" ? "Attivazione annullata" : (e.message || "Non riuscito")); }
+    finally { btn.disabled = false; }
+  }
+  $("#bio-att").onclick = (e) => bioPremi(e.target);
+  $("#bio-att2").onclick = (e) => bioPremi(e.target);
+  $("#bio-no").onclick = () => { lss("bio-nonora", Date.now() + 30 * 864e5); $("#bio-inv").hidden = true; };
+  const dispHtml = (d, puoiTogliere) => `<div class="bdev"><span>📱 ${esc(d.nome)}${d.id === lsg("bio-qui", null) ? " <b>(questo)</b>" : ""}<small>attivato il ${esc(new Date(d.creato).toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" }))} · ${d.ultimoUso ? "ultimo accesso " + esc(new Date(d.ultimoUso).toLocaleString("it-IT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })) : "mai usato"}</small></span>${puoiTogliere ? `<button type="button" data-pk="${esc(d.id)}">Togli</button>` : ""}</div>`;
+  async function togliPk(id, poi) {
+    if (!confirm("Togliere l'accesso con Face ID da questo dispositivo? Si potrà sempre entrare con il codice.")) return;
+    try { await call("/pk/rimuovi", { id }); if (id === lsg("bio-qui", null)) lss("bio-qui", null); toast("Accesso biometrico tolto"); poi(); } catch (e) { if (e.message !== "401") toast(e.message); }
+  }
+  async function loadBio() {
+    const box = $("#bio-list");
+    $("#bio-att2").parentElement.hidden = !bioOk;
+    try {
+      const l = await call("/pk/miei");
+      box.innerHTML = l.length ? l.map((d) => dispHtml(d, true)).join("") : '<p class="hint">Non è ancora attivo su nessun dispositivo.</p>';
+      if (!l.some((d) => d.id === lsg("bio-qui", null))) lss("bio-qui", null);   // tolto da un altro telefono o dal direttivo
+      $("#bio-att2").parentElement.hidden = !bioOk || l.some((d) => d.id === lsg("bio-qui", null));
+      box.querySelectorAll("button[data-pk]").forEach((b) => (b.onclick = () => togliPk(b.dataset.pk, loadBio)));
+    } catch (e) { if (e.message !== "401") box.innerHTML = '<p class="msg ko">' + esc(e.message) + "</p>"; }
+  }
   $("#out").onclick = () => lock("Sei uscito.");
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) hiddenAt = Date.now();
@@ -1116,14 +1196,16 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   async function loadPersone() {
     const box = $("#plist");
     try {
-      const l = await call("/codici");
-      box.innerHTML = `<div class="mem"><div class="top"><span class="ic">⭐</span><div>${esc(me.nome)}<small>amministratore principale · può fare tutto</small></div></div></div>` + l.map((c) =>
-        `<div class="mem" data-id="${esc(c.id)}"><div class="top"><span class="ic">👤</span><div>${esc(c.nome)}<small>codice creato il ${esc(new Date(c.creato).toLocaleDateString("it-IT", { day: "numeric", month: "long" }))} · ${c.ultimoUso ? "ultimo uso " + esc(t(c.ultimoUso)) : "mai usato"}</small></div><button type="button" data-id="${esc(c.id)}" data-n="${esc(c.nome)}">Revoca</button></div><div class="perm">${chips(c.perm)}</div></div>`).join("") +
+      const tutti = await call("/codici"), mio = tutti.find((c) => c.principale), l = tutti.filter((c) => !c.principale);
+      const bdevs = () => "";   // nel direttivo solo il conteggio: per chiudere fuori qualcuno basta revocare il codice
+      box.innerHTML = `<div class="mem"><div class="top"><span class="ic">⭐</span><div>${esc(me.nome)}<small>amministratore principale · può fare tutto${mio && mio.biometria.length ? " · 🔐 Face ID su " + mio.biometria.length + (mio.biometria.length === 1 ? " dispositivo" : " dispositivi") : ""}</small></div></div>${mio ? bdevs(mio) : ""}</div>` + l.map((c) =>
+        `<div class="mem" data-id="${esc(c.id)}"><div class="top"><span class="ic">👤</span><div>${esc(c.nome)}<small>codice creato il ${esc(new Date(c.creato).toLocaleDateString("it-IT", { day: "numeric", month: "long" }))} · ${c.ultimoUso ? "ultimo uso " + esc(t(c.ultimoUso)) : "mai usato"}${(c.biometria || []).length ? " · 🔐 Face ID su " + c.biometria.length + (c.biometria.length === 1 ? " dispositivo" : " dispositivi") : ""}</small></div><button type="button" data-id="${esc(c.id)}" data-n="${esc(c.nome)}">Revoca</button></div><div class="perm">${chips(c.perm)}</div>${bdevs(c)}</div>`).join("") +
         (l.length ? "" : '<p class="hint">Nessun altro membro abilitato: crealo qui sotto.</p>');
       box.querySelectorAll(".top button").forEach((b) => (b.onclick = async () => {
-        if (!confirm("Revocare il codice di " + b.dataset.n + "? Non potrà più entrare.")) return;
+        if (!confirm("Revocare il codice di " + b.dataset.n + "? Non potrà più entrare, nemmeno con Face ID o impronta.")) return;
         try { await call("/codice-revoca", { id: b.dataset.id }); toast("Codice revocato"); loadPersone(); } catch (err) { if (err.message !== "401") toast(err.message); }
       }));
+      box.querySelectorAll("button[data-pk]").forEach((b) => (b.onclick = () => togliPk(b.dataset.pk, loadPersone)));
       box.querySelectorAll(".mem[data-id] .perm input").forEach((x) => x.addEventListener("change", async () => {
         const m = x.closest(".mem"), sel = [...m.querySelectorAll(".perm input:checked")].map((y) => y.value);
         try { await call("/codice-permessi", { id: m.dataset.id, perm: sel }); toast("Autorizzazioni di " + m.querySelector(".top div").firstChild.textContent + " salvate"); }
