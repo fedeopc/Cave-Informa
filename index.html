@@ -147,6 +147,12 @@ nav.tabs svg{width:24px;height:24px}
 .now-level b{font-family:var(--f-display);font-size:2rem;line-height:1.05;text-transform:uppercase;letter-spacing:.01em}
 .now-place{display:flex;align-items:center;gap:6px;font-size:.92rem;color:var(--muted);min-width:0}
 .now-place strong{color:var(--fg)}
+.now-place #now-place{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pact{display:flex;gap:6px;flex:none}
+.pbtn{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:.8rem;font-weight:700;color:var(--fg);background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+.pbtn:disabled{opacity:.6}
+:root:not([data-theme=dark]) .pbtn{background:rgba(255,255,255,.55);border-color:rgba(0,0,0,.08)}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]) .pbtn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22)}}
 .now-msg{margin:0;font-size:.95rem}
 .risks{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--line)}
 .risks li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.93rem}
@@ -608,17 +614,15 @@ header.top .brand{gap:12px}
   <div class="now" id="now" data-lvl="-1" aria-live="polite">
     <div class="now-head"><span class="eyebrow">Allerta di oggi</span><span id="now-date"></span></div>
     <div class="now-level"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 7v6M12 17v.5"/></svg></i><b id="now-level">Carico il bollettino</b></div>
-    <div class="now-place"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg><span id="now-place">Cave</span></div>
+    <div class="now-place"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg><span id="now-place">Cave</span><span class="pact"><button class="pbtn" id="geo" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Usa posizione</button><button class="pbtn" id="pick-open" type="button">Cambia</button></span></div>
     <p class="now-change" id="now-change" hidden></p>
     <p class="now-msg" id="now-msg" hidden></p>
     <div class="rchips" id="now-risks" hidden></div>
     <div class="tomorrow" id="now-tomorrow" hidden></div>
     <a class="bol" id="now-bol" target="_blank" rel="noopener" hidden><span class="bi" aria-hidden="true">📄</span><span><b>Leggi il bollettino ufficiale</b><small id="now-bol-s"></small></span><span class="go" aria-hidden="true">›</span></a>
     <div class="now-actions">
-      <button class="btn" id="geo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>Usa la mia posizione</button>
-      <button class="btn" id="pick-open" type="button">Cambia comune</button>
       <button class="btn" id="retry" type="button" hidden>Riprova</button>
-      <button class="btn" id="bcr-refresh" type="button" aria-label="Cerca un nuovo bollettino"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg><span>Aggiorna</span></button>
+      <button class="btn" id="bcr-refresh" type="button" aria-label="Cerca un nuovo bollettino"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg><span>Aggiorna bollettino</span></button>
     </div>
     <form class="pick" id="pick" hidden>
       <input id="pick-input" list="comuni" placeholder="Scrivi il nome del comune" autocomplete="off" aria-label="Comune">
@@ -787,13 +791,13 @@ header.top .brand{gap:12px}
 
   <details class="acc info-acc"><summary>Privacy</summary><div class="acc-body info-body">
     <p>L'app non raccoglie dati personali: non ci sono account, cookie di tracciamento o statistiche di utilizzo.</p>
-    <p><strong>Posizione:</strong> viene chiesta solo se tocchi "Usa la mia posizione", serve a trovare la zona di allerta e resta sul telefono. Non viene inviata a nessuno.</p>
+    <p><strong>Posizione:</strong> viene chiesta solo se tocchi "Usa posizione" (o "Aggiorna") accanto al luogo, serve a trovare la zona di allerta e resta sul telefono. Non viene inviata a nessuno.</p>
     <p><strong>Dati salvati sul telefono:</strong> le spunte dello zaino, il comune scelto e l'ultimo bollettino, per far funzionare l'app senza connessione. Puoi cancellarli eliminando l'app o i dati del sito.</p>
     <p><strong>Collegamenti esterni:</strong> l'app è ospitata su GitHub e scarica i bollettini dai server di GitHub e i dati sui terremoti da INGV (o EMSC). Come per ogni sito, questi server ricevono l'indirizzo IP del telefono per rispondere. La tua posizione non viene inviata: l'app scarica i terremoti di tutta Italia e calcola le distanze sul telefono.</p>
     <p><strong>Notifiche:</strong> se le attivi, il telefono genera un indirizzo anonimo per ricevere i messaggi, che viene salvato sul servizio dell'associazione (Cloudflare) e usato solo per inviare le notifiche di Cave Informa. Non contiene il tuo nome, il numero o la posizione. Puoi disattivarle in qualsiasi momento dalla pagina Allerte o dalle impostazioni del telefono.</p>
     <p><strong>Bacheca:</strong> eventi e comunicazioni vengono letti da un foglio Google pubblicato dall'associazione. Come per ogni sito, Google riceve l'indirizzo IP del telefono per rispondere; non viene inviato nessun altro dato.</p>
     <p><strong>Ricerca pronto soccorso:</strong> se tocchi "Vicini a me", l'app invia ai servizi pubblici di OpenStreetMap (Nominatim e, in riserva, Overpass) la tua posizione arrotondata a circa 1 km, solo per trovare gli ospedali nel raggio di 30 km.</p>
-    <p><strong>Previsioni:</strong> per le previsioni l'app invia al servizio gratuito Open-Meteo le coordinate del comune scelto, oppure la tua posizione arrotondata a circa 1 km se usi "Usa la mia posizione".</p>
+    <p><strong>Previsioni:</strong> per le previsioni l'app invia al servizio gratuito Open-Meteo le coordinate del comune scelto, oppure la tua posizione arrotondata a circa 1 km se usi la tua posizione.</p>
     <p><strong>Comune scelto:</strong> se scegli un comune diverso da Cave, l'app ne cerca le coordinate una sola volta sul servizio gratuito di OpenStreetMap (Nominatim), inviando solo il nome del comune, e le salva sul telefono.</p>
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
@@ -1683,23 +1687,23 @@ if (typeof document !== "undefined") (function allertaInit() {
     } catch (e) {
       toast(navigator.onLine === false ? "Nessuna connessione: mostro l'ultimo bollettino salvato" : "GitHub non risponde ora: riprova tra qualche minuto");
     } finally {
-      rb.disabled = false; rb.classList.remove("spin"); rb.lastChild.textContent = "Aggiorna";
+      rb.disabled = false; rb.classList.remove("spin"); rb.lastChild.textContent = "Aggiorna bollettino";
     }
   });
 
   el.geo.addEventListener("click", () => {
     if (!("geolocation" in navigator)) { toast("Posizione non disponibile su questo dispositivo"); return; }
-    el.geo.disabled = true; el.geo.lastChild.textContent = "Cerco la posizione…";
+    el.geo.disabled = true; el.geo.lastChild.textContent = "Cerco…";
     navigator.geolocation.getCurrentPosition((pos) => {
-      el.geo.disabled = false; el.geo.lastChild.textContent = "Aggiorna posizione";
+      el.geo.disabled = false; el.geo.lastChild.textContent = "Aggiorna";
       place = { mode: "geo", lat: pos.coords.latitude, lon: pos.coords.longitude };
       ls.set("allerta-luogo", place); document.dispatchEvent(new Event("luogo")); update();
     }, (err) => {
-      el.geo.disabled = false; el.geo.lastChild.textContent = "Usa la mia posizione";
+      el.geo.disabled = false; el.geo.lastChild.textContent = "Usa posizione";
       toast(err.code === 1 ? "Permesso posizione negato: attivalo in Impostazioni" : "Posizione non trovata, riprova");
     }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 10 * 60 * 1000 });
   });
-  if (place.mode === "geo") el.geo.lastChild.textContent = "Aggiorna posizione";
+  if (place.mode === "geo") el.geo.lastChild.textContent = "Aggiorna";
 
   el.pickOpen.addEventListener("click", () => { el.pick.hidden = !el.pick.hidden; if (!el.pick.hidden) el.input.focus(); });
   el.pick.addEventListener("submit", (e) => {
@@ -1708,7 +1712,7 @@ if (typeof document !== "undefined") (function allertaInit() {
     const match = [...el.list.options].map((o) => o.value).find((c) => c.toLowerCase() === name.toLowerCase());
     if (el.list.options.length && !match) { toast("Comune non trovato: scegli dall'elenco"); return; }
     place = { mode: "comune", name: match || name };
-    ls.set("allerta-luogo", place); document.dispatchEvent(new Event("luogo")); el.pick.hidden = true; el.input.value = ""; el.geo.lastChild.textContent = "Usa la mia posizione"; update();
+    ls.set("allerta-luogo", place); document.dispatchEvent(new Event("luogo")); el.pick.hidden = true; el.input.value = ""; el.geo.lastChild.textContent = "Usa posizione"; update();
   });
 })();
 
