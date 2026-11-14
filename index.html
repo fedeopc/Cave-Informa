@@ -625,7 +625,7 @@ header.top .brand{gap:12px}
       <div><strong>Notifiche</strong><small id="notif-state">Ricevi un avviso in caso di allerta arancione o rossa, terremoti vicini e comunicazioni dell'associazione.</small></div></div>
     <p class="now-msg" id="notif-help" hidden></p>
     <label class="gialla-opt" id="notif-gialla-row" hidden><input type="checkbox" id="notif-gialla"><span><b>Avvisami anche per l'allerta gialla</b><small>In autunno e in inverno può capitare anche più volte a settimana.</small></span></label>
-    <div class="dae-btns"><button class="btn" id="notif-on" type="button">Attiva notifiche</button><button class="btn" id="notif-off" type="button" hidden>Disattiva</button></div>
+    <div class="dae-btns"><button class="btn" id="notif-on" type="button">Attiva notifiche</button><button class="btn" id="notif-prova" type="button" hidden>🔔 Prova</button><button class="btn" id="notif-off" type="button" hidden>Disattiva</button></div>
   </div>
 
   <div class="tiles">
@@ -768,7 +768,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.29 · 12 novembre 2026</span>
+    <span id="app-version">Versione 3.30 · 14 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1155,7 +1155,7 @@ const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // 
   gBox.checked=!!store.get("push-gialla",false);
 
   function show(active){
-    on.hidden=active; off.hidden=!active; gRow.hidden=!active;
+    on.hidden=active; off.hidden=!active; gRow.hidden=!active; $("#notif-prova").hidden=!active;
     state.textContent=active?"Attive su questo telefono: ti avvisiamo in caso di allerta "+(gBox.checked?"gialla, arancione":"arancione")+" o rossa, terremoti vicini e comunicazioni dell'associazione.":"Ricevi un avviso in caso di allerta arancione o rossa, terremoti vicini e comunicazioni dell'associazione.";
   }
   async function current(){ if(!supported) return null; const reg=await navigator.serviceWorker.ready; return reg.pushManager.getSubscription(); }
@@ -1194,6 +1194,20 @@ const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // 
     try{ const sub=await current(); if(!sub) throw 0; await send("/subscribe",{...sub.toJSON(),gialla:v}); store.set("push-gialla",v); store.set("push-sync",Date.now()); show(true); toast(v?"Riceverai anche le allerte gialle":"Solo allerte arancioni e rosse"); }
     catch(e){ gBox.checked=!v; toast("Non riuscito, controlla la connessione e riprova"); }
     finally{ gBox.disabled=false; }
+  });
+  // prova: il servizio manda una notifica solo a questo telefono e dice come risulta iscritto
+  $("#notif-prova").addEventListener("click",async()=>{
+    const b=$("#notif-prova"); b.disabled=true; help.hidden=true;
+    try{
+      const sub=await current(); if(!sub) throw new Error("Notifiche non attive su questo telefono.");
+      const r=await fetch(api+"/prova-mia",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({endpoint:sub.endpoint})});
+      const j=await r.json().catch(()=>({}));
+      if(!r.ok) throw new Error((j.error||"prova non riuscita").replace(/^./,c=>c.toUpperCase())+".");
+      if(j.gialla!==gBox.checked){ await send("/subscribe",{...sub.toJSON(),gialla:gBox.checked}); store.set("push-sync",Date.now()); }   // riallineo la preferenza
+      help.hidden=false;
+      help.textContent="Notifica di prova inviata: dovrebbe comparire tra pochi secondi. Se non arriva, controlla Impostazioni → Notifiche → Cave Informa e che non sia attiva una modalità Full immersione o Non disturbare."+(j.gialla!==gBox.checked?" (Ho anche aggiornato la tua scelta sull'allerta gialla, che il servizio non aveva.)":"");
+    }catch(e){ help.hidden=false; help.textContent=e.message||"Prova non riuscita, controlla la connessione."; }
+    finally{ b.disabled=false; }
   });
   off.addEventListener("click",async()=>{
     off.disabled=true;

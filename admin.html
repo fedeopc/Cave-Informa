@@ -660,6 +660,7 @@ section[data-p]{display:grid;gap:12px}
 .att.annullata b.t{text-decoration:line-through;opacity:.7}
 .att .ann{display:inline-block;margin-top:6px;font-size:.8rem;font-weight:700;color:#D23B40;background:color-mix(in srgb,#D23B40 12%,transparent);border-radius:8px;padding:3px 8px}
 .sa .ann{color:#D23B40;font-weight:700}
+.idet{display:grid;gap:0;margin-top:10px}.idet .irow{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:.9rem}.idet .irow b{font-variant-numeric:tabular-nums}.idet .att{font-weight:650}.idet .hint{margin-top:8px}
 #arch-n[hidden]{display:none}
 details.arc{border-top:1px solid var(--line);padding:4px 0}details.arc:first-child{border-top:0}
 details.arc>summary{cursor:pointer;list-style:none;padding:10px 0;display:grid;gap:3px}details.arc>summary::-webkit-details-marker{display:none}
@@ -1013,6 +1014,18 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     const d0 = st[0], d7 = st[Math.max(0, st.length - 8)], diff = ora - d7.n;
     box.innerHTML = `<div class="trend"><div class="nums"><span><b>${ora}</b> oggi</span><span>${diff >= 0 ? "+" : ""}${diff} negli ultimi 7 giorni</span></div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Telefoni iscritti dal ${gg(d0.d)}">${bars}</svg><div class="nums"><span>${esc(gg(d0.d))}</span><span>oggi</span></div></div>`;
   }
+  // di chi sono i telefoni iscritti e quanti si sono fatti vivi nell'ultimo mese
+  function dettaglioIscritti(d, tot) {
+    $("#iscr-det")?.remove(); if (!d) return;
+    const cittadini = Math.max(0, tot - d.volontari - d.admin);
+    $("#trend").insertAdjacentHTML("afterend", `<div id="iscr-det" class="idet">
+      <div class="irow"><span>👥 Cittadini</span><b>${cittadini}</b></div>
+      <div class="irow"><span>🔑 Con l'area volontari</span><b>${d.volontari}</b></div>
+      <div class="irow"><span>🛠️ Pagine admin</span><b>${d.admin}</b></div>
+      <div class="irow"><span>🟡 Avvisati anche per l'allerta gialla</span><b>${d.gialla}</b></div>
+      <div class="irow att"><span>✅ Hanno aperto l'app nell'ultimo mese</span><b>${d.attivi} su ${tot}</b></div>
+      <p class="hint">I telefoni che hanno tolto l'app o le notifiche dalle impostazioni spariscono dal totale alla prima notifica che parte.${d.conContatto < tot ? " L'ultimo contatto si registra da questa versione: per i telefoni iscritti prima comparirà alla loro prossima apertura dell'app." : ""}</p></div>`);
+  }
   async function loadStato() {
     const sem = $("#sem"), ctl = $("#ctl"), pb = $("#sem-pb");
     sem.className = "sem"; sem.innerHTML = '<span class="sem-dot"></span><div><b>Controllo…</b><small></small></div>';
@@ -1023,7 +1036,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       sem.className = "sem " + lv; if (lv !== "ok") apri("#c-servizi");
       sem.innerHTML = `<span class="sem-dot"></span><div><b>${lv === "ok" ? "Tutto funziona" : pr.length === 1 ? "1 problema" : pr.length + " problemi"}</b><small>Ultimo controllo automatico: ${esc(fa(sa.giro))} · ${j.iscritti} telefoni con notifiche</small></div>`;
       pb.innerHTML = pr.map((c) => `<div class="pb ${c.stato}"><b>${esc(c.nome)}:</b> ${esc(c.testo)}</div>`).join("");
-      trend(j.storico || [], j.iscritti);
+      trend(j.storico || [], j.iscritti); dettaglioIscritti(j.dettaglio, j.iscritti);
       const gruppi = [...new Set(sa.controlli.map((c) => c.gruppo))];
       ctl.innerHTML = gruppi.map((g) => `<div class="ctl-g"><div>${esc(g)}</div>` + sa.controlli.filter((c) => c.gruppo === g).map((c) =>
         `<div class="ctl-r"><span class="i ${c.stato}">${c.stato === "ok" ? "✓" : c.stato === "warn" ? "!" : "✕"}</span><span>${esc(c.nome)}</span><span class="v">${esc(c.breve || "")}</span></div>`).join("") + "</div>").join("");
@@ -1051,7 +1064,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       if (await Notification.requestPermission() !== "granted") throw new Error("permesso negato: attivalo in Impostazioni → Notifiche");
       const { publicKey } = await (await fetch(API + "/vapid")).json();
       sub = sub || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(publicKey) });
-      await fetch(API + "/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub.toJSON()) });
+      await fetch(API + "/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...sub.toJSON(), origine: "admin" }) });
     }
     return sub;
   }
