@@ -20,7 +20,7 @@
 :root{
   --bg:#EEF1F4; --surface:#FFFFFF; --fg:#13202C; --muted:#5A6878; --line:#D3DAE2;
   --accent:#1D4F91; --accent-ink:#FFFFFF; --accent-soft:#DDE7F4;
-  --verde:#2F7D4F; --gialla:#C99A00; --arancione:#D9661A; --rossa:#C0262D;
+  --verde:#2F7D4F; --gialla:#C99A00; --arancione:#D9661A; --rossa:#C0262D; --on-allerta:#fff; --on-allerta-chip:rgba(0,0,0,.2);
   --gialla-bg:#FBF1CC; --arancione-bg:#FCE3D1; --rossa-bg:#F8D7D8; --verde-bg:#D8EEDF;
   --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -29,13 +29,13 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0E151C; --surface:#17212B; --fg:#E6ECF2; --muted:#9AA8B6; --line:#2A3846;
   --accent:#7FB0F0; --accent-ink:#0B1622; --accent-soft:#1D2F45;
-  --verde:#5CC08A; --gialla:#F0C640; --arancione:#F2914F; --rossa:#F06A6F;
+  --verde:#5CC08A; --gialla:#F0C640; --arancione:#F2914F; --rossa:#F06A6F; --on-allerta:#1d1d1d; --on-allerta-chip:rgba(255,255,255,.45);
   --gialla-bg:#3A3112; --arancione-bg:#3C2414; --rossa-bg:#3E1A1C; --verde-bg:#16321F;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0E151C; --surface:#17212B; --fg:#E6ECF2; --muted:#9AA8B6; --line:#2A3846;
   --accent:#7FB0F0; --accent-ink:#0B1622; --accent-soft:#1D2F45;
-  --verde:#5CC08A; --gialla:#F0C640; --arancione:#F2914F; --rossa:#F06A6F;
+  --verde:#5CC08A; --gialla:#F0C640; --arancione:#F2914F; --rossa:#F06A6F; --on-allerta:#1d1d1d; --on-allerta-chip:rgba(255,255,255,.45);
   --gialla-bg:#3A3112; --arancione-bg:#3C2414; --rossa-bg:#3E1A1C; --verde-bg:#16321F;
   color-scheme:dark}
 
@@ -153,9 +153,19 @@ nav.tabs svg{width:24px;height:24px}
 .risks li span:last-child{display:flex;align-items:center;gap:8px;font-weight:700}
 .dot{width:12px;height:12px;border-radius:50%;flex:none;background:var(--muted);box-shadow:0 0 0 2px var(--surface)}
 .dot.l0{background:var(--verde)} .dot.l1{background:var(--gialla)} .dot.l2{background:var(--arancione)} .dot.l3{background:var(--rossa)}
-.tomorrow{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.93rem;background:var(--surface);border-radius:10px;padding:10px 12px}
-.tomorrow span:last-child{display:flex;align-items:center;gap:8px;font-weight:700;text-align:right}
-.tomorrow span:last-child{flex-wrap:wrap;justify-content:flex-end}.tomorrow small.reg{flex-basis:100%;text-align:right;font-weight:600;font-size:.75rem;color:var(--muted)}
+.tomorrow{display:flex;align-items:center;gap:12px;font-size:.93rem;background:var(--surface);border-radius:10px;padding:12px 14px}
+.tomorrow .cal{flex:none;width:48px;text-align:center;border-radius:10px;background:rgba(0,0,0,.25);padding:4px 0;line-height:1.1}.tomorrow .cal small{display:block;font-size:.66rem;font-weight:800;text-transform:uppercase;color:var(--muted)}.tomorrow .cal b{font-size:1.3rem}
+.tomorrow .dm{flex:1;min-width:0}.tomorrow .dm b{display:flex;align-items:center;gap:8px;font-size:1.05rem}.tomorrow .dm small{display:block;font-size:.78rem;color:var(--muted);font-weight:600;margin-top:2px}
+.now .tomorrow.dom-on{display:block;padding:14px 16px;border:none;backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--gialla);color:#fff}
+.now .tomorrow.dom-on.l1{color:#1d1d1d}.now .tomorrow.dom-on.l2{background:var(--arancione);color:var(--on-allerta)}.now .tomorrow.dom-on.l3{background:var(--rossa);color:var(--on-allerta)}
+.dom-on .dt{display:flex;align-items:center;gap:10px;font-size:1.15rem;font-weight:800}
+.dom-on .tic{flex:none;width:30px;height:30px;border-radius:9px;background:#1d1d1d;color:var(--gialla);display:grid;place-items:center;font-weight:900}
+.dom-on.l2 .tic{color:var(--arancione)}.dom-on.l3 .tic{color:var(--rossa)}
+.dom-on .ds{margin:6px 0 0 40px;font-size:.85rem;font-weight:600;opacity:.85}
+.dom-on .dr{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 0 40px}.dom-on .dr b{font-size:.78rem;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.45);display:flex;align-items:center;gap:6px}
+.dom-on.l2 .dr b,.dom-on.l3 .dr b{background:var(--on-allerta-chip)}.dom-on .dot{box-shadow:0 0 0 2px rgba(0,0,0,.3)}
+.now .now-head{flex-wrap:nowrap;align-items:center}.now .now-head .eyebrow{font-size:.85rem;letter-spacing:.05em;color:var(--fg);background:rgba(255,255,255,.16);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.now .now-head #now-date{font-size:.88rem;font-weight:700;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .now-actions{display:flex;gap:8px;flex-wrap:wrap}
 .now-actions .btn{display:inline-flex;align-items:center;gap:6px}
 #bcr-refresh.spin svg{animation:spin .9s linear infinite}
@@ -788,7 +798,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.32 · 14 novembre 2026</span>
+    <span id="app-version">Versione 3.33 · 14 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1550,12 +1560,18 @@ if (typeof document !== "undefined") (function allertaInit() {
     el.risks.innerHTML = rischi.map((r) => `<span class="rchip"><i class="dot l${r.lvl}"></i>${r.label}${r.lvl ? ": <b>" + BCR.SHORT[r.lvl].toLowerCase() + "</b>" : ""}</span>`).join("");
     el.risks.hidden = false;
     const t = res.tomorrow;
-    const tl = "Domani, " + fmtDay(t.date);
-    el.tomorrow.innerHTML = t.reg
-      ? `<span>${tl}</span><span><i class="dot l${t.reg.max}"></i>${BCR.LEVELS[t.reg.max]}<small class="reg">${t.reg.dpc != null ? "⚠️ nazionale: " + BCR.SHORT[t.reg.dpc].toLowerCase() : "Regione Lazio" + oraReg(t.reg.emesso)}</small></span>`
-      : t.sum
-      ? `<span>${tl}</span><span><i class="dot l${t.sum.max}"></i>${BCR.LEVELS[t.sum.max]}</span>`
-      : `<span>${tl}</span><span>Bollettino entro le 16</span>`;
+    const tm = t.reg ? t.reg.max : t.sum ? t.sum.max : null;
+    const tGiorno = fmtDay(t.date, { weekday: "long", day: "numeric", month: "long" });
+    const tFonte = t.reg ? (t.reg.dpc != null ? "⚠️ nazionale: " + BCR.SHORT[t.reg.dpc].toLowerCase() : "Regione Lazio" + oraReg(t.reg.emesso)) : t.sum ? "Protezione Civile nazionale" : "Bollettino entro le 16";
+    el.tomorrow.className = "tomorrow" + (tm > 0 ? " dom-on l" + tm : "");
+    if (tm > 0) {
+      const tr = t.reg && t.reg.livelli.length === 3 ? [["Idrogeologico", t.reg.livelli[0]], ["Temporali", t.reg.livelli[1]], ["Idraulico", t.reg.livelli[2]]] : (t.sum.risks || []).map((r) => [r.label, r.lvl]);
+      el.tomorrow.innerHTML = `<div class="dt"><b class="tic" aria-hidden="true">!</b>Domani ${BCR.LEVELS[tm].toLowerCase()}</div><div class="ds">${tGiorno} · ${tFonte}</div>` +
+        (tr.length ? `<div class="dr">${tr.map(([l, v]) => `<b><i class="dot l${v}"></i>${l}</b>`).join("")}</div>` : "");
+    } else {
+      const g = t.date;
+      el.tomorrow.innerHTML = `<div class="cal"><small>${fmtDay(g, { weekday: "short" }).replace(".", "")}</small><b>${g.getDate()}</b></div><div class="dm"><b>${tm === 0 ? '<i class="dot l0"></i>Domani nessuna allerta' : "Domani"}</b><small>${tFonte}</small></div>`;
+    }
     el.tomorrow.hidden = false;
     // bollettino ufficiale: il PDF della Regione Lazio (zona di Cave) oppure la pagina nazionale della Protezione Civile
     const bol = $("#now-bol");
