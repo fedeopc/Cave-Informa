@@ -404,6 +404,12 @@ nav.tabs button{font-size:.7rem;white-space:nowrap}
 .gialla-opt small{display:block;color:var(--muted);margin-top:2px;line-height:1.35}
 .notif-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-size:1.2rem}
 .notif small{color:var(--muted);font-size:.85rem}
+.back-link{justify-self:start;align-self:flex-start;margin-right:auto;width:fit-content;font:inherit;font-weight:700;color:var(--accent);background:none;border:0;padding:4px 0;cursor:pointer;font-size:.95rem}
+nav.tabs button{position:relative}.tab-dot{position:absolute;top:6px;right:calc(50% - 18px);width:10px;height:10px;border-radius:50%;background:#E5484D;box-shadow:0 0 0 2px var(--bg,#0B1118)}.tab-dot[hidden]{display:none}
+.notif-sum{display:flex;align-items:center;gap:12px}.notif .notif-ic{width:36px;height:36px}
+.notif-chip:empty{display:none}.notif-chip{margin-left:auto;font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.notif-chip.on{color:var(--ok,#2E9E5B);border-color:color-mix(in srgb,var(--ok,#2E9E5B) 50%,transparent)}
+.notif-body{display:grid;gap:12px;padding:0 16px 16px!important}.notif-txt{margin:0;color:var(--muted);font-size:.9rem}
 .avviso-banner{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--fg);background:linear-gradient(150deg,color-mix(in srgb,var(--accent) 20%,var(--glass)),var(--glass))}
 .avviso-banner span:last-child{display:grid;min-width:0}
 .avviso-banner small{color:var(--muted);font-size:.82rem}
@@ -617,16 +623,18 @@ header.top .brand{gap:12px}
     <p class="now-src" id="now-src"></p>
   </div>
 
-  <a class="card avviso-banner" id="avviso-banner" href="#comune" hidden></a>
+  <a class="card avviso-banner" id="avviso-banner" href="#avvisi" hidden></a>
   <a class="bb-banner" id="bb-banner" href="#bacheca" hidden></a>
 
-  <div class="card notif" id="notif" hidden>
-    <div class="dae-head"><span class="notif-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg></span>
-      <div><strong>Notifiche</strong><small id="notif-state">Ricevi un avviso in caso di allerta arancione o rossa, terremoti vicini e comunicazioni dell'associazione.</small></div></div>
+  <details class="acc notif" id="notif" hidden>
+    <summary><span class="notif-sum"><span class="notif-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg></span><span>Notifiche</span></span><span class="notif-chip" id="notif-chip"></span></summary>
+    <div class="acc-body notif-body">
+    <p class="notif-txt" id="notif-state">Ricevi un avviso in caso di allerta arancione o rossa, terremoti vicini e comunicazioni dell'associazione.</p>
     <p class="now-msg" id="notif-help" hidden></p>
     <label class="gialla-opt" id="notif-gialla-row" hidden><input type="checkbox" id="notif-gialla"><span><b>Avvisami anche per l'allerta gialla</b><small>In autunno e in inverno può capitare anche più volte a settimana.</small></span></label>
     <div class="dae-btns"><button class="btn" id="notif-on" type="button">Attiva notifiche</button><button class="btn" id="notif-prova" type="button" hidden>🔔 Prova</button><button class="btn" id="notif-off" type="button" hidden>Disattiva</button></div>
-  </div>
+    </div>
+  </details>
 
   <div class="tiles">
     <div class="xt">
@@ -694,8 +702,16 @@ header.top .brand{gap:12px}
   <div id="risk" class="risk-wrap"></div>
 </section>
 
+<!-- AVVISI: bacheca e comunicazioni dell'associazione -->
+<section class="tab" id="tab-avvisi" role="tabpanel" aria-labelledby="b-avvisi" hidden>
+  <p class="lead">Comunicazioni, eventi e avvisi dell'Associazione Italiana Protezione Civile Cave.</p>
+  <div id="bacheca-wrap" style="display:grid;gap:12px;scroll-margin-top:190px" hidden><div class="eyebrow">Bacheca dell'associazione</div><div class="card" id="bacheca"></div></div>
+  <p class="muted" id="avvisi-vuoto" hidden>Nessuna comunicazione in questo momento. Quando l'associazione pubblica qualcosa lo trovi qui, e con le notifiche attive ti arriva anche un avviso.</p>
+</section>
+
 <!-- ZAINO -->
 <section class="tab" id="tab-zaino" role="tabpanel" aria-labelledby="b-zaino" hidden>
+  <button class="back-link" type="button" onclick="showTab('guida')">‹ Cosa fare</button>
   <p class="lead">Prepara uno zaino da prendere in pochi secondi. Spunta le voci man mano: restano salvate su questo telefono.</p>
   <div class="progress"><div class="bar"><i id="pbar"></i></div><span id="pcount">0/0</span></div>
   <div id="kit" style="display:grid;gap:12px"></div>
@@ -768,7 +784,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.30 · 14 novembre 2026</span>
+    <span id="app-version">Versione 3.31 · 14 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -811,9 +827,7 @@ header.top .brand{gap:12px}
 
   <div class="card group" id="group" hidden></div>
 
-  <div id="bacheca-wrap" style="display:grid;gap:18px;scroll-margin-top:190px" hidden><div class="eyebrow">Bacheca dell'associazione</div><div class="card" id="bacheca"></div></div>
 
-  <div id="avvisi-wrap" style="display:grid;gap:18px" hidden><div class="eyebrow">Comunicazioni dell'associazione</div><div class="card" id="avvisi"></div></div>
 
   <div id="areas-wrap" style="display:grid;gap:18px" hidden><div class="eyebrow">Aree di emergenza</div>
   <div class="card" id="areas"></div></div>
@@ -840,7 +854,7 @@ header.top .brand{gap:12px}
   <div class="in">
     <button role="tab" id="b-allerte" aria-controls="tab-allerte" aria-selected="true" data-t="allerte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 22 20H2Z"/><path d="M12 10v4M12 17v.5"/></svg>Allerte</button>
     <button role="tab" id="b-guida" aria-controls="tab-guida" aria-selected="false" data-t="guida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M4 21V5"/></svg>Cosa fare</button>
-    <button role="tab" id="b-zaino" aria-controls="tab-zaino" aria-selected="false" data-t="zaino"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="7" width="14" height="14" rx="3"/><path d="M9 7V5a3 3 0 0 1 6 0v2M9 13h6"/></svg>Zaino</button>
+    <button role="tab" id="b-avvisi" aria-controls="tab-avvisi" aria-selected="false" data-t="avvisi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 10v4h3l7 4V6L6 10Z"/><path d="M16.5 9a4 4 0 0 1 0 6"/><path d="M19 6.5a7.5 7.5 0 0 1 0 11"/></svg>Avvisi<i class="tab-dot" id="avvisi-dot" hidden></i></button>
     <button role="tab" id="b-dae" aria-controls="tab-dae" aria-selected="false" data-t="dae"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/><path d="M12.8 9.5 10.8 13h2.6l-1.8 3.2"/></svg>DAE</button>
     <button role="tab" id="b-comune" aria-controls="tab-comune" aria-selected="false" data-t="comune"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Contatti</button>
   </div>
@@ -950,7 +964,9 @@ tick();setInterval(tick,15000);
 
 /* schede */
 function showTab(t){
-  document.querySelectorAll("nav.tabs button").forEach(b=>{const on=b.dataset.t===t;b.setAttribute("aria-selected",on)});
+  const nav=t==="zaino"?"guida":t;   // lo zaino fa parte di "Cosa fare"
+  document.querySelectorAll("nav.tabs button").forEach(b=>{const on=b.dataset.t===nav;b.setAttribute("aria-selected",on)});
+  if(t==="avvisi"&&window.AVVISI_LETTI) window.AVVISI_LETTI();
   document.querySelectorAll("section.tab").forEach(s=>s.hidden=s.id!=="tab-"+t);
   store.set("tab",t);window.scrollTo(0,0);
 }
@@ -961,7 +977,7 @@ function apri(dest){
   dest=String(dest||"").replace(/^.*#/,""); if(dest==="numeri") dest="comune";
   if(dest==="soci"){ setTimeout(()=>{ if(window.SOCI_AREA) window.SOCI_AREA(); },300); return true; }
   if(dest.startsWith("soci-")){ setTimeout(()=>{ if(window.SOCI_APRI) window.SOCI_APRI(dest.slice(5)); },300); return true; }
-  if(dest==="bacheca"){ showTab("comune"); setTimeout(()=>{const w=document.getElementById("bacheca-wrap"); if(w&&!w.hidden) w.scrollIntoView({behavior:"smooth",block:"start"});},120); return true; }
+  if(dest==="bacheca"||dest==="avvisi"){ showTab("avvisi"); setTimeout(()=>{const w=document.getElementById("bacheca-wrap"); if(w&&!w.hidden) w.scrollIntoView({behavior:"smooth",block:"start"});},120); return true; }
   if(dest==="terremoti"){ showTab("allerte"); setTimeout(()=>{const b=document.getElementById("tile-eq"); if(b){ if(b.getAttribute("aria-expanded")!=="true") b.click(); b.scrollIntoView({behavior:"smooth",block:"center"}); }},150); return true; }
   if(document.getElementById("tab-"+dest)){ showTab(dest); return true; }
   return false;
@@ -995,7 +1011,7 @@ $("#check-update").addEventListener("click",async()=>{
   btn.disabled=false; btn.textContent="Controlla aggiornamenti";
 });
 {const fix=t=>t==="numeri"?"comune":t;const start=fix(hashTab)||"";const saved=fix(store.get("tab","allerte"));
-showTab(["allerte","guida","zaino","comune","info","dae"].includes(start)?start:(["allerte","guida","zaino","comune","info","dae"].includes(saved)?saved:"allerte"));
+showTab(["allerte","guida","zaino","avvisi","comune","info","dae"].includes(start)?start:(["allerte","guida","zaino","avvisi","comune","info","dae"].includes(saved)?saved:"allerte"));
 if(start==="bacheca"||start==="terremoti") setTimeout(()=>apri(start),600);
 if(/^soci(-|$)/.test(location.hash.slice(1))) setTimeout(()=>apriNotifica(location.hash),900);}
 
@@ -1150,19 +1166,22 @@ const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // 
   const standalone=navigator.standalone===true||matchMedia("(display-mode: standalone)").matches;
   const supported="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
   const b64=s=>{const p="=".repeat((4-s.length%4)%4);const r=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(r,c=>c.charCodeAt(0));};
+  let primaVolta=true;
   const box=$("#notif"), state=$("#notif-state"), help=$("#notif-help"), on=$("#notif-on"), off=$("#notif-off"), gRow=$("#notif-gialla-row"), gBox=$("#notif-gialla");
   box.hidden=false;
   gBox.checked=!!store.get("push-gialla",false);
 
   function show(active){
     on.hidden=active; off.hidden=!active; gRow.hidden=!active; $("#notif-prova").hidden=!active;
+    const chip=$("#notif-chip"); chip.textContent=active?"✓ attive":"non attive"; chip.classList.toggle("on",active);
+    if(primaVolta){ box.open=!active; primaVolta=false; }   // chiusa se già attive, aperta per invitare ad attivarle
     state.textContent=active?"Attive su questo telefono: ti avvisiamo in caso di allerta "+(gBox.checked?"gialla, arancione":"arancione")+" o rossa, terremoti vicini e comunicazioni dell'associazione.":"Ricevi un avviso in caso di allerta arancione o rossa, terremoti vicini e comunicazioni dell'associazione.";
   }
   async function current(){ if(!supported) return null; const reg=await navigator.serviceWorker.ready; return reg.pushManager.getSubscription(); }
   async function send(path,body){ const r=await fetch(api+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); if(!r.ok) throw new Error("server "+r.status); }
 
   if(!supported){
-    on.hidden=true;
+    on.hidden=true; box.open=true; $("#notif-chip").textContent=isIOS&&!standalone?"da attivare":"non disponibili";
     help.hidden=false;
     help.textContent=isIOS&&!standalone
       ?"Su iPhone le notifiche funzionano solo con l'app installata: tocca Condividi, poi \"Aggiungi alla schermata Home\", e apri l'app dall'icona."
@@ -2123,9 +2142,21 @@ if (typeof document !== "undefined") (function bachecaInit() {
   const linkHtml = (e) => e.link ? `<a href="${esc(e.link)}" target="_blank" rel="noopener">Maggiori informazioni ›</a>` : "";
   // una sola bacheca: foglio Google + avvisi pubblicati dalla pagina amministratori
   let csvText = (ls.get("bacheca", null) || {}).csv || "", svcList = ls.get("bacheca-servizio", []);
+  let correnti = [];
+  const visti = () => new Set(ls.get("avvisi-visti", []));
+  function segnaNuovi() {
+    const aperta = !document.getElementById("tab-avvisi").hidden;
+    if (aperta) { ls.set("avvisi-visti", correnti.slice(0, 100)); }
+    const v = visti(); document.getElementById("avvisi-dot").hidden = aperta || !correnti.some((k) => !v.has(k));
+  }
+  window.AVVISI_LETTI = () => { ls.set("avvisi-visti", correnti.slice(0, 100)); document.getElementById("avvisi-dot").hidden = true; };
   function render() {
     const now = new Date();
     const { eventi, avvisi } = BB.merge(BB.items(csvText, now), BB.fromService(svcList, now));
+    // pallino "nuovo" sulla scheda Avvisi: elementi mai visti su questo telefono
+    const chiavi = [...avvisi.map((a) => "a|" + a.titolo + "|" + +a.d), ...eventi.map((e) => "e|" + e.titolo + "|" + +e.d)];
+    correnti = chiavi; segnaNuovi();
+    $("#avvisi-vuoto").hidden = !!(eventi.length || avvisi.length);
     if (!eventi.length && !avvisi.length) { wrap.hidden = true; ban.hidden = true; return; }
     // prima le comunicazioni (urgenti in cima), poi gli eventi in programma
     box.innerHTML = (avvisi.length ? `<div class="bb-h">Comunicazioni</div>` + avvisi.map((a) => `<div class="bb-item"><span class="bb-ic msg" aria-hidden="true">${a.urgente ? "⚠️" : "📢"}</span><span class="t"><strong>${esc(a.titolo)}</strong>${a.testo ? `<p>${esc(a.testo)}</p>` : ""}<small>Pubblicato il ${a.d.toLocaleDateString("it-IT", { day: "numeric", month: "long" })}</small>${linkHtml(a)}</span></div>`).join("") : "")
@@ -2139,7 +2170,7 @@ if (typeof document !== "undefined") (function bachecaInit() {
     else if (eventi.length) { const e = eventi[0]; ban.innerHTML = `${cal(e.d)}<span class="t"><span>Prossimo evento</span><strong>${esc(e.titolo)}</strong><small>${[giorno(e.d), e.ora ? (/^\d/.test(e.ora) ? "ore " + e.ora : e.ora) : ""].filter(Boolean).map(esc).join(" · ")}</small></span><span class="go" aria-hidden="true">›</span>`; }
     ban.hidden = !(fresh || eventi.length);
   }
-  ban.addEventListener("click", (ev) => { ev.preventDefault(); showTab("comune"); setTimeout(() => wrap.scrollIntoView({ behavior: "smooth", block: "start" }), 60); });
+  ban.addEventListener("click", (ev) => { ev.preventDefault(); showTab("avvisi"); });
   render();
   const EVERY = 10 * 60 * 1000; // il foglio si controlla al massimo ogni 10 minuti
   async function loadSvc() {
