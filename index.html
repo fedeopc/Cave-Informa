@@ -802,7 +802,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.33 · 14 novembre 2026</span>
+    <span id="app-version">Versione 3.34 · 15 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1639,9 +1639,13 @@ if (typeof document !== "undefined") (function allertaInit() {
       if (res.today.sum && /liri/i.test(res.today.sum.zone)) {
         const lz = await regione(force);
         const iso = (d) => d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0"); // come nel servizio: AAAAMMGG
+        // ora di uscita del bollettino nazionale (dal nome del file, ora italiana)
+        const tDpc = new Date(+stem.slice(0, 4), +stem.slice(4, 6) - 1, +stem.slice(6, 8), +stem.slice(9, 11), +stem.slice(11, 13)).getTime();
         for (const k of ["today", "tomorrow"]) {
           const g = lz && lz.giorni && lz.giorni[iso(res[k].date)], dpc = res[k].sum ? res[k].sum.max : -1;
-          if (g) res[k].reg = { max: g.max, emesso: g.emesso, livelli: g.livelli || [], dpc: dpc > g.max ? dpc : null };
+          // segnalo il nazionale più alto solo se è uscito dopo quello della Regione: se la Regione ha aggiornato dopo, vale la Regione
+          const dpcDopo = !g || !g.emesso || tDpc >= Date.parse(g.emesso);
+          if (g) res[k].reg = { max: g.max, emesso: g.emesso, livelli: g.livelli || [], dpc: dpc > g.max && dpcDopo ? dpc : null };
           if (g && g.url && (!res.bol || g.emesso > res.bol.emesso)) res.bol = { url: g.url, emesso: g.emesso };   // PDF più recente della Regione
         }
       }
