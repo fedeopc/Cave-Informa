@@ -802,7 +802,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.34 · 15 novembre 2026</span>
+    <span id="app-version">Versione 3.37 · 25 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1175,14 +1175,16 @@ $("#nums").innerHTML=NUMS.map(x=>`<a class="ntile${x.red?" red":""}" href="tel:$
 })();
 /* ===== NOTIFICHE: indirizzo del servizio Cloudflare (es. "https://allerta-cave-push.nomeutente.workers.dev")
    Lascia vuoto per nascondere notifiche e comunicazioni. ===== */
-const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // servizio Cloudflare: notifiche e comunicazioni
+const PUSH_API = location.hostname.endsWith("protezionecivilecave.it") ? "https://api.protezionecivilecave.it" : "https://allerta-cave-push.secondo-violento3m.workers.dev"; // servizio Cloudflare: notifiche e comunicazioni
 
 (function(){
   if(!PUSH_API) return;
   const api=PUSH_API.replace(/\/$/,"");
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
   const standalone=navigator.standalone===true||matchMedia("(display-mode: standalone)").matches;
-  const supported="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
+  // app installata dallo store (Capacitor): le notifiche passano da Firebase invece che dal browser
+  const cap=window.Capacitor, nativa=!!(cap&&cap.isNativePlatform&&cap.isNativePlatform()), PN=nativa&&cap.Plugins&&cap.Plugins.PushNotifications;
+  const supported=nativa?!!PN:("serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window);
   const b64=s=>{const p="=".repeat((4-s.length%4)%4);const r=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(r,c=>c.charCodeAt(0));};
   let primaVolta=true;
   const box=$("#notif"), state=$("#notif-state"), help=$("#notif-help"), on=$("#notif-on"), off=$("#notif-off"), gRow=$("#notif-gialla-row"), gBox=$("#notif-gialla");
@@ -1195,7 +1197,27 @@ const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // 
     if(primaVolta){ box.open=!active; primaVolta=false; }   // chiusa se già attive, aperta per invitare ad attivarle
     state.textContent=active?"Attive su questo telefono: ti avvisiamo in caso di allerta "+(gBox.checked?"gialla, arancione":"arancione")+" o rossa, terremoti vicini e comunicazioni dell'associazione.":"Ricevi un avviso in caso di allerta arancione o rossa, terremoti vicini e comunicazioni dell'associazione.";
   }
-  async function current(){ if(!supported) return null; const reg=await navigator.serviceWorker.ready; return reg.pushManager.getSubscription(); }
+  let fcmAttesa=null;
+  async function nativoToken(){   // chiede il permesso, si registra a Firebase e restituisce il codice del telefono
+    const p=await PN.requestPermissions(); if(p.receive!=="granted") throw new Error("permesso negato");
+    return new Promise((ok,ko)=>{
+      PN.addListener("registration",t=>ok(t.value)); PN.addListener("registrationError",e=>ko(new Error(e.error||"registrazione non riuscita")));
+      PN.register();
+    });
+  }
+  const subNativo=t=>({endpoint:"fcm:"+t,toJSON(){return {endpoint:"fcm:"+t};},async unsubscribe(){ try{ await PN.unregister(); }catch(e){} store.set("fcm-token",""); }});
+  async function current(){
+    if(!supported) return null;
+    if(nativa){ const t=store.get("fcm-token",""); if(!t) return null; const p=await PN.checkPermissions(); return p.receive==="granted"?subNativo(t):null; }
+    const reg=await navigator.serviceWorker.ready; return reg.pushManager.getSubscription();
+  }
+  if(nativa&&PN){   // canali Android: la sirena è solo per le nuove attivazioni dei volontari
+    const ch=(id,name,imp,extra)=>PN.createChannel(Object.assign({id,name,importance:imp,visibility:1,vibration:true,lights:true},extra||{})).catch(()=>{});
+    ch("avvisi","Avvisi e comunicazioni",3); ch("allerte","Allerte meteo e terremoti",4); ch("volontari","Volontari: aggiornamenti",4);
+    ch("attivazioni","Volontari: nuove attivazioni",5,{sound:"sirena",description:"Suona anche con il telefono in silenzioso se aggiunto alle eccezioni di Non disturbare"});
+    PN.addListener("pushNotificationActionPerformed",a=>{ const d=(a.notification&&a.notification.data)||{}; if(d.url) apriNotifica(d.url); });
+    PN.addListener("pushNotificationReceived",n=>{ const d=n.data||{}; if(window.SOCI_AGG&&/^soci-/.test(d.tag||"")) window.SOCI_AGG(); if(d.canale==="attivazioni"&&d.url) apriNotifica(d.url); else toast(n.title||"Nuova notifica"); });
+  }
   async function send(path,body){ const r=await fetch(api+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); if(!r.ok) throw new Error("server "+r.status); }
 
   if(!supported){
@@ -1207,7 +1229,7 @@ const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // 
     return;
   }
   current().then(sub=>{
-    show(!!sub && Notification.permission==="granted");
+    show(!!sub && (nativa||Notification.permission==="granted"));
     // ricorda al server l'iscrizione una volta al giorno (se il server l'avesse persa)
     if(sub){ const last=store.get("push-sync",0); if(Date.now()-last>864e5){ send("/subscribe",{...sub.toJSON(),gialla:gBox.checked}).then(()=>store.set("push-sync",Date.now())).catch(()=>{}); } }
   }).catch(()=>{});
@@ -1215,12 +1237,18 @@ const PUSH_API = "https://allerta-cave-push.secondo-violento3m.workers.dev"; // 
   on.addEventListener("click",async()=>{
     on.disabled=true; on.textContent="Attivo…"; help.hidden=true;
     try{
-      const perm=await Notification.requestPermission();
-      if(perm!=="granted"){ help.hidden=false; help.textContent="Permesso negato. Puoi attivarlo in Impostazioni → Notifiche → Cave Informa."; return; }
-      const reg=await navigator.serviceWorker.ready;
-      const {publicKey}=await (await fetch(api+"/vapid")).json();
-      let sub=await reg.pushManager.getSubscription();
-      if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64(publicKey)});
+      let sub;
+      if(nativa){
+        let t; try{ t=await nativoToken(); }catch(e){ help.hidden=false; help.textContent="Permesso negato. Puoi attivarlo in Impostazioni → App → Cave Informa → Notifiche."; return; }
+        store.set("fcm-token",t); sub=subNativo(t);
+      } else {
+        const perm=await Notification.requestPermission();
+        if(perm!=="granted"){ help.hidden=false; help.textContent="Permesso negato. Puoi attivarlo in Impostazioni → Notifiche → Cave Informa."; return; }
+        const reg=await navigator.serviceWorker.ready;
+        const {publicKey}=await (await fetch(api+"/vapid")).json();
+        sub=await reg.pushManager.getSubscription();
+        if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64(publicKey)});
+      }
       await send("/subscribe",{...sub.toJSON(),gialla:gBox.checked}); store.set("push-sync",Date.now());
       show(true); toast("Notifiche attivate");
     }catch(e){ help.hidden=false; help.textContent="Non sono riuscito ad attivare le notifiche. Controlla la connessione e riprova."; }
@@ -2236,7 +2264,7 @@ const SOCI=(()=>{
   if(!PUSH_API){ box.hidden=true; return {}; }
   let me=store.get("socio",null), msgs=[], cur=null, scelta=null, finAperte=false;
   const post=async(path,body)=>{ const r=await fetch(PUSH_API+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); const j=await r.json().catch(()=>({})); if(!r.ok) throw new Error(j.error||("errore "+r.status)); return j; };
-  const endpoint=async()=>{ try{ const reg=await navigator.serviceWorker.ready; const sub=await reg.pushManager.getSubscription(); return sub&&sub.endpoint; }catch(e){ return null; } };
+  const endpoint=async()=>{ try{ if(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform()){ const t=store.get("fcm-token",""); return t?"fcm:"+t:null; } const reg=await navigator.serviceWorker.ready; const sub=await reg.pushManager.getSubscription(); return sub&&sub.endpoint; }catch(e){ return null; } };
   const nota=(t,ok)=>{ const el=$("#soci-msg"); el.textContent=t||""; el.style.color=ok===false?"#D23B40":""; };
   const quando=iso=>new Date(iso).toLocaleString("it-IT",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
   // la voce "Area soci" compare solo sui telefoni dei soci (area attiva) o aprendo il link personale …/#soci

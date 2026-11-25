@@ -757,7 +757,7 @@ details.mese{margin-left:6px}details.mese>summary{font-weight:650;font-size:.9re
       <div class="card" data-c="iscritti" data-chiusa><div class="eyebrow">Telefoni iscritti</div><div id="trend"><p class="hint">Caricamento…</p></div></div>
       <div class="card" data-c="strumenti" data-chiusa><div class="eyebrow">Strumenti</div>
         <div class="row2"><button type="button" id="t-me">🔔 Notifica di prova a questo telefono</button><button type="button" id="t-dae">🔄 Aggiorna DAE ora</button></div>
-        <div class="row2"><button type="button" id="t-lazio">📄 Leggi ora la Regione Lazio</button></div>
+        <div class="row2"><button type="button" id="t-lazio">📄 Leggi ora la Regione Lazio</button><button type="button" id="t-tg">✈️ Prova canale Telegram</button></div>
         <label class="chk sorv"><input type="checkbox" id="t-sorv"> <span><b>🛠️ Avvisami su questo telefono se qualcosa non funziona</b><small>Il semaforo segnala subito anche il primo errore; la notifica arriva solo se il problema non si risolve da solo e dura più di mezz'ora, al massimo una volta al giorno per lo stesso problema. Arriva solo agli amministratori, non ai cittadini.</small></span></label>
         <div class="row2"><button type="button" id="t-sp">🛠️ Prova avviso di malfunzionamento</button></div>
         <p class="msg" id="tmsg" role="status"></p>
@@ -836,7 +836,7 @@ details.mese{margin-left:6px}details.mese>summary{font-weight:650;font-size:.9re
 if (window.top !== window.self) { try { window.top.location = window.location.href; } catch (e) { document.documentElement.innerHTML = ""; } }
 (function () {
   "use strict";
-  const API = "https://allerta-cave-push.secondo-violento3m.workers.dev";
+  const API = location.hostname.endsWith("protezionecivilecave.it") ? "https://api.protezionecivilecave.it" : "https://allerta-cave-push.secondo-violento3m.workers.dev";
   const LOCK_MIN = 5;                       // blocco automatico dopo 5 minuti in sospeso
   const $ = (s) => document.querySelector(s), $$ = (s) => document.querySelectorAll(s);
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -1167,6 +1167,16 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       if (sub) cb.checked = !!(await call("/sorveglianza", { endpoint: sub.endpoint })).on;
     } catch (e) {}
   }
+  $("#t-tg").onclick = async () => {
+    const el = $("#tmsg");
+    try {
+      msg(el, "Invio…", true);
+      const r = await call("/telegram-prova", {});
+      if (r.assente) msg(el, "Il canale Telegram non è ancora collegato: mancano TELEGRAM_TOKEN e TELEGRAM_CHANNEL su Cloudflare.", false);
+      else if (r.ok) msg(el, "Messaggio di prova pubblicato nel canale Telegram.", true);
+      else msg(el, "Telegram ha risposto: " + (r.err || "errore") + ". Controlla che il bot sia amministratore del canale.", false);
+    } catch (err) { if (err.message !== "401") msg(el, "Non riuscito: " + err.message, false); }
+  };
   $("#t-sp").onclick = async () => {
     const el = $("#tmsg");
     try {
