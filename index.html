@@ -14,6 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<script>try{var _t=localStorage.getItem("testo");if(_t==="1"||_t==="2")document.documentElement.style.fontSize=_t==="1"?"112.5%":"125%"}catch(e){}</script>
 <style>html{-webkit-text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px)}body{margin:0;min-height:100vh}img{max-width:100%}[hidden]{display:none!important}</style>
 <style>
 /* Layout: app a schede, una colonna stretta, barra di navigazione fissa in basso come un'app iOS */
@@ -40,7 +41,7 @@
   color-scheme:dark}
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:1rem;line-height:1.5;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--accent)}
 .wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.15}
@@ -444,7 +445,7 @@ nav.tabs button{position:relative}.tab-dot{position:absolute;top:6px;right:calc(
 /* ===== anteprima 2.1 ===== */
 header.top .wrap{display:grid;gap:8px;padding-block:10px 12px;align-items:stretch;justify-content:stretch}
 .hrow{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.hrow2{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.hrow2{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 12px}
 header.top .clock{display:grid;line-height:1.2;font-size:.92rem;color:var(--muted);text-align:left}
 header.top .clock span::first-letter{text-transform:uppercase}
 header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabular-nums}
@@ -539,6 +540,14 @@ header.top .clock b{font-size:1.25rem;color:var(--fg);font-variant-numeric:tabul
 .gcount{font-size:.8rem;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
 .gcount.full{color:var(--verde)}
 .info-body{display:grid;gap:8px;padding:0 16px 14px!important}
+#now-share{display:inline-flex}#now[data-lvl="-1"] #now-share{display:none}
+.inst{display:grid;gap:8px}.inst h4{margin:6px 0 0;font-size:1rem}.passi li>span{min-width:0}.call112{margin-left:auto}.inst .tuo{font-weight:600;color:var(--accent);font-size:.85rem}
+.passi{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:p}
+.passi li{counter-increment:p;display:flex;gap:10px;align-items:flex-start;font-size:.94rem;line-height:1.4}
+.passi li::before{content:counter(p);flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:.85rem;display:grid;place-items:center;margin-top:-1px}
+.kb{display:inline-block;min-width:1.5em;text-align:center;border:1px solid var(--line);border-radius:6px;padding:0 5px;background:var(--surface);font-weight:700}
+.txsz{display:grid;gap:8px}.txsz button{font:inherit;font-weight:700;text-align:left;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.txsz button[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft)}
 .info-body p{margin:0;font-size:.93rem}
 /* logo associazione */
 header.top .brand .logo{height:72px;width:auto;flex:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,.2))}
@@ -621,6 +630,7 @@ header.top .brand{gap:12px}
     <div class="tomorrow" id="now-tomorrow" hidden></div>
     <a class="bol" id="now-bol" target="_blank" rel="noopener" hidden><span class="bi" aria-hidden="true">📄</span><span><b>Leggi il bollettino ufficiale</b><small id="now-bol-s"></small></span><span class="go" aria-hidden="true">›</span></a>
     <div class="now-actions">
+      <button class="btn" id="now-share" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Condividi</button>
       <button class="btn" id="retry" type="button" hidden>Riprova</button>
       <button class="btn" id="bcr-refresh" type="button" aria-label="Cerca un nuovo bollettino"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg><span>Aggiorna bollettino</span></button>
     </div>
@@ -761,6 +771,30 @@ header.top .brand{gap:12px}
     <p class="muted" id="soci-msg" role="status"></p>
   </div></details>
 
+  <details class="acc info-acc" id="inst-box"><summary>📲 Installa l'app sul telefono</summary><div class="acc-body info-body">
+    <p class="soci-intro">Installata, Cave Informa si apre come una vera app e può mandarti le <strong>notifiche</strong>. Su iPhone è indispensabile.</p>
+    <div class="inst" id="inst-ios"><h4>📱 iPhone <span class="tuo" hidden>· il tuo telefono</span></h4><ol class="passi">
+      <li><span>Apri questa pagina con <b>Safari</b> (non da Chrome né dall'interno di WhatsApp o Facebook).</span></li>
+      <li><span>Tocca il tasto <b>Condividi</b> <span class="kb">⬆︎</span>, il quadrato con la freccia in basso.</span></li>
+      <li><span>Scegli <b>Aggiungi alla schermata Home</b> (se non la vedi, tocca prima <b>Altro</b>).</span></li>
+      <li><span>Tocca <b>Aggiungi</b>: sulla Home compare l'icona di Cave Informa.</span></li>
+      <li><span>Apri l'app <b>dall'icona</b> e, in "Notifiche", tocca <b>Attiva notifiche</b>.</span></li></ol></div>
+    <div class="inst" id="inst-and"><h4>🤖 Android <span class="tuo" hidden>· il tuo telefono</span></h4><ol class="passi">
+      <li><span>Apri questa pagina con <b>Chrome</b>.</span></li>
+      <li><span>Tocca i tre puntini <span class="kb">⋮</span> in alto a destra.</span></li>
+      <li><span>Scegli <b>Installa app</b> (oppure <b>Aggiungi a schermata Home</b>) e conferma.</span></li>
+      <li><span>Apri l'app <b>dall'icona</b> e, in "Notifiche", tocca <b>Attiva notifiche</b>.</span></li></ol></div>
+  </div></details>
+
+  <details class="acc info-acc" id="testo-box"><summary>🔠 Dimensione del testo</summary><div class="acc-body info-body">
+    <p class="soci-intro">Scegli la grandezza che leggi meglio. Resta salvata su questo telefono.</p>
+    <div class="txsz" role="radiogroup" aria-label="Dimensione del testo">
+      <button type="button" role="radio" data-n="0" aria-checked="true" style="font-size:1rem">Normale</button>
+      <button type="button" role="radio" data-n="1" aria-checked="false" style="font-size:1.15rem">Grande</button>
+      <button type="button" role="radio" data-n="2" aria-checked="false" style="font-size:1.3rem">Molto grande</button>
+    </div>
+  </div></details>
+
   <details class="acc info-acc" open><summary>Cos'è</summary><div class="acc-body info-body">
     <p>Un'app informativa realizzata da volontari di protezione civile per i cittadini di Cave. Raccoglie in un posto solo le allerte del giorno, i comportamenti da seguire e i contatti utili.</p>
     <p><strong>Non è un servizio ufficiale.</strong> Non sostituisce le allerte ufficiali della Regione Lazio e del sistema nazionale IT-alert. In caso di emergenza chiama sempre il <strong>112</strong>.</p>
@@ -802,7 +836,7 @@ header.top .brand{gap:12px}
   </div></details>
   <p class="soci-link"><button type="button" id="soci-apri">🔑 Area riservata ai volontari</button></p>
   <div class="card update-row">
-    <span id="app-version">Versione 3.38 · 27 novembre 2026</span>
+    <span id="app-version">Versione 3.39 · 27 novembre 2026</span>
     <button class="btn" id="check-update" type="button">Controlla aggiornamenti</button>
   </div>
 </section>
@@ -1226,6 +1260,7 @@ const PUSH_API = location.hostname.endsWith("protezionecivilecave.it") ? "https:
     help.textContent=isIOS&&!standalone
       ?"Su iPhone le notifiche funzionano solo con l'app installata: tocca Condividi, poi \"Aggiungi alla schermata Home\", e apri l'app dall'icona."
       :"Questo browser non supporta le notifiche. Prova con Safari su iPhone (app installata) o Chrome su Android.";
+    if(isIOS&&!standalone){const a=document.createElement("a");a.href="#";a.textContent=" Guida passo passo";a.onclick=e=>{e.preventDefault();showTab("info");const d=document.getElementById("inst-box");d.open=true;setTimeout(()=>d.scrollIntoView({behavior:"smooth",block:"start"}),60)};help.appendChild(a);}
     return;
   }
   current().then(sub=>{
@@ -2348,6 +2383,33 @@ const SOCI=(()=>{
   return { apri: apriMsg, area: apriArea, agg };
 })();
 window.SOCI_APRI=SOCI.apri; window.SOCI_AREA=SOCI.area; window.SOCI_AGG=SOCI.agg;
+</script>
+<script>
+/* condividi l'allerta, guida all'installazione, dimensione del testo */
+(function(){
+  const $=s=>document.querySelector(s);
+  // condividi
+  const sh=$("#now-share");
+  if(sh) sh.addEventListener("click",async()=>{
+    const liv=($("#now-level")||{}).textContent||"Allerta", luogo=(($("#now-place")||{}).textContent||"").trim(), data=(($("#now-date")||{}).textContent||"").trim();
+    const url=location.href.split("#")[0].split("?")[0];
+    const testo=[liv+(luogo?" · "+luogo:"")+(data?" ("+data+")":""),"Aggiornamenti e notifiche gratuite: Cave Informa, l'app della Protezione Civile di Cave."].join("\n");
+    try{ if(navigator.share){ await navigator.share({text:testo,url}); return; } }catch(e){ if(e&&e.name==="AbortError") return; }
+    window.open("https://wa.me/?text="+encodeURIComponent(testo+"\n"+url),"_blank","noopener");
+  });
+  // installazione: prima il telefono in uso, e niente guida se l'app è già installata
+  const ua=navigator.userAgent||"", ios=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const inst=navigator.standalone===true||matchMedia("(display-mode: standalone)").matches;
+  const box=$("#inst-box"); if(box){
+    if(inst) box.hidden=true;
+    else{ const mio=$(ios?"#inst-ios":"#inst-and"); if(mio){ mio.querySelector(".tuo").hidden=false; mio.parentNode.insertBefore(mio,mio.parentNode.querySelector(".inst")); } }
+  }
+  // dimensione del testo
+  const tb=[...document.querySelectorAll(".txsz button")], FS=["","112.5%","125%"];
+  const imposta=n=>{ document.documentElement.style.fontSize=FS[n]; tb.forEach(b=>b.setAttribute("aria-checked",String(+b.dataset.n===n))); };
+  let n0=0; try{ n0=+localStorage.getItem("testo")||0; }catch(e){} imposta(n0);
+  tb.forEach(b=>b.addEventListener("click",()=>{ const n=+b.dataset.n; imposta(n); try{ localStorage.setItem("testo",String(n)); }catch(e){} }));
+})();
 </script>
 </body>
 </html>

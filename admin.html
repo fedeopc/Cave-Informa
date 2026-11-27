@@ -651,6 +651,15 @@ section[data-p]{display:grid;gap:12px}
 .mem{padding:12px 0;border-top:1px solid var(--line);display:grid;gap:8px}.mem:first-child{border-top:0}
 .mem .top{display:flex;align-items:center;gap:10px}.mem .top>div{flex:1;min-width:0}.mem small{display:block;color:var(--muted);font-size:.78rem}
 .mem .top button{font:inherit;font-size:.82rem;font-weight:700;color:#C0262D;background:none;border:0;cursor:pointer;padding:8px}
+.mem.ap>.top{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mem.ap>.top::after{content:"";width:9px;height:9px;flex:none;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:rotate(45deg) translate(-2px,-2px);transition:transform .2s;margin-right:4px}
+.mem.ap.aperto>.top::after{transform:rotate(-135deg) translate(-2px,-2px)}
+.mem.ap>.corpo{display:none;gap:10px}.mem.ap.aperto>.corpo{display:grid}
+.mem .riep{color:var(--fg);font-weight:600}
+.mem .rev{justify-self:start;font:inherit;font-size:.85rem;font-weight:700;color:#C0262D;background:none;border:1px solid color-mix(in srgb,#C0262D 40%,var(--line));border-radius:10px;cursor:pointer;padding:8px 14px}
+.mod{display:flex;flex-wrap:wrap;gap:6px}
+.mod button{font:inherit;font-size:.82rem;font-weight:600;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.mod button:active{background:color-mix(in srgb,var(--accent) 14%,var(--surface));border-color:var(--accent)}
 .newcode .fatto{background:#2E8B57;border-color:#2E8B57;color:#fff}
 /* attivazioni: correggi / annulla / elimina */
 .att .azioni{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -683,7 +692,7 @@ details.mese{margin-left:6px}details.mese>summary{font-weight:650;font-size:.9re
 .att .azioni .fin{background:#2E9E5B;border-color:#2E9E5B;color:#fff}
 .att .ann.fin,.sa .ann.fin{color:#2E9E5B;background:color-mix(in srgb,#2E9E5B 14%,transparent)}.sa .ann.fin{background:none}
 
-/* 3.38 · miglioramenti alla pagina admin */
+/* 3.38 · miglioramenti alla pagina admin · 3.39 · direttivo ad apertura, modelli degli avvisi, telefono nuovo */
 .ahead img{height:44px}
 .hbtn{margin-left:auto;display:flex;gap:8px;align-items:center}.hbtn .out{margin-left:0}
 .ig{width:38px;height:38px;padding:0;display:grid;place-items:center;font-size:1.05rem}
@@ -755,6 +764,7 @@ input::placeholder,textarea::placeholder{color:color-mix(in srgb,var(--fg) 62%,t
           <button type="button" data-v="evento">📅 Evento</button>
         </div>
         <p class="hint" id="tipo-hint">Comunicazione nella bacheca dell'app.</p>
+        <label>Modello <span class="opt">(facoltativo)</span></label><div class="mod" id="mod"></div>
         <label for="ti">Titolo</label><input id="ti" maxlength="90" required placeholder="Es. Strada provinciale chiusa">
         <label for="te">Testo</label><textarea id="te" maxlength="600" placeholder="Cosa succede, dove, fino a quando, cosa fare."></textarea>
         <div id="ev" hidden>
@@ -835,7 +845,7 @@ input::placeholder,textarea::placeholder{color:color-mix(in srgb,var(--fg) 62%,t
     </section>
     <section data-p="imp" hidden>
       <div class="card"><div class="eyebrow" style="cursor:default">Impostazioni</div>
-        <label class="chk sorv"><input type="checkbox" id="t-sorv"> <span><b>🛠️ Avvisami su questo telefono se qualcosa non funziona</b><small>Il semaforo segnala subito anche il primo errore; la notifica arriva solo se il problema non si risolve da solo e dura più di mezz'ora, al massimo una volta al giorno per lo stesso problema. Arriva solo agli amministratori, non ai cittadini.</small></span></label>
+        <label class="chk sorv"><input type="checkbox" id="t-sorv"> <span><b>🛠️ Avvisami su questo telefono se qualcosa non va</b><small>Il semaforo segnala subito anche il primo errore; la notifica arriva solo se il problema non si risolve da solo e dura più di mezz'ora, al massimo una volta al giorno per lo stesso problema. Solo agli amministratori, non ai cittadini. Se sei l'amministratore principale, ricevi anche l'avviso quando un membro del direttivo entra da un telefono mai usato prima.</small></span></label>
         <div class="row2"><button type="button" id="t-sp">🛠️ Prova avviso di malfunzionamento</button></div>
         <p class="msg" id="smsg2" role="status"></p></div>
       <div class="card" id="c-bio" data-c="biometria"><div class="eyebrow">🔐 Il mio accesso con Face ID</div>
@@ -848,7 +858,7 @@ input::placeholder,textarea::placeholder{color:color-mix(in srgb,var(--fg) 62%,t
       <div class="card" data-c="direttivo"><div class="eyebrow">Membri del direttivo <span class="tag">solo tu</span></div>
         <p class="hint">Scegli cosa può fare ciascuno. Le modifiche valgono da subito, anche se la persona è già dentro (al massimo dopo che ricarica la pagina).</p>
         <div id="plist"><p class="hint">Caricamento…</p></div></div>
-      <div class="card" data-c="nuovo"><div class="eyebrow">Abilita una nuova persona</div>
+      <div class="card" data-c="nuovo" data-chiusa><div class="eyebrow">Abilita una nuova persona</div>
         <label for="pn">Nome</label>
         <input id="pn" maxlength="60" placeholder="Nome, es. Anna (segreteria)">
         <label>Cosa può fare</label>
@@ -869,6 +879,8 @@ input::placeholder,textarea::placeholder{color:color-mix(in srgb,var(--fg) 62%,t
 if (window.top !== window.self) { try { window.top.location = window.location.href; } catch (e) { document.documentElement.innerHTML = ""; } }
 (function () {
   "use strict";
+  // identificativo casuale di questo telefono: serve solo ad avvisarti se un membro entra da un telefono nuovo
+  const idDisp = () => { try { let d = localStorage.getItem("admin-disp"); if (!d || !/^[A-Za-z0-9_-]{16,48}$/.test(d)) { d = Array.from(crypto.getRandomValues(new Uint8Array(18)), (b) => "abcdefghijklmnopqrstuvwxyz0123456789"[b % 36]).join(""); localStorage.setItem("admin-disp", d); } return d; } catch (e) { return ""; } };
   const API = location.hostname.endsWith("protezionecivilecave.it") ? "https://api.protezionecivilecave.it" : "https://allerta-cave-push.secondo-violento3m.workers.dev";
   const LOCK_MIN = 5;                       // blocco automatico dopo 5 minuti in sospeso
   const $ = (s) => document.querySelector(s), $$ = (s) => document.querySelectorAll(s);
@@ -878,7 +890,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   function toast(t) { const e = $("#toast"); e.textContent = t; e.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (e.hidden = true), 2400); }
   function msg(el, t, ok) { el.textContent = t || ""; el.className = "msg " + (t ? (ok ? "ok" : "ko") : ""); }
   async function call(path, body) {
-    const r = await fetch(API + path, { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token }, body: body ? JSON.stringify(body) : undefined });
+    const r = await fetch(API + path, { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, "X-Disp": idDisp() }, body: body ? JSON.stringify(body) : undefined });
     let j = {}; try { j = await r.json(); } catch (e) {}
     if (r.status === 401) { lock("Codice non più valido: inseriscilo di nuovo."); throw new Error("401"); }
     if (!r.ok) throw new Error(j.error || "errore " + r.status);
@@ -896,7 +908,7 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
     const pw = $("#pw").value.trim(); if (!pw) return;
     $("#go").disabled = true; msg($("#lmsg"), "");
     try {
-      const r = await fetch(API + "/login", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + pw }, body: "{}" });
+      const r = await fetch(API + "/login", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + pw, "X-Disp": idDisp() }, body: "{}" });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) { msg($("#lmsg"), j.error === "codice non valido" ? "Codice non valido." : (j.error || "Accesso non riuscito"), false); return; }
       entra(j, pw);
@@ -1039,6 +1051,22 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
   const gg = (iso) => iso.split("-").reverse().join("/");
   const dh = (iso) => new Date(iso).toLocaleString("it-IT", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
   const MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+  /* modelli: riempiono tipo, titolo e testo; i puntini di sospensione (…) sono da completare */
+  const MOD_AV = [
+    ["🔒 Sede chiusa", "avviso", "Sede chiusa il …", "La sede dell'associazione resterà chiusa il … . Riapre il … ."],
+    ["🎓 Serata informativa", "evento", "Serata informativa: …", "Incontro aperto a tutti con i volontari della Protezione Civile. Ingresso libero.", "Sede dell'associazione"],
+    ["📚 Corso", "evento", "Corso: …", "Posti limitati: per partecipare scrivi o chiama i recapiti dell'associazione.", "Sede dell'associazione"],
+    ["🚧 Strada chiusa", "urgente", "Chiusa …", "… è chiusa al traffico per … . Percorso alternativo: … . Ti aggiorneremo qui appena riapre."],
+    ["🌧️ Invito alla prudenza", "avviso", "Maltempo: occhio a …", "Nelle prossime ore sono previsti … . Evita sottopassi, zone basse e corsi d'acqua. Il livello di allerta aggiornato è nella prima pagina dell'app."],
+    ["🎪 Evento in piazza", "evento", "…", "Vi aspettiamo con i volontari della Protezione Civile di Cave.", "Piazza …"],
+  ];
+  $("#mod").innerHTML = MOD_AV.map((m, i) => `<button type="button" data-i="${i}">${m[0]}</button>`).join("");
+  $$("#mod button").forEach((b) => (b.onclick = () => {
+    const m = MOD_AV[+b.dataset.i];
+    if (($("#ti").value.trim() || $("#te").value.trim()) && !confirm("Sostituire il testo già scritto con il modello?")) return;
+    setTipo(m[1]); $("#ti").value = m[2]; $("#te").value = m[3]; if (m[1] === "evento") $("#el").value = m[4] || "";
+    preview(); const i = m[2].indexOf("…"); $("#ti").focus(); if (i >= 0) $("#ti").setSelectionRange(i, i + 1);
+  }));
   function setTipo(v) { tipo = v; $$("#tipo button").forEach((x) => x.classList.toggle("on", x.dataset.v === v)); $("#ev").hidden = v !== "evento"; $("#scad").hidden = v === "evento"; $("#tipo-hint").textContent = HINT[v]; preview(); }
   function setQm(v) { qm = v; $$("#qm button").forEach((x) => x.classList.toggle("on", x.dataset.v === v)); $("#qd").hidden = v !== "prog"; if (v === "prog" && !$("#qd").value) { const d = new Date(Date.now() + 864e5); d.setHours(8, 0, 0, 0); $("#qd").value = dLoc(d); } labels(); preview(); aggSvuota(); }
   function labels() {
@@ -1262,6 +1290,8 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
 
   /* ---------- direttivo e autorizzazioni (solo amministratore principale) ---------- */
   const PERM_NOMI = [["avvisi", "📢 Avvisi in bacheca", "Pubblica e modifica gli avvisi"], ["attivazioni", "🚨 Inviare attivazioni", "Manda messaggi ai volontari"], ["risposte", "👥 Vedere chi risponde", "Elenco di chi c'è e di chi no"], ["volontari", "🔑 Codici dei volontari", "Vede e crea i codici di accesso"], ["storico", "📊 Storico e presenze", "Ore e presenze dei volontari"], ["stato", "🛠️ Stato dei servizi", "Vede se tutto funziona"]];
+  const PERM_BREVI = { avvisi: "Avvisi", attivazioni: "Attivazioni", risposte: "Risposte", volontari: "Codici", storico: "Storico", stato: "Stato" };
+  const permRiep = (p) => { p = (p || []).filter((k) => PERM_BREVI[k]); return p.length === 6 ? "Tutte le autorizzazioni" : p.length ? p.map((k) => PERM_BREVI[k]).join(" · ") : "nessuna autorizzazione"; };
   const PERM_BASE = ["avvisi", "attivazioni", "risposte", "stato"];
   const chips = (sel) => PERM_NOMI.map(([k, n, d]) => `<label class="pr"><span>${n}<small>${d}</small></span><input type="checkbox" role="switch" value="${k}"${sel.includes(k) ? " checked" : ""}></label>`).join("");
   $("#pn-perm").innerHTML = chips(PERM_BASE);
@@ -1271,16 +1301,20 @@ if (window.top !== window.self) { try { window.top.location = window.location.hr
       const tutti = await call("/codici"), mio = tutti.find((c) => c.principale), l = tutti.filter((c) => !c.principale);
       const bdevs = () => "";   // nel direttivo solo il conteggio: per chiudere fuori qualcuno basta revocare il codice
       box.innerHTML = `<div class="mem"><div class="top"><span class="ic">⭐</span><div>${esc(me.nome)}<small>amministratore principale · può fare tutto${mio && mio.biometria.length ? " · 🔐 Face ID su " + mio.biometria.length + (mio.biometria.length === 1 ? " dispositivo" : " dispositivi") : ""}</small></div></div>${mio ? bdevs(mio) : ""}</div>` + l.map((c) =>
-        `<div class="mem" data-id="${esc(c.id)}"><div class="top"><span class="ic">👤</span><div>${esc(c.nome)}<small>codice creato il ${esc(new Date(c.creato).toLocaleDateString("it-IT", { day: "numeric", month: "long" }))} · ${c.ultimoUso ? "ultimo uso " + esc(t(c.ultimoUso)) : "mai usato"}${(c.biometria || []).length ? " · 🔐 Face ID su " + c.biometria.length + (c.biometria.length === 1 ? " dispositivo" : " dispositivi") : ""}</small></div><button type="button" data-id="${esc(c.id)}" data-n="${esc(c.nome)}">Revoca</button></div><div class="perm">${chips(c.perm)}</div>${bdevs(c)}</div>`).join("") +
+        `<div class="mem ap" data-id="${esc(c.id)}"><div class="top" role="button" tabindex="0" aria-expanded="false"><span class="ic">👤</span><div>${esc(c.nome)}<small class="riep">${permRiep(c.perm)}</small><small>${c.ultimoUso ? "ultimo uso " + esc(t(c.ultimoUso)) : "codice mai usato"}${(c.biometria || []).length ? " · 🔐 Face ID" : ""}</small></div></div><div class="corpo"><div class="perm">${chips(c.perm)}</div>${bdevs(c)}<small>codice creato il ${esc(new Date(c.creato).toLocaleDateString("it-IT", { day: "numeric", month: "long" }))}${(c.biometria || []).length ? " · 🔐 Face ID su " + c.biometria.length + (c.biometria.length === 1 ? " dispositivo" : " dispositivi") : ""}</small><button type="button" class="rev" data-id="${esc(c.id)}" data-n="${esc(c.nome)}">Revoca il codice</button></div></div>`).join("") +
         (l.length ? "" : '<p class="hint">Nessun altro membro abilitato: crealo qui sotto.</p>');
-      box.querySelectorAll(".top button").forEach((b) => (b.onclick = async () => {
+      box.querySelectorAll(".rev").forEach((b) => (b.onclick = async () => {
         if (!confirm("Revocare il codice di " + b.dataset.n + "? Non potrà più entrare, nemmeno con Face ID o impronta.")) return;
         try { await call("/codice-revoca", { id: b.dataset.id }); toast("Codice revocato"); loadPersone(); } catch (err) { if (err.message !== "401") toast(err.message); }
       }));
+      box.querySelectorAll(".mem.ap>.top").forEach((h) => {
+        const apri = () => { const m = h.parentElement, on = !m.classList.contains("aperto"); box.querySelectorAll(".mem.ap.aperto").forEach((o) => { o.classList.remove("aperto"); o.firstChild.setAttribute("aria-expanded", "false"); }); if (on) { m.classList.add("aperto"); h.setAttribute("aria-expanded", "true"); } };
+        h.onclick = apri; h.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); apri(); } };
+      });
       box.querySelectorAll("button[data-pk]").forEach((b) => (b.onclick = () => togliPk(b.dataset.pk, loadPersone)));
       box.querySelectorAll(".mem[data-id] .perm input").forEach((x) => x.addEventListener("change", async () => {
         const m = x.closest(".mem"), sel = [...m.querySelectorAll(".perm input:checked")].map((y) => y.value);
-        try { await call("/codice-permessi", { id: m.dataset.id, perm: sel }); toast("Autorizzazioni di " + m.querySelector(".top div").firstChild.textContent + " salvate"); }
+        try { await call("/codice-permessi", { id: m.dataset.id, perm: sel }); m.querySelector(".riep").textContent = permRiep(sel); toast("Autorizzazioni di " + m.querySelector(".top div").firstChild.textContent + " salvate"); }
         catch (err) { x.checked = !x.checked; if (err.message !== "401") toast(err.message); }
       }));
     } catch (err) { if (err.message !== "401") box.innerHTML = '<p class="msg ko">' + esc(err.message) + "</p>"; }
